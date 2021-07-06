@@ -1,0 +1,9 @@
+title: Check for Squid3 (www.squid-cache.org) health
+agents: linux
+catalog: os/misc
+license: GPL
+distribution: check_mk
+description:
+ This check checks for Squid3 (www.squid-cache.org) basic health.
+inventory:
+  One service is created for CPU time, DNS time, Client hits, Client Requests and Server Requests

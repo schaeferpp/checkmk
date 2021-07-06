@@ -1,0 +1,25 @@
+#!/bin/bash
+
+MK_CONFDIR="/etc/check_mk"
+
+
+if [ -e $MK_CONFDIR/mk_squid.cfg ] ; then
+  . "$MK_CONFDIR"/mk_squid.cfg
+fi
+
+if [ -z "$port" ]; then
+  SQUID_PORT=$(ss -tlpn | grep squid | tr -s ' ' | cut -d' ' -f 4 | cut -d':' -f 2)
+fi
+
+
+if type squidclient > /dev/null 2>&1 ; then
+  echo "<<<check_squid>>>"
+
+  # one squid instance
+  squidclient -p "$SQUID_PORT" -T2 mgr:5min | grep =
+
+  # multiple squid instances
+  # instance names must be without spaces and with colon char at the end
+  # squidclient -p 3128 -T2 mgr:5min | grep ' = ' | sed -e 's/^/Instance1:/'
+  # squidclient -p 3129 -T2 mgr:5min | grep ' = ' | sed -e 's/^/Instance2:/'
+fi
