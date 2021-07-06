@@ -21,7 +21,7 @@ import cmk.utils.plugin_registry
 import cmk.gui.config as config
 import cmk.gui.sites as sites
 from cmk.gui.i18n import _
-from cmk.gui.globals import html, user_errors
+from cmk.gui.globals import html, user_errors, request
 from cmk.gui.view_utils import get_labels
 from cmk.gui.type_defs import Choices, ColumnName, Row, Rows, VisualContext
 from cmk.gui.page_menu import PageMenuEntry
@@ -29,22 +29,26 @@ from cmk.gui.page_menu import PageMenuEntry
 
 class VisualInfo(metaclass=abc.ABCMeta):
     """Base class for all visual info classes"""
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def ident(self) -> str:
         """The identity of a visual type. One word, may contain alpha numeric characters"""
         raise NotImplementedError()
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def title(self) -> str:
         """The human readable GUI title"""
         raise NotImplementedError()
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def title_plural(self) -> str:
         """The human readable GUI title for multiple items"""
         raise NotImplementedError()
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def single_spec(self) -> List[Tuple[str, ValueSpec]]:
         """The key / valuespec pairs (choices) to identify a single row"""
         raise NotImplementedError()
@@ -90,32 +94,38 @@ visual_info_registry = VisualInfoRegistry()
 
 class VisualType(metaclass=abc.ABCMeta):
     """Base class for all filters"""
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def ident(self) -> str:
         """The identity of a visual type. One word, may contain alpha numeric characters"""
         raise NotImplementedError()
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def title(self) -> str:
         """The human readable GUI title"""
         raise NotImplementedError()
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def ident_attr(self) -> str:
         """The name of the attribute that is used to identify a visual of this type"""
         raise NotImplementedError()
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def multicontext_links(self) -> bool:
         """Whether or not to show context buttons even if not single infos present"""
         raise NotImplementedError()
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def plural_title(self) -> str:
         """The plural title to use in the GUI"""
         raise NotImplementedError()
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def show_url(self) -> str:
         """The URL filename that can be used to show visuals of this type"""
         raise NotImplementedError()
@@ -136,7 +146,8 @@ class VisualType(metaclass=abc.ABCMeta):
         """Load all visuals of this type"""
         raise NotImplementedError()
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def permitted_visuals(self) -> Dict:
         """Get the permitted visuals of this type"""
         raise NotImplementedError()
@@ -296,7 +307,7 @@ class Filter(metaclass=abc.ABCMeta):
         var context. This can be used to persist the filter settings."""
         val = {}
         for varname in self.htmlvars:
-            val[varname] = html.request.var(varname, '')
+            val[varname] = request.var(varname, '')
         return val
 
 
@@ -322,7 +333,7 @@ class FilterTristate(Filter):
         self.deflt = deflt
 
     def display(self):
-        current = html.request.var(self.varname)
+        current = request.var(self.varname)
         html.begin_radio_group(horizontal=True)
         for value, text in [("1", _("yes")), ("0", _("no")), ("-1", _("(ignore)"))]:
             checked = current == value or (current in [None, ""] and int(value) == self.deflt)
@@ -330,7 +341,7 @@ class FilterTristate(Filter):
         html.end_radio_group()
 
     def tristate_value(self):
-        return html.request.get_integer_input_mandatory(self.varname, self.deflt)
+        return request.get_integer_input_mandatory(self.varname, self.deflt)
 
     def filter(self, infoname):
         current = self.tristate_value()
@@ -384,9 +395,7 @@ class FilterTime(Filter):
         for what, whatname in [("from", _("From")), ("until", _("Until"))]:
             varprefix = self.ident + "_" + what
             html.open_tr()
-            html.open_td()
-            html.write("%s:" % whatname)
-            html.close_td()
+            html.td("%s:" % whatname)
             html.open_td()
             html.text_input(varprefix)
             html.close_td()
@@ -413,27 +422,27 @@ class FilterTime(Filter):
     def _get_time_range_of(self, what: str) -> Union[None, int, float]:
         varprefix = self.ident + "_" + what
 
-        rangename = html.request.var(varprefix + "_range")
+        rangename = request.var(varprefix + "_range")
         if rangename == "abs":
             try:
                 return time.mktime(
-                    time.strptime(html.request.get_str_input_mandatory(varprefix), "%Y-%m-%d"))
+                    time.strptime(request.get_str_input_mandatory(varprefix), "%Y-%m-%d"))
             except Exception:
                 user_errors.add(
                     MKUserError(varprefix, _("Please enter the date in the format YYYY-MM-DD.")))
                 return None
 
         if rangename == "unix":
-            return html.request.get_integer_input_mandatory(varprefix)
+            return request.get_integer_input_mandatory(varprefix)
         if rangename is None:
             return None
 
         try:
-            count = html.request.get_integer_input_mandatory(varprefix)
+            count = request.get_integer_input_mandatory(varprefix)
             secs = count * int(rangename)
             return int(time.time()) - secs
         except Exception:
-            html.request.set_var(varprefix, "")
+            request.set_var(varprefix, "")
             return None
 
 
@@ -445,7 +454,7 @@ def filter_cre_choices():
 
 
 def filter_cre_heading_info():
-    current_value = html.request.var("site")
+    current_value = request.var("site")
     return config.site(current_value)["alias"] if current_value else None
 
 

@@ -292,15 +292,18 @@ class DiagnosticsElementError(Exception):
 
 
 class ABCDiagnosticsElement(metaclass=abc.ABCMeta):
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def ident(self) -> str:
         raise NotImplementedError()
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def title(self) -> str:
         raise NotImplementedError()
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def description(self) -> str:
         raise NotImplementedError()
 
@@ -421,12 +424,12 @@ class CheckmkOverviewDiagnosticsElement(ABCDiagnosticsElementJSONDump):
                                           checkmk_server_name)
 
         infos = {}
-        tree = structured_data.StructuredDataTree().load_from(filepath)
-        attrs = tree.get_sub_attributes(["software", "applications", "check_mk"])
+        tree = structured_data.load_tree_from(filepath)
+        attrs = tree.get_attributes(["software", "applications", "check_mk"])
         if attrs:
             infos.update(attrs.get_raw_tree())
 
-        node = tree.get_sub_container(["software", "applications", "check_mk"])
+        node = tree.get_node(["software", "applications", "check_mk"])
         if node:
             infos.update(node.get_raw_tree())
 
@@ -443,7 +446,8 @@ class ABCCheckmkFilesDiagnosticsElement(ABCDiagnosticsElement):
     def __init__(self, rel_checkmk_files: List[str]) -> None:
         self.rel_checkmk_files = rel_checkmk_files
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def _checkmk_files_map(self) -> CheckmkFilesMap:
         raise NotImplementedError
 

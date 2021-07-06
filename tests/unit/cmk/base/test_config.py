@@ -4,14 +4,13 @@
 # This file is part of Checkmk (https://checkmk.com). It is subject to the terms and
 # conditions defined in the file COPYING, which is part of this source code package.
 
-from pathlib import Path
 import re
+from pathlib import Path
 
-import pytest  # type: ignore[import]
+import pytest
 from six import ensure_str
 
-# No stub file
-from testlib.base import Scenario  # type: ignore[import]
+from testlib.base import Scenario
 
 import cmk.utils.paths
 import cmk.utils.piggyback as piggyback
@@ -19,21 +18,17 @@ import cmk.utils.version as cmk_version
 from cmk.utils.caching import config_cache as _config_cache
 from cmk.utils.exceptions import MKGeneralException
 from cmk.utils.rulesets.ruleset_matcher import RulesetMatchObject
-from cmk.utils.type_defs import (
-    CheckPluginName,
-    ConfigSerial,
-    HostKey,
-    LATEST_SERIAL,
-    SectionName,
-    SourceType,
-)
+from cmk.utils.type_defs import CheckPluginName, HostKey, SectionName, SourceType
 
-import cmk.base.config as config
-from cmk.base.check_utils import Service
-from cmk.base.discovered_labels import DiscoveredServiceLabels, ServiceLabel
+from cmk.core_helpers.config_path import VersionedConfigPath
+from cmk.core_helpers.type_defs import Mode
+
 import cmk.base.api.agent_based.register as agent_based_register
+import cmk.base.config as config
 from cmk.base.api.agent_based.checking_classes import CheckPlugin
 from cmk.base.api.agent_based.type_defs import ParsedSectionName, SNMPSectionPlugin
+from cmk.base.check_utils import Service
+from cmk.base.discovered_labels import DiscoveredServiceLabels, ServiceLabel
 
 
 def test_duplicate_hosts(monkeypatch):
@@ -1695,8 +1690,8 @@ def test_host_config_max_cachefile_age_no_cluster(monkeypatch):
 
     host_config = config.HostConfig.make_host_config("xyz")
     assert not host_config.is_cluster
-    assert host_config.max_cachefile_age == config.check_max_cachefile_age
-    assert host_config.max_cachefile_age != config.cluster_max_cachefile_age
+    assert host_config.max_cachefile_age.get(Mode.CHECKING) == config.check_max_cachefile_age
+    assert host_config.max_cachefile_age.get(Mode.CHECKING) != config.cluster_max_cachefile_age
 
 
 def test_host_config_max_cachefile_age_cluster(monkeypatch):
@@ -1706,8 +1701,8 @@ def test_host_config_max_cachefile_age_cluster(monkeypatch):
 
     host_config = config.HostConfig.make_host_config("clu")
     assert host_config.is_cluster
-    assert host_config.max_cachefile_age != config.check_max_cachefile_age
-    assert host_config.max_cachefile_age == config.cluster_max_cachefile_age
+    assert host_config.max_cachefile_age.get(Mode.CHECKING) != config.check_max_cachefile_age
+    assert host_config.max_cachefile_age.get(Mode.CHECKING) == config.cluster_max_cachefile_age
 
 
 @pytest.mark.parametrize("use_new_descr,result", [
@@ -2099,30 +2094,29 @@ cmc_host_rrd_config = [
 """ % (condition, value))
 
 
-@pytest.fixture(name="serial")
-def fixture_serial():
-    return ConfigSerial("13")
+@pytest.fixture(name="config_path")
+def fixture_config_path():
+    return VersionedConfigPath(13)
 
 
-def test_save_packed_config(monkeypatch, serial):
+def test_save_packed_config(monkeypatch, config_path):
     ts = Scenario()
     ts.add_host("bla1")
     config_cache = ts.apply(monkeypatch)
+    precompiled_check_config = Path(config_path) / "precompiled_check_config.mk"
 
-    assert not Path(cmk.utils.paths.core_helper_config_dir, serial,
-                    "precompiled_check_config.mk").exists()
+    assert not precompiled_check_config.exists()
 
-    config.save_packed_config(serial, config_cache)
+    config.save_packed_config(config_path, config_cache)
 
-    assert Path(cmk.utils.paths.core_helper_config_dir, serial,
-                "precompiled_check_config.mk").exists()
+    assert precompiled_check_config.exists()
 
 
-def test_load_packed_config(serial):
-    config.PackedConfigStore(serial).write({"abc": 1})
+def test_load_packed_config(config_path):
+    config.PackedConfigStore.from_serial(config_path).write({"abc": 1})
 
     assert "abc" not in config.__dict__
-    config.load_packed_config(serial)
+    config.load_packed_config(config_path)
     # Mypy does not understand that we add some new member for testing
     assert config.abc == 1  # type: ignore[attr-defined]
     del config.__dict__["abc"]
@@ -2130,61 +2124,34 @@ def test_load_packed_config(serial):
 
 class TestPackedConfigStore:
     @pytest.fixture()
-    def store(self, serial):
-        return config.PackedConfigStore(serial)
-
-    def test_latest_serial_path(self):
-        store = config.PackedConfigStore(serial=LATEST_SERIAL)
-        assert store.path == Path(cmk.utils.paths.core_helper_config_dir, "latest",
-                                  "precompiled_check_config.mk")
-
-    def test_given_serial_path(self):
-        store = config.PackedConfigStore(serial=ConfigSerial("42"))
-        assert store.path == Path(cmk.utils.paths.core_helper_config_dir, "42",
-                                  "precompiled_check_config.mk")
+    def store(self, config_path):
+        return config.PackedConfigStore.from_serial(config_path)
 
     def test_read_not_existing_file(self, store):
         with pytest.raises(FileNotFoundError):
             store.read()
 
-    def test_write(self, store, serial):
-        assert not Path(cmk.utils.paths.core_helper_config_dir, serial,
-                        "precompiled_check_config.mk").exists()
+    def test_write(self, store, config_path):
+        precompiled_check_config = Path(config_path) / "precompiled_check_config.mk"
+        assert not precompiled_check_config.exists()
 
         store.write({"abc": 1})
 
-        packed_file_path = Path(cmk.utils.paths.core_helper_config_dir, serial,
-                                "precompiled_check_config.mk")
-        assert packed_file_path.exists()
-
-        assert store.read() == {
-            "abc": 1,
-        }
+        assert precompiled_check_config.exists()
+        assert store.read() == {"abc": 1}
 
 
 @pytest.mark.parametrize("params, expected_result", [
-    (
-        None,
-        False,
-    ),
-    (
-        {},
-        False,
-    ),
+    (None, False),
+    ({}, False),
     (
         {
             'x': 'y'
         },
         False,
     ),
-    (
-        [1, (2, 3)],
-        False,
-    ),
-    (
-        4,
-        False,
-    ),
+    ([1, (2, 3)], False),
+    (4, False),
     (
         {
             'tp_default_value': 1,

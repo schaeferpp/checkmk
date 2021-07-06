@@ -23,7 +23,7 @@ import cmk.utils.crash_reporting
 
 import cmk.gui.pages
 import cmk.gui.i18n
-import cmk.gui.escaping as escaping
+import cmk.gui.utils.escaping as escaping
 from cmk.gui.i18n import _
 from cmk.gui.globals import html, request, response, transactions, user_errors
 from cmk.gui.htmllib import HTML
@@ -127,23 +127,23 @@ class GUICrashReport(cmk.utils.crash_reporting.ABCCrashReport):
             "page": requested_file_name(request) + ".py",
             "vars": {
                 key: "***" if value in ["password", "_password"] else value
-                for key, value in html.request.itervars()
+                for key, value in request.itervars()
             },
             "username": config.user.id,
-            "user_agent": html.request.user_agent.string,
-            "referer": html.request.referer,
+            "user_agent": request.user_agent.string,
+            "referer": request.referer,
             "is_mobile": is_mobile(request, response),
-            "is_ssl_request": html.request.is_ssl_request,
+            "is_ssl_request": request.is_ssl_request,
             "language": cmk.gui.i18n.get_current_language(),
-            "request_method": html.request.request_method,
+            "request_method": request.request_method,
         },)
 
 
 class ABCCrashReportPage(cmk.gui.pages.Page, metaclass=abc.ABCMeta):
     def __init__(self):
         super(ABCCrashReportPage, self).__init__()
-        self._crash_id = html.request.get_unicode_input_mandatory("crash_id")
-        self._site_id = html.request.get_unicode_input_mandatory("site")
+        self._crash_id = request.get_unicode_input_mandatory("crash_id")
+        self._site_id = request.get_unicode_input_mandatory("site")
 
     def _get_crash_info(self, row):
         return json.loads(row["crash_info"])
@@ -195,7 +195,7 @@ class PageCrash(ABCCrashReportPage):
             html.footer()
             return
 
-        if html.request.has_var("_report") and transactions.check_transaction():
+        if request.has_var("_report") and transactions.check_transaction():
             details = self._handle_report_form(crash_info)
         else:
             details = {}
@@ -359,13 +359,14 @@ class PageCrash(ABCCrashReportPage):
                     files.append(filepath)
 
             if files:
-                warn_text = HTML(
+                warn_text = escaping.escape_html(
                     _("The following files located in the local hierarchy of your site are involved in this exception:"
                      ))
                 warn_text += html.render_ul(HTML("\n").join(map(html.render_li, files)))
-                warn_text += _("Maybe these files are not compatible with your current Checkmk "
-                               "version. Please verify and only report this crash when you think "
-                               "this should be working.")
+                warn_text += escaping.escape_html(
+                    _("Maybe these files are not compatible with your current Checkmk "
+                      "version. Please verify and only report this crash when you think "
+                      "this should be working."))
                 html.show_warning(warn_text)
 
     def _show_report_form(self, crash_info, details):
@@ -418,8 +419,8 @@ class PageCrash(ABCCrashReportPage):
         _crash_row(_("Core"), info.get("core", ""), True)
         _crash_row(_("Python Version"), info.get("python_version", _("Unknown")), False)
 
-        joined_paths = "<br>".join(
-            [escaping.escape_attribute(p) for p in info.get("python_paths", [_("Unknown")])])
+        joined_paths = html.render_br().join(
+            [escaping.escape_html(p) for p in info.get("python_paths", [_("Unknown")])])
         _crash_row(_("Python Module Paths"), joined_paths, odd=False)
 
         html.close_table()
@@ -468,8 +469,7 @@ class ReportRendererGeneric(ABCReportRenderer):
     def page_menu_entries_related_monitoring(self, crash_info: CrashInfo,
                                              site_id: config.SiteId) -> Iterator[PageMenuEntry]:
         # We don't want to produce anything here
-        return
-        yield  # pylint: disable=unreachable
+        yield from ()
 
     def show_details(self, crash_info, row):
         if not crash_info["details"]:
@@ -480,6 +480,43 @@ class ReportRendererGeneric(ABCReportRenderer):
             _("No detail renderer for crash of type '%s' available. Details structure is:") %
             crash_info["crash_type"])
         html.pre(pprint.pformat(crash_info["details"]))
+
+
+@report_renderer_registry.register
+class ReportRendererSection(ABCReportRenderer):
+    @classmethod
+    def type(cls):
+        return "section"
+
+    def page_menu_entries_related_monitoring(self, crash_info: CrashInfo,
+                                             site_id: config.SiteId) -> Iterator[PageMenuEntry]:
+        # We don't want to produce anything here
+        yield from ()
+
+    def show_details(self, crash_info, row):
+        self._show_crashed_section_details(crash_info)
+        self._show_section_content(row)
+
+    def _show_crashed_section_details(self, info):
+        def format_bool(val):
+            return {
+                True: _("Yes"),
+                False: _("No"),
+                None: _("Unknown"),
+            }[val]
+
+        details = info["details"]
+
+        html.h3(_("Details"), class_="table")
+        html.open_table(class_="data")
+
+        _crash_row(_("Section Name"), details["section_name"], odd=True)
+        _crash_row(_("Inline-SNMP"), format_bool(details.get("inline_snmp")), odd=False, pre=True)
+
+        html.close_table()
+
+    def _show_section_content(self, row):
+        _crash_row(_("Section Content"), repr(row.get("section_content")))
 
 
 @report_renderer_registry.register
@@ -620,7 +657,8 @@ def format_params(params):
 def _show_output_box(title, content):
     html.h3(title, class_="table")
     html.open_div(class_="log_output")
-    html.write(escaping.escape_attribute(content).replace("\n", "<br>").replace(' ', '&nbsp;'))
+    html.write_html(
+        HTML(escaping.escape_attribute(content).replace("\n", "<br>").replace(' ', '&nbsp;')))
     html.close_div()
 
 

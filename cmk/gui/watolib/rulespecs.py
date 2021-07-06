@@ -24,6 +24,7 @@ from cmk.gui.valuespec import (
     Tuple,
     DropdownChoice,
     OptionalDropdownChoice,
+    ValueSpecText,
 )
 from cmk.gui.watolib.timeperiods import TimeperiodSelection
 from cmk.gui.watolib.automations import check_mk_local_automation
@@ -48,38 +49,45 @@ from cmk.gui.utils.urls import (
 
 class RulespecBaseGroup(metaclass=abc.ABCMeta):
     """Base class for all rulespec group types"""
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def name(self) -> str:
         """Unique internal key of this group"""
         raise NotImplementedError()
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def title(self) -> str:
         """Human readable title of this group"""
         raise NotImplementedError()
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def help(self) -> Optional[str]:
         """Helpful description of this group"""
         raise NotImplementedError()
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def choice_title(self) -> str:
         raise NotImplementedError()
 
 
 class RulespecGroup(RulespecBaseGroup):
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def name(self) -> str:
         """Unique internal key of this group"""
         raise NotImplementedError()
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def title(self) -> str:
         """Human readable title of this group"""
         raise NotImplementedError()
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def help(self) -> str:
         """Helpful description of this group"""
         raise NotImplementedError()
@@ -90,12 +98,14 @@ class RulespecGroup(RulespecBaseGroup):
 
 
 class RulespecSubGroup(RulespecBaseGroup, metaclass=abc.ABCMeta):
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def main_group(self) -> Type[RulespecGroup]:
         """A reference to the main group class"""
         raise NotImplementedError()
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def sub_group_name(self) -> str:
         """The internal name of the sub group"""
         raise NotImplementedError()
@@ -1097,8 +1107,8 @@ class CheckTypeGroupSelection(ElementSelection):
         }
         return elements
 
-    def value_to_text(self, value):
-        return "<tt>%s</tt>" % value
+    def value_to_text(self, value) -> HTML:
+        return html.render_tt(value)
 
 
 class TimeperiodValuespec(ValueSpec):
@@ -1125,11 +1135,11 @@ class TimeperiodValuespec(ValueSpec):
 
     def render_input(self, varprefix, value):
         # The display mode differs when the valuespec is activated
-        vars_copy = dict(html.request.itervars())
+        vars_copy = dict(request.itervars())
 
         # The timeperiod mode can be set by either the GUI switch or by the value itself
         # GUI switch overrules the information stored in the value
-        if html.request.has_var(self.tp_toggle_var):
+        if request.has_var(self.tp_toggle_var):
             is_active = self._is_switched_on()
         else:
             is_active = self.is_active(value)
@@ -1157,12 +1167,11 @@ class TimeperiodValuespec(ValueSpec):
                             class_=["toggle_timespecific_parameter"])
             return r
 
-    def value_to_text(self, value):
-        # TODO/Phantasm: highlight currently active timewindow
+    def value_to_text(self, value) -> ValueSpecText:
         return self._get_used_valuespec(value).value_to_text(value)
 
     def from_html_vars(self, varprefix):
-        if html.request.var(self.tp_current_mode) == "1":
+        if request.var(self.tp_current_mode) == "1":
             # Fetch the timespecific settings
             parameters = self._get_timeperiod_valuespec().from_html_vars(varprefix)
             if parameters[self.tp_values_key]:
@@ -1209,7 +1218,7 @@ class TimeperiodValuespec(ValueSpec):
 
     # Checks whether the tp-mode is switched on through the gui
     def _is_switched_on(self):
-        return html.request.var(self.tp_toggle_var) == "1"
+        return request.var(self.tp_toggle_var) == "1"
 
     # Checks whether the value itself already uses the tp-mode
     def is_active(self, value):
@@ -1278,8 +1287,8 @@ class MatchItemGeneratorRules(ABCMatchItemGenerator):
                     if rulespec.title)
 
     @staticmethod
-    def is_affected_by_change(change_action_name: str) -> bool:
-        return change_action_name.endswith("-package")
+    def is_affected_by_change(_change_action_name: str) -> bool:
+        return False
 
     @property
     def is_localization_dependent(self) -> bool:

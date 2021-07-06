@@ -5,17 +5,14 @@
 # conditions defined in the file COPYING, which is part of this source code package.
 
 import json
-import pytest  # type: ignore[import]
+import pytest
 from six import ensure_str
 
 from cmk.gui.utils.html import HTML
 
 
 @pytest.mark.parametrize("value", [
-    None,
     "",
-    123,
-    123.4,
     "one",
     "Oneüლ,ᔑ•ﺪ͟͠•ᔐ.ლ",
 ])

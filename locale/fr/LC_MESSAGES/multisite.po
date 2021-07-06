@@ -1,13 +1,14 @@
 # Copyright (C) 2019 tribe29 GmbH - License: GNU General Public License v2
 # This file is part of Checkmk (https://checkmk.com). It is subject to the terms and
 # conditions defined in the file COPYING, which is part of this source code package.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: Checkmk user interface translation 0.1\n"
 "Report-Msgid-Bugs-To: feedback@checkmk.com\n"
 "POT-Creation-Date: 2011-05-13 09:42+0200\n"
-"PO-Revision-Date: 2021-05-31 12:57+0000\n"
-"Last-Translator: Jörg Herbel <joerg.herbel@tribe29.com>\n"
+"PO-Revision-Date: 2021-06-10 10:10+0000\n"
+"Last-Translator: Weblate Admin <marketing@tribe29.com>\n"
 "Language-Team: French <https://translate.checkmk.com/projects/checkmk/"
 "software/fr/>\n"
 "Language: fr\n"
@@ -30,7 +31,7 @@ msgstr " (copie)"
 
 #, python-format
 msgid " (Duration: %s)"
-msgstr " (Durée: %s)"
+msgstr " (Durée : %s)"
 
 #, python-format
 msgid " (Duration: %s, %sIO: %s/s)"
@@ -291,13 +292,13 @@ msgstr "% utilisé"
 msgid "%% of %s"
 msgstr "%% de %s"
 
-#, fuzzy, python-format
+#, python-format
 msgid "%%d locked element"
-msgstr "Élément de clonage"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "%%d locked elements"
-msgstr "Élément de clonage"
+msgstr ""
 
 #, python-format
 msgid "%.1f mm"
@@ -379,13 +380,13 @@ msgstr "%d Werks incompatibles ont été reconnus."
 msgid "%d links"
 msgstr "%d liens"
 
-#, fuzzy, python-format
+#, python-format
 msgid "%d locked site"
-msgstr "Sur des sites sélectionnés"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "%d locked sites"
-msgstr "Sur des sites sélectionnés"
+msgstr ""
 
 #, python-format
 msgid "%d of %d connections used"
@@ -678,7 +679,7 @@ msgstr "%sTemps de réponse"
 
 #, python-format
 msgid "%sRound trip average"
-msgstr "Moyenne des trajets aller-retour"
+msgstr ""
 
 #, python-format
 msgid "%sRound trip maximum"
@@ -690,7 +691,7 @@ msgstr "%sRound trip minimum"
 
 #, python-format
 msgid "%sRound trip standard devation"
-msgstr "Déviation standard du trajet aller-retour"
+msgstr ""
 
 msgid ""
 "&copy; <a target=\"_blank\" href=\"https://checkmk.com\">tribe29 GmbH</a>"
@@ -1111,13 +1112,6 @@ msgstr "<b>%s jusqu'à la fin de l'année</b>"
 msgid "<b>%s until sunday night</b>"
 msgstr "<b>%s jusqu'à dimanche soir</b>"
 
-msgid ""
-"<b>Do you really want to rename to following hosts? This involves a restart "
-"of the monitoring core!</b>"
-msgstr ""
-"<b>Voulez-vous vraiment renommer les hôtes suivants ? Cela implique un "
-"redémarrage du noyau de surveillance!</b>"
-
 msgid "<b>Negate:</b> make rule apply for <b>all but</b> the above entries"
 msgstr ""
 "<b>Négation : </b> faire en sorte que la règle s'applique pour <b>toutes les "
@@ -1502,10 +1496,6 @@ msgstr ""
 "l'utilisation d'une manière ou d'une autre.</p> <p>."
 
 #, python-format
-msgid "<p>Sent notification to: %s</p>"
-msgstr "<p>Envoyé une notification à : %s</p>"
-
-#, python-format
 msgid ""
 "<p>The Checkmk Microcore uses Checkmk checker processes to execute the "
 "Checkmk and Checkmk Discovery services of the hosts monitored with Checkmk. "
@@ -1543,7 +1533,7 @@ msgstr ""
 "du Microcore, ce qui peut provoquer des pics de charge lorsqu'on a beaucoup "
 "de processus d'aide Checkmk configurés.</p>"
 
-#, python-format
+#, fuzzy, python-format
 msgid ""
 "<p>The Checkmk Microcore uses Checkmk fetcher processes to obtain data about "
 "the Checkmk and Checkmk Discovery services of the hosts monitored with "
@@ -1554,12 +1544,12 @@ msgid ""
 "whether or not you can decrease check timeouts</li><li>Check which checks / "
 "plugins are <a href=\"view.py?view_name=service_check_durations\">consuming "
 "most helper process time</a></li><li>Increase the <a href=\"wato.py?"
-"mode=edit_configvar&varname=cmc_cmk_helpers\">number of Checkmk helpers</a></"
-"li></ul></p><p>But you need to be careful that you don't configure too many "
-"Checkmk fetcher helpers, because they consume resources. An additional "
-"problem is that the Checkmk fetchers are initialized in parallel during "
-"startup of the Microcore, which may cause load peaks when having a lot of "
-"Checkmk helper processes configured.</p>"
+"mode=edit_configvar&varname=cmc_fetcher_helpers\">number of Checkmk "
+"fetchers</a></li></ul></p><p>But you need to be careful that you don't "
+"configure too many Checkmk fetcher helpers, because they consume resources. "
+"An additional problem is that the Checkmk fetchers are initialized in "
+"parallel during startup of the Microcore, which may cause load peaks when "
+"having a lot of Checkmk helper processes configured.</p>"
 msgstr ""
 "</p><p>Le Checkmk Microcore utilise des processus fetcher Checkmk pour "
 "obtenir des données sur les services Checkmk et Checkmk Discovery des hôtes "
@@ -3797,6 +3787,10 @@ msgstr "Adhoc pendant %d minutes"
 
 msgid "Admin"
 msgstr "Admin"
+
+#, fuzzy
+msgid "Admin state"
+msgstr "Administrateur"
 
 msgid "Admin state (SNMP with 64-bit counters only)"
 msgstr "État d'administration (SNMP avec compteurs 64 bits uniquement)"
@@ -6133,6 +6127,10 @@ msgstr "Tableau des disponibilités"
 
 msgid "Available"
 msgstr "Disponible sur"
+
+#, fuzzy
+msgid "Available (missing)"
+msgstr "Variable nécessaire manquante"
 
 msgid "Available Spare"
 msgstr "Disponibilité de la réserve"
@@ -8623,6 +8621,10 @@ msgstr "Modification de la connexion LDAP %s"
 msgid "Changed alert handler rule %d"
 msgstr "Modification de la règle de traitement des alertes %d"
 
+#, fuzzy
+msgid "Changed entries"
+msgstr "entrées modifiées"
+
 #, python-format
 msgid "Changed global configuration variable %s to %s."
 msgstr "La variable de configuration globale %s a été modifiée en %s."
@@ -10525,13 +10527,11 @@ msgstr ""
 "correspondances exactes, sensibles à la casse, <tt>!</tt> pour la négation "
 "et <tt>~</tt> pour les correspondances regex."
 
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "Configure the language of the user interface. Feel free to contribute to the "
 "translations on %s."
 msgstr ""
-"Configurez ici la langue qui sera utilisée par l'utilisateur dans "
-"l'interface utilisateur."
 
 msgid ""
 "Configure the maximum number of bytes that is sent to the monitoring site. "
@@ -11272,6 +11272,10 @@ msgstr ""
 "Impossible de recharger le proxy Livestatus : %s. Voir web.log et liveproxyd."
 "log pour plus d'informations."
 
+#, fuzzy, python-format
+msgid "Could not render: %r"
+msgstr "Impossible de sauvegarder les modifications : %s"
+
 #, python-format
 msgid "Could not save changes: %s"
 msgstr "Impossible de sauvegarder les modifications : %s"
@@ -11544,7 +11548,7 @@ msgstr "Créer un nouveau %s"
 
 #, python-format
 msgid "Create new %s attribute %s"
-msgstr "Créer un nouvel attribut %s"
+msgstr ""
 
 #, python-format
 msgid "Create new %s group %s"
@@ -14376,6 +14380,10 @@ msgstr ""
 "Les %s désactivés sont conservés dans la configuration mais ne sont pas "
 "actifs."
 
+#, fuzzy
+msgid "Disabled (configured away by admin)"
+msgstr "Désactiver la configuration à distance"
+
 msgid "Disabled active checks"
 msgstr "Contrôles actifs désactivés"
 
@@ -14842,6 +14850,10 @@ msgstr "Affiche le contenu d'un site web personnalisé."
 
 msgid "Displays the content of a view"
 msgstr "Affiche le contenu d'une vue"
+
+#, fuzzy
+msgid "Displays the state of a specific service."
+msgstr "Affiche une seule métrique d'un hôte et d'un service spécifique."
 
 msgid "Dissolve operation"
 msgstr "Opération de dissolution"
@@ -15478,6 +15490,14 @@ msgid "Do you really want to remove the package <tt>%s</tt> from your system?"
 msgstr ""
 "Voulez-vous vraiment supprimer le paquet <tt>%s</tt> de votre système ?"
 
+#, fuzzy
+msgid ""
+"Do you really want to rename to following hosts?This involves a restart of "
+"the monitoring core!"
+msgstr ""
+"<b>Voulez-vous vraiment renommer les hôtes suivants ? Cela implique un "
+"redémarrage du noyau de surveillance!</b>"
+
 msgid ""
 "Do you really want to reset all rule hit counters in <b>all rule packs</b> "
 "to zero?"
@@ -15602,6 +15622,10 @@ msgstr "Ne pas publier aux autres utilisateurs"
 
 msgid "Don't remove matching vanished services"
 msgstr "Ne pas supprimer les services disparus correspondants"
+
+#, fuzzy
+msgid "Don't show Summary"
+msgstr "Ne pas montrer une ligne de résumé"
 
 msgid "Don't show and check"
 msgstr "Ne pas montrer et vérifier"
@@ -19290,6 +19314,10 @@ msgstr "Graphique des prévisions"
 
 msgid "Forecast Model Configuration"
 msgstr "Configuration du modèle de prévision"
+
+#, fuzzy
+msgid "Forecast Parametrization"
+msgstr "Paramétrisation du modèle de prévision"
 
 msgid "Forecast Trend (Slow)"
 msgstr "Tendance des prévisions (lente)"
@@ -24989,6 +25017,10 @@ msgstr "Connexions InfluxDB"
 msgid "InfluxDB connections"
 msgstr "Connexions InfluxDB"
 
+#, fuzzy
+msgid "InfluxDB instance"
+msgstr "Instances de la base de données"
+
 msgid "InfluxDB service rules"
 msgstr "Règles du service InfluxDB"
 
@@ -28950,6 +28982,19 @@ msgstr "Statut de rétrécissement automatique de la carte"
 msgid "Map channel state to service state"
 msgstr "Mapper l'état du canal à l'état du service"
 
+#, fuzzy
+msgid "Map combinations of operational and admin state"
+msgstr "Cartographie des états opérationnels"
+
+msgid ""
+"Map combinations of the operational state (<tt>ifOperStatus</tt>) and the "
+"admin state (<tt>ifAdminStatus</tt>) to a monitoring state. Here, you can "
+"for example configure that an interface which is down <i>and</i> admin down "
+"should be considered OK. Such a setting will only apply to interfaces "
+"matching the operational <i>and</i> the admin state. For example, an "
+"interface which is down but admin up would not be affected. "
+msgstr ""
+
 msgid "Map data relating to VMs"
 msgstr "Données cartographiques relatives aux VM"
 
@@ -28983,6 +29028,10 @@ msgstr "Mapper les états de systemd aux états de surveillance"
 
 msgid "Map mount point names"
 msgstr "Cartographie des noms de points de montage"
+
+#, fuzzy
+msgid "Map operational and admin state independently"
+msgstr "Cartographie des états opérationnels"
 
 msgid "Map operational states"
 msgstr "Cartographie des états opérationnels"
@@ -29029,6 +29078,10 @@ msgid "Mapping of LED color to monitoring state"
 msgstr "Correspondance entre la couleur de la LED et l'état de surveillance"
 
 msgid "Mapping of MTree state to monitoring state"
+msgstr "Mapping de l'état du MTree à l'état de surveillance"
+
+#, fuzzy
+msgid "Mapping of operational and admin state to monitoring state"
 msgstr "Mapping de l'état du MTree à l'état de surveillance"
 
 msgid "March"
@@ -30219,6 +30272,10 @@ msgstr "Données de prédiction manquantes."
 
 msgid "Missing render parameter"
 msgstr "Paramètre de rendu manquant"
+
+#, fuzzy
+msgid "Missing required context information"
+msgstr "Coordonnées du service"
 
 #, python-format
 msgid "Missing required key(s): %s"
@@ -31464,6 +31521,10 @@ msgstr "Nouveau graphique personnalisé..."
 
 msgid "New element"
 msgstr "Nouvel élément"
+
+#, fuzzy
+msgid "New entries"
+msgstr "nouvelles entrées"
 
 msgid "New event created"
 msgstr "Nouvel événement créé"
@@ -35662,6 +35723,9 @@ msgstr "Veuillez ajouter au moins un nœud enfant."
 msgid "Please add at least one column to your view."
 msgstr "Veuillez ajouter au moins une colonne à votre vue."
 
+msgid "Please add the hostname here, eg. my_influxdb.com."
+msgstr ""
+
 msgid "Please check one metric you want to apply a transformation"
 msgstr ""
 "Veuillez cocher une métrique pour laquelle vous souhaitez appliquer une "
@@ -35899,9 +35963,10 @@ msgstr ""
 msgid "Please provide a valid name"
 msgstr "Veuillez fournir un nom valide"
 
+#, fuzzy
 msgid ""
-"Please refer to the [cms_dashboards#host_problems|Checkmk user guide] for "
-"more details."
+"Please refer to the [dashboards#host_problems|Checkmk user guide] for more "
+"details."
 msgstr ""
 "Veuillez vous référer au [cms_dashboards#host_problems|Checkmk user guide] "
 "pour plus de détails."
@@ -36289,9 +36354,6 @@ msgstr "Index du port ou \"Total\"."
 
 msgid "Port number"
 msgstr "Numéro de port"
-
-msgid "Port number for HTTPS connection to InfluxDB."
-msgstr "Numéro de port pour la connexion HTTPS à InfluxDB."
 
 msgid "Port number for HTTPS connection to vSphere"
 msgstr "Numéro de port pour la connexion HTTPS à vSphere"
@@ -40036,6 +40098,14 @@ msgstr ""
 msgid "Section"
 msgstr "Section"
 
+#, fuzzy
+msgid "Section Content"
+msgstr "Nom de la section"
+
+#, fuzzy
+msgid "Section Name"
+msgstr "Nom de la section"
+
 msgid "Section name"
 msgstr "Nom de la section"
 
@@ -40389,6 +40459,10 @@ msgstr "Capteurs"
 msgid "Sent"
 msgstr "Envoyé"
 
+#, fuzzy, python-format
+msgid "Sent notification to: %s"
+msgstr "<p>Envoyé une notification à : %s</p>"
+
 msgid "Sent vs Received Traffic Breakdown"
 msgstr "Répartition du trafic envoyé et reçu"
 
@@ -40530,6 +40604,10 @@ msgstr "Service Regex :"
 
 msgid "Service Speed-O-Meter"
 msgstr "Service Speed-O-Meter"
+
+#, fuzzy
+msgid "Service State"
+msgstr "État du service"
 
 msgid "Service Status Grouping"
 msgstr "Groupement d'états de service"
@@ -41744,6 +41822,10 @@ msgstr "Afficher l'espace réservé à l'utilisateur <tt>root</tt>."
 
 msgid "Show stale hosts and services"
 msgstr "Afficher les hôtes et services périmés"
+
+#, fuzzy
+msgid "Show summary for not OK states"
+msgstr "Résumé des notifications des hôtes"
 
 msgid ""
 "Show the dialog that can be used to update the dashboard context on initial "
@@ -48163,7 +48245,8 @@ msgstr ""
 "Les détails du nœud peuvent être affichés soit sur l'hôte interrogé, soit "
 "sur le nœud Graylog."
 
-msgid "The notification has been sent via<br>"
+#, fuzzy
+msgid "The notification has been sent via"
 msgstr "La notification a été envoyée via<br>"
 
 msgid "The notification is being processed"
@@ -54048,6 +54131,10 @@ msgstr "Couleurs de la ligne de temps :"
 msgid "Timeline of"
 msgstr "Chronologie de"
 
+#, fuzzy, python-format
+msgid "Timeline of %s"
+msgstr "Chronologie de"
+
 msgid "Timemachine backup age"
 msgstr "Âge de la sauvegarde de Timemachine"
 
@@ -55143,9 +55230,6 @@ msgstr "Préfixe d'URL pour les liens vers Checkmk"
 msgid "URL to HiveManagerNG, e.g. https://cloud.aerohive.com"
 msgstr "URL vers HiveManagerNG, par exemple https://cloud.aerohive.com"
 
-msgid "URL to InfluxDB, e.g. https://my_influxdb.com"
-msgstr "URL vers InfluxDB, par exemple https://my_influxdb.com"
-
 msgid ""
 "URL to access the central site from the remote site, including the protocol "
 "(<tt>http://</tt> or <tt>https://</tt>) and </tt>/check_mk/</tt>. In case of "
@@ -55320,11 +55404,11 @@ msgstr ""
 "Impossible de se connecter à l'instance %s. Veuillez vérifier les "
 "informations d'identification sous Global Settings."
 
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "Unable to convert configuration into 2.0 format\n"
 "%s"
-msgstr "Inventorier les informations de configuration du réseau"
+msgstr ""
 
 msgid "Unable to create parent folder(s)."
 msgstr "Impossible de créer le(s) dossier(s) parent(s)."
@@ -55832,7 +55916,7 @@ msgstr ""
 
 #, python-format
 msgid "Updated properties of %s group %s"
-msgstr "Propriétés mises à jour du groupe %s"
+msgstr ""
 
 #, python-format
 msgid "Updated properties of %sgroup %s"
@@ -57692,6 +57776,10 @@ msgstr "Valeurs à extraire de ce dispositif"
 
 msgid "Vanished"
 msgstr "Vanished"
+
+#, fuzzy
+msgid "Vanished (checked, but no longer exist)"
+msgstr "Services disparus (surveillés, mais n'existant plus)"
 
 msgid "Vanished clustered services (located on cluster host)"
 msgstr "Services en cluster disparus (situés sur l'hôte du cluster)"
@@ -61274,6 +61362,11 @@ msgstr ""
 "ne seront pas rendus. Si plusieurs motifs correspondent à un service, le "
 "service sera ajouté au premier groupe correspondant."
 
+msgid ""
+"You can use this ruleset to exclude or include the metrics of specific "
+"services."
+msgstr ""
+
 #, python-format
 msgid ""
 "You can use, modify and distribute Check_MK under the terms of the <a href="
@@ -62325,12 +62418,6 @@ msgstr "spécification de la cartouche"
 msgid "change the state"
 msgstr "changer l'état"
 
-msgid "changed"
-msgstr "modifié"
-
-msgid "changed entries"
-msgstr "entrées modifiées"
-
 msgid "check plugins"
 msgstr "vérifier les plugins"
 
@@ -63176,12 +63263,6 @@ msgstr "s/o"
 msgid "negate"
 msgstr "annuler"
 
-msgid "new"
-msgstr "nouveau"
-
-msgid "new entries"
-msgstr "nouvelles entrées"
-
 msgid "new host name"
 msgstr "nouveau nom d'hôte"
 
@@ -63792,6 +63873,10 @@ msgstr "fois l'écart-type en dessous de la valeur prédite"
 msgid "to"
 msgstr "à"
 
+#, python-format
+msgid "to %d of %d recipients"
+msgstr ""
+
 msgid "to port:"
 msgstr "au port :"
 
@@ -63996,6 +64081,18 @@ msgstr "z/OS"
 msgid "© 2020 tribe29 GmbH. All Rights Reserved."
 msgstr "© 2020 tribe29 GmbH. Tous droits réservés."
 
+#~ msgid "changed"
+#~ msgstr "modifié"
+
+#~ msgid "new"
+#~ msgstr "nouveau"
+
+#~ msgid "Port number for HTTPS connection to InfluxDB."
+#~ msgstr "Numéro de port pour la connexion HTTPS à InfluxDB."
+
+#~ msgid "URL to InfluxDB, e.g. https://my_influxdb.com"
+#~ msgstr "URL vers InfluxDB, par exemple https://my_influxdb.com"
+
 #~ msgid "Unsupported context type '%s'"
 #~ msgstr "Le type de contexte '%s' n'est pas pris en charge."
 
@@ -64024,159 +64121,114 @@ msgstr "© 2020 tribe29 GmbH. Tous droits réservés."
 #~ msgstr "Problèmes (non gérés)"
 
 #, fuzzy
-#~| msgid "all services"
 #~ msgid "Full service scan"
 #~ msgstr "tous les services"
 
 #, fuzzy
-#~| msgid "Add service description"
 #~ msgid "Service description format"
 #~ msgstr "Ajouter un description de service"
 
 #, fuzzy
-#~| msgid "Original hostname"
 #~ msgid "Hint a hostname"
 #~ msgstr "Nom d'hôte originel"
 
 #, fuzzy
-#~| msgid "selected services"
 #~ msgid "Hint a service"
 #~ msgstr "services sélectionnés"
 
 #, fuzzy
-#~| msgid "Host Name:"
 #~ msgid "Hostname:"
 #~ msgstr "Nom de l'Hôte : "
 
 #, fuzzy
-#~| msgid "Invalid hostname"
-#~ msgid "Invalid time unit %s"
-#~ msgstr "Nom d'hôte invalide"
-
-#, fuzzy
-#~| msgid "Windows Service Discovery"
 #~ msgid "<i>Generated automatically</i>"
 #~ msgstr "Découverte des Services Windows"
 
 #, fuzzy
-#~| msgid "Other content"
 #~ msgid "Hide context"
 #~ msgstr "Autre contenu"
 
 #, fuzzy
-#~| msgid "Agent files"
 #~ msgid "End date"
 #~ msgstr "Fichier de l'agent"
 
 #, fuzzy
-#~| msgid "Server time"
 #~ msgid "Start date"
 #~ msgstr "Temps du serveur"
 
 #, fuzzy
-#~| msgid "(no Service level)"
 #~ msgid "Fill color"
 #~ msgstr "(pas de niveau de Service)"
 
 #, fuzzy
-#~| msgid "Site status"
 #~ msgid "Metric: "
 #~ msgstr "Statut du site"
 
 #, fuzzy
-#~| msgid "LDAP Settings"
 #~ msgid "SNMP settings"
 #~ msgstr "Paramètres LDAP"
 
 #, fuzzy
-#~| msgid "Invalid hostname"
-#~ msgid "Invalid snapin %s"
-#~ msgstr "Nom d'hôte invalide"
-
-#, fuzzy
-#~| msgid "Send Notification"
 #~ msgid "Notification timeline"
 #~ msgstr "Envoyer une notification"
 
 #, fuzzy
-#~| msgid "Site status"
 #~ msgid "Add subscription details"
 #~ msgstr "Statut du site"
 
 #, fuzzy
-#~| msgid "All Dashboards"
 #~ msgid "Main dashboard $SITE$"
 #~ msgstr "Tous les Tableaux de Bord"
 
 #, fuzzy
-#~| msgid "Send Notification"
 #~ msgid "Notifications today"
 #~ msgstr "Envoyer une notification"
 
 #, fuzzy
-#~| msgid "Number of open file descriptors"
 #~ msgid "Number of hosts (excluded)"
 #~ msgstr "Nombre de descripteurs de fichiers ouverts"
 
 #, fuzzy
-#~| msgid "Number of connections for a WiFi"
 #~ msgid "Number of services (excluded)"
 #~ msgstr "Nombre de connexions pour un WiFi"
 
 #, fuzzy
-#~| msgid "Search for hosts"
 #~ msgid "Service problem history"
 #~ msgstr "Rechercher des hôtes"
 
 #, fuzzy
-#~| msgid "The last 7 days"
 #~ msgid "Top alerters (last 7 days)"
 #~ msgstr "Les 7 derniers jours"
 
 #, fuzzy
-#~| msgid "Windows Service Discovery"
 #~ msgid "Total service history"
 #~ msgstr "Découverte des Services Windows"
 
 #, fuzzy
-#~| msgid "Delete host!"
 #~ msgid "Filter hosts"
 #~ msgstr "Supprimer l'hôte !"
 
 #, fuzzy
-#~| msgid "Other Settings"
 #~ msgid "Filter settings"
 #~ msgstr "Autres paramètres"
 
 #, fuzzy
-#~| msgid "Site status"
 #~ msgid "Status: "
 #~ msgstr "Statut du site"
 
 #, fuzzy
-#~| msgid "-- not connected --"
-#~ msgid "%d site is not connected"
-#~ msgid_plural "%d sites are not connected"
-#~ msgstr[0] "-- pas connecté --"
-#~ msgstr[1] "-- pas connecté --"
-
-#, fuzzy
-#~| msgid "use local configuration"
 #~ msgid "Node configuration"
 #~ msgstr "utiliser la configuration locale"
 
 #, fuzzy
-#~| msgid "use local configuration"
 #~ msgid "Nodes configuration"
 #~ msgstr "utiliser la configuration locale"
 
 #, fuzzy
-#~| msgid "Search for rules: "
 #~ msgid "Search node arguments"
 #~ msgstr "Rechercher des règles : "
 
 #, fuzzy
-#~| msgid "all services"
 #~ msgid "Search services"
 #~ msgstr "tous les services"
 
@@ -64185,42 +64237,30 @@ msgstr "© 2020 tribe29 GmbH. Tous droits réservés."
 #~ msgstr "Activer les sites affectés"
 
 #, fuzzy
-#~| msgid "Application Name"
 #~ msgid "Installation Name"
 #~ msgstr "Nom d'Application"
 
 #, fuzzy
-#~| msgid "Network Interfaces"
 #~ msgid "No ntopng interfaces found"
 #~ msgstr "Interfaces réseau"
 
 #, fuzzy
-#~| msgid "Site status"
 #~ msgid "Standby Status"
 #~ msgstr "Statut du site"
 
 #, fuzzy
-#~| msgid "Internal name"
 #~ msgid "Internal links"
 #~ msgstr "Nom interne"
 
 #, fuzzy
-#~| msgid "selected services"
 #~ msgid "On selected services"
 #~ msgstr "services sélectionnés"
 
 #, fuzzy
-#~| msgid "Allowed states:"
 #~ msgid "Download stats"
 #~ msgstr "États autorisés :"
 
 #, fuzzy
-#~| msgid "Levels for airflow"
-#~ msgid "Levels for %s error rates"
-#~ msgstr "Niveaux pour la circulation de l'air"
-
-#, fuzzy
-#~| msgid "Adminstrator password:"
 #~ msgid "Admin Password"
 #~ msgstr "Mot de passe de l'administrateur:"
 
@@ -64233,9 +64273,6 @@ msgstr "© 2020 tribe29 GmbH. Tous droits réservés."
 
 #~ msgid "%d.%m."
 #~ msgstr "%d.%m."
-
-#~ msgid "%m/%d1-%d2/%Y"
-#~ msgstr "%d1.%m-%d2/%y"
 
 #~ msgid "%m1/%d1/%Y - %m2/%d2/%Y"
 #~ msgstr "%d1.%m1.%Y - %d2.%m2.%Y"
@@ -64729,9 +64766,6 @@ msgstr "© 2020 tribe29 GmbH. Tous droits réservés."
 #~ msgstr ""
 #~ "Ne peut pas sauvegarder les options %s pour l'utilisateur <b>%s</b> dans "
 #~ "<b>%s</b>: %s"
-
-#~ msgid "Changed attributes of folder %s"
-#~ msgstr "Attributs du dossier % modifiés"
 
 #~ msgid "Changed properties of rule %s, moved rule from folder %s to %s"
 #~ msgstr ""

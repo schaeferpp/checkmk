@@ -4,6 +4,8 @@
 # This file is part of Checkmk (https://checkmk.com). It is subject to the terms and
 # conditions defined in the file COPYING, which is part of this source code package.
 
+from __future__ import annotations
+
 import time
 import itertools
 import json
@@ -40,6 +42,7 @@ from cmk.gui.i18n import _
 from cmk.gui.globals import html, request, transactions, user_errors, response, output_funnel
 from cmk.gui.htmllib import HTML
 from cmk.gui.breadcrumb import BreadcrumbItem, Breadcrumb
+from cmk.gui.utils.escaping import escape_html_permissive
 from cmk.gui.page_menu import (
     PageMenu,
     PageMenuDropdown,
@@ -109,7 +112,7 @@ def get_availability_options_from_request(what: AVObjectType) -> AVOptions:
     # trick will merge their options with our default options.
     avoptions.update(config.user.load_file("avoptions", {}))
 
-    form_name = html.request.get_ascii_input("filled_in")
+    form_name = request.get_ascii_input("filled_in")
     if form_name == "avoptions_display":
         avoption_entries = availability.get_av_display_options(what)
     elif form_name == "avoptions_computation":
@@ -117,7 +120,7 @@ def get_availability_options_from_request(what: AVObjectType) -> AVOptions:
     else:
         avoption_entries = []
 
-    if html.request.var("avoptions") == "set":
+    if request.var("avoptions") == "set":
         for name, _height, _show_in_reporting, vs in avoption_entries:
             try:
                 avoptions[name] = vs.from_html_vars("avo_" + name)
@@ -132,7 +135,7 @@ def get_availability_options_from_request(what: AVObjectType) -> AVOptions:
     except MKUserError as e:
         user_errors.add(e)
 
-    if html.request.var("_unset_logrow_limit") == "1":
+    if request.var("_unset_logrow_limit") == "1":
         avoptions["logrow_limit"] = 0
 
     if html.form_submitted():
@@ -142,10 +145,10 @@ def get_availability_options_from_request(what: AVObjectType) -> AVOptions:
 
 
 def _handle_availability_option_reset() -> None:
-    if html.request.var("_reset"):
+    if request.var("_reset"):
         config.user.save_file("avoptions", {})
-        html.request.del_vars("avo_")
-        html.request.del_var("avoptions")
+        request.del_vars("avo_")
+        request.del_var("avoptions")
 
 
 def _show_availability_options(option_type: str, what: AVObjectType, avoptions: AVOptions,
@@ -212,10 +215,11 @@ def _show_availability_options_controls() -> None:
 # Render the page showing availability table or timelines. It
 # is (currently) called by views.py, when showing a view but
 # availability mode is activated.
-def show_availability_page(view: 'View', filterheaders: 'FilterHeaders') -> None:
+def show_availability_page(view: View, filterheaders: FilterHeaders) -> None:
     config.user.need_permission("general.see_availability")
 
     # We make reports about hosts, services or BI aggregates
+    what: AVObjectType
     if "service" in view.datasource.infos:
         what = "service"
     elif "aggr_name" in view.datasource.infos:
@@ -232,7 +236,7 @@ def show_availability_page(view: 'View', filterheaders: 'FilterHeaders') -> None
     # - Show availability table (stats) "availability"
     # - Show timeline                   "timeline"
     # --> controlled by URL variable "av_mode"
-    av_mode = html.request.get_ascii_input_mandatory("av_mode", "availability")
+    av_mode = request.get_ascii_input_mandatory("av_mode", "availability")
 
     if av_mode == "timeline":
         title = _("Availability Timeline")
@@ -246,15 +250,15 @@ def show_availability_page(view: 'View', filterheaders: 'FilterHeaders') -> None
     # --> controlled by "av_aggr" in case of BI aggregate
     title += " - "
     av_object: AVObjectSpec = None
-    if html.request.var("av_host"):
-        av_object = (html.request.get_str_input_mandatory("av_site"),
-                     html.request.get_str_input_mandatory("av_host"),
-                     html.request.get_unicode_input_mandatory("av_service"))
+    if request.var("av_host"):
+        av_object = (request.get_str_input_mandatory("av_site"),
+                     request.get_str_input_mandatory("av_host"),
+                     request.get_unicode_input_mandatory("av_service"))
         title += av_object[1]
         if av_object[2]:
             title += " - " + av_object[2]
-    elif html.request.var("av_aggr"):
-        av_object = (None, None, html.request.get_unicode_input_mandatory("av_aggr"))
+    elif request.var("av_aggr"):
+        av_object = (None, None, request.get_unicode_input_mandatory("av_aggr"))
         title += av_object[2]
     else:
         title += view_title(view.spec, view.context)
@@ -273,12 +277,12 @@ def show_availability_page(view: 'View', filterheaders: 'FilterHeaders') -> None
     # Deletion must take place before computation, since it affects the outcome
     with output_funnel.plugged():
         handle_delete_annotations()
-        confirmation_html_code = output_funnel.drain()
+        confirmation_html_code = HTML(output_funnel.drain())
 
     # Remove variables for editing annotations, otherwise they will make it into the uris
-    html.request.del_vars("anno_")
-    if html.request.var("filled_in") == "editanno":
-        html.request.del_var("filled_in")
+    request.del_vars("anno_")
+    if request.var("filled_in") == "editanno":
+        request.del_var("filled_in")
     # Re-read the avoptions again, because the HTML vars have changed above (anno_ and editanno_ has
     # been removed, which must not be part of the form
     avoptions = get_availability_options_from_request(what)
@@ -316,7 +320,7 @@ def show_availability_page(view: 'View', filterheaders: 'FilterHeaders') -> None
         html.begin_page_content()
 
     if user_errors:
-        form_name = html.request.get_ascii_input_mandatory("filled_in")
+        form_name = request.get_ascii_input_mandatory("filled_in")
         if form_name in ("avoptions_display", "avoptions_computation"):
             html.final_javascript("cmk.page_menu.open_popup(%s);" %
                                   json.dumps("popup_" + form_name))
@@ -330,7 +334,7 @@ def show_availability_page(view: 'View', filterheaders: 'FilterHeaders') -> None
               "missing HTTP request variables to your request") %
             ", ".join(sorted(missing_single_infos)))
 
-    html.write(confirmation_html_code)
+    html.write_html(confirmation_html_code)
 
     if not user_errors:
         # If we abolish the limit we have to fetch the data again
@@ -431,10 +435,10 @@ def _page_menu_availability(breadcrumb: Breadcrumb, view, what: AVObjectType, av
 
 
 def _render_avoptions_form(option_type: str, what: AVObjectType, avoptions: AVOptions,
-                           valuespecs: AVOptionValueSpecs) -> str:
+                           valuespecs: AVOptionValueSpecs) -> HTML:
     with output_funnel.plugged():
         _show_availability_options(option_type, what, avoptions, valuespecs)
-        return output_funnel.drain()
+        return HTML(output_funnel.drain())
 
 
 def _page_menu_entries_av_mode(what: AVObjectType, av_mode: AVMode, av_object: AVObjectSpec,
@@ -540,9 +544,7 @@ def render_availability_timelines(what: AVObjectType, av_data: AVData,
 
 def _render_availability_timeline(what: AVObjectType, av_entry: AVEntry, avoptions: AVOptions,
                                   timeline_nr: int) -> None:
-    html.open_h3()
-    html.write("%s %s" % (_("Timeline of"), availability.object_title(what, av_entry)))
-    html.close_h3()
+    html.h3(_("Timeline of %s") % availability.object_title(what, av_entry))
 
     timeline_rows = av_entry["timeline"]
 
@@ -572,7 +574,7 @@ def _render_availability_timeline(what: AVObjectType, av_entry: AVEntry, avoptio
             table.cell(_("Links"), css="buttons")
             if what == "bi":
                 url = makeuri(request, [("timewarp", str(int(row["from"])))])
-                if html.request.var("timewarp") and html.request.get_integer_input_mandatory(
+                if request.var("timewarp") and request.get_integer_input_mandatory(
                         "timewarp") == int(row["from"]):
                     html.disabled_icon_button("timewarp_off")
                 else:
@@ -596,7 +598,7 @@ def _render_availability_timeline(what: AVObjectType, av_entry: AVEntry, avoptio
             table.cell(_("Until"), row["until_text"], css="nobr narrow")
             table.cell(_("Duration"), row["duration_text"], css="narrow number")
             table.cell(_("State"),
-                       html.render_span(row["state_name"]),
+                       html.render_span(row["state_name"], class_=["state_rounded_fill"]),
                        css=row["css"] + " state narrow")
 
             if "omit_timeline_plugin_output" not in avoptions["labelling"]:
@@ -782,7 +784,7 @@ def _get_bi_availability(avoptions, aggr_rows, timewarp):
 def show_bi_availability(view: "View", aggr_rows: 'Rows') -> None:
     config.user.need_permission("general.see_availability")
 
-    av_mode = html.request.get_ascii_input_mandatory("av_mode", "availability")
+    av_mode = request.get_ascii_input_mandatory("av_mode", "availability")
 
     _handle_availability_option_reset()
     avoptions = get_availability_options_from_request("bi")
@@ -804,8 +806,8 @@ def show_bi_availability(view: "View", aggr_rows: 'Rows') -> None:
             ))
 
         av_object: AVObjectSpec = None
-        if html.request.var("av_aggr"):
-            av_object = (None, None, html.request.get_unicode_input_mandatory("av_aggr"))
+        if request.var("av_aggr"):
+            av_object = (None, None, request.get_unicode_input_mandatory("av_aggr"))
 
         # Dummy time_range, this is not needed for the BI
         page_menu = _page_menu_availability(breadcrumb, view, "bi", av_mode, av_object, (0.0, 0.0),
@@ -846,7 +848,7 @@ def show_bi_availability(view: "View", aggr_rows: 'Rows') -> None:
     if not user_errors:
         # iterate all aggregation rows
         timewarpcode = HTML()
-        timewarp = html.request.get_integer_input("timewarp")
+        timewarp = request.get_integer_input("timewarp")
 
         timeline_containers, av_rawdata, has_reached_logrow_limit = _get_bi_availability(
             avoptions, aggr_rows, timewarp)
@@ -872,7 +874,7 @@ def show_bi_availability(view: "View", aggr_rows: 'Rows') -> None:
                     "aggr_name": node["title"],
                     "aggr_output": eff_state["output"],
                     "aggr_hosts": node["reqhosts"],
-                    "aggr_group": html.request.var("aggr_group"),
+                    "aggr_group": request.var("aggr_group"),
                 }
 
                 renderer = bi.FoldableTreeRendererTree(
@@ -934,7 +936,7 @@ def show_bi_availability(view: "View", aggr_rows: 'Rows') -> None:
                     html.close_tr()
                     html.close_table()
 
-                    timewarpcode += output_funnel.drain()
+                    timewarpcode += HTML(output_funnel.drain())
 
         av_data = availability.compute_availability("bi", av_rawdata, avoptions)
 
@@ -953,7 +955,7 @@ def show_bi_availability(view: "View", aggr_rows: 'Rows') -> None:
             _output_csv("bi", av_mode, av_data, avoptions)
             return
 
-        html.write(timewarpcode)
+        html.write_html(timewarpcode)
         do_render_availability("bi", av_rawdata, av_data, av_mode, None, avoptions)
 
     html.body_end()
@@ -1082,7 +1084,7 @@ def show_annotations(annotations, av_rawdata, what, avoptions, omit_service):
                     _("This period has been reclassified in service state to state: %s" %
                       service_state_name(recl_svc_state)))
 
-            table.cell(_("Annotation"), html.render_text(annotation["text"]))
+            table.cell(_("Annotation"), escape_html_permissive(annotation["text"]))
             table.cell(_("Author"), annotation["author"])
             table.cell(_("Entry"), render_date(annotation["date"]), css="nobr narrow")
             if not cmk_version.is_raw_edition():
@@ -1128,7 +1130,7 @@ def edit_annotation(breadcrumb: Breadcrumb) -> bool:
             value["date"] = time.time()
             value["author"] = config.user.id
             availability.update_annotations(site_host_svc, value, replace_existing=annotation)
-            html.request.del_var("filled_in")
+            request.del_var("filled_in")
             return False
         except MKUserError as e:
             html.user_error(e)
@@ -1230,7 +1232,7 @@ def _vs_annotation():
 
 # Called at the beginning of every availability page
 def handle_delete_annotations():
-    if html.request.var("_delete_annotation"):
+    if request.var("_delete_annotation"):
         _site_id, _hostname, _service, host_state, service_state, fromtime, \
                 untiltime, site_host_svc = _handle_anno_request_vars()
 
@@ -1249,7 +1251,7 @@ def handle_edit_annotations(breadcrumb: Breadcrumb) -> bool:
     # Avoid reshowing edit form after edit and reload
     if transactions.is_transaction() and not transactions.transaction_valid():
         return False
-    if html.request.var("anno_host") and not html.request.var("_delete_annotation"):
+    if request.var("anno_host") and not request.var("_delete_annotation"):
         finished = edit_annotation(breadcrumb)
     else:
         finished = False
@@ -1258,13 +1260,13 @@ def handle_edit_annotations(breadcrumb: Breadcrumb) -> bool:
 
 
 def _handle_anno_request_vars():
-    site_id = html.request.var("anno_site") or ""
-    hostname = html.request.get_str_input_mandatory("anno_host")
-    host_state = html.request.var("anno_host_state") or None
-    service = html.request.var("anno_service") or None
-    service_state = html.request.var("anno_service_state") or None
-    fromtime = html.request.get_float_input_mandatory("anno_from")
-    untiltime = html.request.get_float_input_mandatory("anno_until")
+    site_id = request.var("anno_site") or ""
+    hostname = request.get_str_input_mandatory("anno_host")
+    host_state = request.var("anno_host_state") or None
+    service = request.var("anno_service") or None
+    service_state = request.var("anno_service_state") or None
+    fromtime = request.get_float_input_mandatory("anno_from")
+    untiltime = request.get_float_input_mandatory("anno_until")
 
     site_host_svc = (site_id, hostname, service)
 

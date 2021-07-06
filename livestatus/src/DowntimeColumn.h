@@ -12,7 +12,6 @@
 #include <algorithm>  // IWYU pragma: keep
 #include <chrono>
 #include <functional>
-#include <iterator>
 #include <string>
 #include <vector>
 
@@ -27,11 +26,6 @@
 class ColumnOffsets;
 class RowRenderer;
 
-#ifdef CMC
-class Object;
-#endif
-
-namespace detail {
 class DowntimeRenderer {
     using function_type = std::function<std::vector<DowntimeData>(Row)>;
 
@@ -45,89 +39,28 @@ private:
     function_type f_;
     verbosity verbosity_;
 };
-}  // namespace detail
 
-class DowntimeColumn : public ListColumn {
+template <class T, class U>
+class DowntimeColumn : public ListColumn::Callback<T, U> {
 public:
-    using verbosity = detail::DowntimeRenderer::verbosity;
-    template <class T>
-    class Callback;
     DowntimeColumn(const std::string &name, const std::string &description,
-                   const ColumnOffsets &offsets, verbosity v)
-        : ListColumn{name, description, offsets}
+                   const ColumnOffsets &offsets, DowntimeRenderer::verbosity v,
+                   const typename ListColumn::Callback<T, U>::function_type &f)
+        : ListColumn::Callback<T, U>{name, description, offsets, f}
         , renderer_{[this](Row row) { return this->getEntries(row); }, v} {}
 
-    void output(Row row, RowRenderer &r, const contact *auth_user,
-                std::chrono::seconds timezone_offset) const override;
-
-private:
-    friend class detail::DowntimeRenderer;
-    detail::DowntimeRenderer renderer_;
-    [[nodiscard]] virtual std::vector<DowntimeData> getEntries(
-        Row row) const = 0;
-};
-
-template <class T>
-class DowntimeColumn::Callback : public DowntimeColumn {
-public:
-    Callback(const std::string &name, const std::string &description,
-             const ColumnOffsets &offsets, DowntimeColumn::verbosity v,
-             MonitoringCore *mc)
-        : DowntimeColumn{name, description, offsets, v}, _mc{mc} {}
-
-    std::vector<std::string> getValue(
-        Row row, const contact *auth_user,
-        std::chrono::seconds timezone_offset) const override;
-
-private:
-    MonitoringCore *_mc;
-    [[nodiscard]] std::vector<DowntimeData> getEntries(Row row) const override;
-    [[nodiscard]] std::vector<DowntimeData> downtimes(const void *data) const;
-};
-
-/// \sa Apart from the lambda, the code is the same in
-///    * CommentColumn::getValue()
-///    * DowntimeColumn::getValue()
-///    * ServiceGroupMembersColumn::getValue()
-///    * ServiceListColumn::getValue()
-template <class T>
-std::vector<std::string> DowntimeColumn::Callback<T>::getValue(
-    Row row, const contact * /*auth_user*/,
-    std::chrono::seconds /*timezone_offset*/) const {
-    auto entries = getEntries(row);
-    std::vector<std::string> values;
-    std::transform(entries.begin(), entries.end(), std::back_inserter(values),
-                   [](const auto &entry) { return std::to_string(entry._id); });
-    return values;
-}
-
-template <class T>
-std::vector<DowntimeData> DowntimeColumn::Callback<T>::getEntries(
-    Row row) const {
-    if (const auto *data = columnData<void>(row)) {
-        return downtimes(data);
+    void output(Row row, RowRenderer &r, const contact * /*auth_user*/,
+                std::chrono::seconds /*timezone_offset*/) const override {
+        renderer_(row, r);
     }
-    return {};
-}
 
-#ifdef CMC
-template <>
-inline std::vector<DowntimeData> DowntimeColumn::Callback<Object>::downtimes(
-    const void *const data) const {
-    return _mc->downtimes(reinterpret_cast<const MonitoringCore::Host *>(data));
-}
-#else
-template <>
-inline std::vector<DowntimeData> DowntimeColumn::Callback<host>::downtimes(
-    const void *const data) const {
-    return _mc->downtimes(reinterpret_cast<const MonitoringCore::Host *>(data));
-}
+private:
+    friend class DowntimeRenderer;
+    DowntimeRenderer renderer_;
+};
 
 template <>
-inline std::vector<DowntimeData> DowntimeColumn::Callback<service>::downtimes(
-    const void *const data) const {
-    return _mc->downtimes(
-        reinterpret_cast<const MonitoringCore::Service *>(data));
+inline std::string detail::column::serialize(const DowntimeData &data) {
+    return std::to_string(data._id);
 }
-#endif
 #endif  // DowntimeColumn_h

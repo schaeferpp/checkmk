@@ -6,9 +6,9 @@
 
 # pylint: disable=protected-access
 
-import pytest  # type: ignore[import]
+import pytest
 
-from testlib.base import Scenario  # type: ignore[import]
+from testlib.base import Scenario
 
 from cmk.utils.exceptions import MKIPAddressLookupError, OnError
 from cmk.utils.type_defs import CheckPluginName, ParsedSectionName, result, SourceType

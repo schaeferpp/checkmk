@@ -58,8 +58,6 @@ def mock_livestatus(with_context: bool = False,
     with app_context, req_context, \
          mock.patch("cmk.gui.sites._get_enabled_and_disabled_sites",
                     new=live.enabled_and_disabled_sites), \
-         mock.patch("livestatus.MultiSiteConnection.set_prepend_site",
-                    new=live.set_prepend_site), \
          mock.patch("livestatus.MultiSiteConnection.expect_query",
                     new=live.expect_query, create=True), \
          mock.patch("livestatus.SingleSiteConnection._create_socket", new=live.create_socket), \
@@ -85,7 +83,7 @@ def simple_expect(
             A livestatus query.
 
         match_type:
-            Either 'strict' or 'ellipsis'. Default is 'ellipsis'.
+            Either 'strict', 'loose' or 'ellipsis'. Default is 'loose'.
 
         expect_status_query:
             If the query of the status table (which Checkmk does when calling sites.live()) should

@@ -27,10 +27,10 @@ import cmk.gui.pages
 import cmk.gui.i18n
 import cmk.gui.utils
 import cmk.gui.view_utils
-import cmk.gui.escaping as escaping
+import cmk.gui.utils.escaping as escaping
 from cmk.gui.i18n import _, _l
 from cmk.gui.globals import html, g, request, theme, output_funnel
-from cmk.gui.htmllib import HTML, HTMLContent
+from cmk.gui.htmllib import HTML
 from cmk.gui.permissions import (
     permission_section_registry,
     PermissionSection,
@@ -147,7 +147,7 @@ def api_get_aggregation_state(filter_names: Optional[List[str]] = None,
                 "infos": collect_infos(node_result_bundle, is_single_host_aggregation)
             }
 
-    have_sites = {x[0] for x in bi_manager.status_fetcher.states.keys()}
+    have_sites = {x[0] for x in bi_manager.status_fetcher.states}
     missing_aggregations = []
     required_sites = set()
     required_aggregations = bi_manager.computer.get_required_aggregations(bi_aggregation_filter)
@@ -206,10 +206,10 @@ def _get_state_assumption_key(site: Any, host: Any,
 
 @cmk.gui.pages.register("bi_set_assumption")
 def ajax_set_assumption() -> None:
-    site = html.request.get_unicode_input("site")
-    host = html.request.get_unicode_input("host")
-    service = html.request.get_unicode_input("service")
-    state = html.request.var("state")
+    site = request.get_unicode_input("site")
+    host = request.get_unicode_input("host")
+    service = request.get_unicode_input("service")
+    state = request.var("state")
     if state == 'none':
         del config.user.bi_assumptions[_get_state_assumption_key(site, host, service)]
     elif state is not None:
@@ -221,13 +221,13 @@ def ajax_set_assumption() -> None:
 
 @cmk.gui.pages.register("bi_save_treestate")
 def ajax_save_treestate():
-    path_id = html.request.get_unicode_input_mandatory("path")
+    path_id = request.get_unicode_input_mandatory("path")
     current_ex_level_str, path = path_id.split(":", 1)
     current_ex_level = int(current_ex_level_str)
 
     if config.user.bi_expansion_level != current_ex_level:
         config.user.set_tree_states('bi', {})
-    config.user.set_tree_state('bi', path, html.request.var("state") == "open")
+    config.user.set_tree_state('bi', path, request.var("state") == "open")
     config.user.save_tree_states()
 
     config.user.bi_expansion_level = current_ex_level
@@ -235,22 +235,22 @@ def ajax_save_treestate():
 
 @cmk.gui.pages.register("bi_render_tree")
 def ajax_render_tree():
-    aggr_group = html.request.get_unicode_input("group")
-    aggr_title = html.request.get_unicode_input("title")
-    omit_root = bool(html.request.var("omit_root"))
-    only_problems = bool(html.request.var("only_problems"))
+    aggr_group = request.get_unicode_input("group")
+    aggr_title = request.get_unicode_input("title")
+    omit_root = bool(request.var("omit_root"))
+    only_problems = bool(request.var("only_problems"))
 
     rows = []
     bi_manager = BIManager()
     bi_manager.status_fetcher.set_assumed_states(config.user.bi_assumptions)
-    aggregation_id = html.request.get_str_input_mandatory("aggregation_id")
+    aggregation_id = request.get_str_input_mandatory("aggregation_id")
     bi_aggregation_filter = BIAggregationFilter([], [], [aggregation_id],
                                                 [aggr_title] if aggr_title is not None else [],
                                                 [aggr_group] if aggr_group is not None else [], [])
     rows = bi_manager.computer.compute_legacy_result_for_filter(bi_aggregation_filter)
 
     # TODO: Cleanup the renderer to use a class registry for lookup
-    renderer_class_name = html.request.var("renderer")
+    renderer_class_name = request.var("renderer")
     if renderer_class_name == "FoldableTreeRendererTree":
         renderer_cls: Type[ABCFoldableTreeRenderer] = FoldableTreeRendererTree
     elif renderer_class_name == "FoldableTreeRendererBoxes":
@@ -267,11 +267,11 @@ def ajax_render_tree():
                             expansion_level=config.user.bi_expansion_level,
                             only_problems=only_problems,
                             lazy=False)
-    html.write(renderer.render())
+    html.write_html(renderer.render())
 
 
 def render_tree_json(row):
-    expansion_level = html.request.get_integer_input_mandatory("expansion_level", 999)
+    expansion_level = request.get_integer_input_mandatory("expansion_level", 999)
 
     treestate = config.user.get_tree_states('bi')
     if expansion_level != config.user.bi_expansion_level:
@@ -545,15 +545,15 @@ class FoldableTreeRendererTree(ABCFoldableTreeRenderer):
 
         with self._show_node(tree, show_host, mousecode=mc, img_class=css_class):
             if tree[2].get('icon'):
-                html.write(html.render_icon(tree[2]['icon']))
-                html.write("&nbsp;")
+                html.write_html(html.render_icon(tree[2]['icon']))
+                html.write_text("&nbsp;")
 
             if tree[2].get("docu_url"):
                 html.icon_button(tree[2]["docu_url"],
                                  _("Context information about this rule"),
                                  "url",
                                  target="_blank")
-                html.write("&nbsp;")
+                html.write_text("&nbsp;")
 
             html.write_text(tree[2]["title"])
 
@@ -631,12 +631,12 @@ class FoldableTreeRendererTree(ABCFoldableTreeRenderer):
 
             html.close_span()
 
-        output: HTMLContent = cmk.gui.view_utils.format_plugin_output(
+        output: HTML = cmk.gui.view_utils.format_plugin_output(
             effective_state["output"], shall_escape=config.escape_plugin_output)
         if output:
             output = html.render_b(HTML("&diams;"), class_="bullet") + output
         else:
-            output = ""
+            output = HTML()
 
         html.span(output, class_=["content", "output"])
 
@@ -812,20 +812,20 @@ def compute_bi_aggregation_filter(all_active_filters):
     group_prefix = []
 
     for active_filter in all_active_filters:
-        if active_filter.ident == "aggr_host":
+        if active_filter.ident == "aggr_hosts":
             host_match = active_filter.value()
-            if host_match:
-                only_hosts = [host_match]
+            if (host_name := host_match.get("aggr_host_host", "")) != "":
+                only_hosts = [host_name]
         elif active_filter.ident == "aggr_group":
             aggr_group = active_filter.selected_group()
             if aggr_group:
                 only_group = [aggr_group]
         elif active_filter.ident == "aggr_service":
-            # TODO: this is broken, in every version
-            # service_spec: site_id, host, service
-            service_spec = active_filter.service_spec()
-            if service_spec:
-                only_service = [service_spec]
+            if service_spec := active_filter.service_spec():
+                # service_spec: site_id, host, service
+                # Since no data has been fetched yet, the site is also unknown
+                if service_spec[2]:
+                    only_service = [(service_spec[1], service_spec[2])]
         elif active_filter.ident == "aggr_name":
             aggr_name = active_filter.value().get("aggr_name")
             if aggr_name:
@@ -836,8 +836,8 @@ def compute_bi_aggregation_filter(all_active_filters):
                 group_prefix = [group_name]
 
     # BIAggregationFilter
-    #("hosts", List[HostSpec]),
-    #("services", List[Tuple[HostSpec, ServiceName]]),
+    #("hosts", List[HostName]),
+    #("services", List[Tuple[HostName, ServiceName]]),
     #("aggr_ids", List[str]),
     #("aggr_names", List[str]),
     #("aggr_groups", List[str]),

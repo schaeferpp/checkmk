@@ -8,10 +8,9 @@
 
 from pathlib import Path
 
-import pytest  # type: ignore[import]
+import pytest
 
-# No stub file
-from testlib.base import Scenario  # type: ignore[import]
+from testlib.base import Scenario
 
 from cmk.utils.exceptions import OnError
 from cmk.utils.log import logger

@@ -67,7 +67,7 @@ PERL_MODULES_LIST2 := \
                   Try-Tiny-0.22.tar.gz \
                   Perl-OSType-1.008.tar.gz \
                   base-2.18.tar.gz \
-                  Archive-Zip-1.43.tar.gz \
+                  Archive-Zip-1.59.tar.gz \
                   HTML-Parser-3.71.tar.gz \
                   Term-Clui-1.70.tar.gz \
                   URI-1.67.tar.gz \
@@ -78,14 +78,14 @@ PERL_MODULES_LIST2 := \
                   Term-ProgressBar-2.17.tar.gz \
                   Test-Cmd-1.08.tar.gz \
                   Test-Simple-1.001014.tar.gz \
-                  XML-LibXML-2.0117.tar.gz \
+                  XML-LibXML-2.0207.tar.gz \
                   HTTP-Cookies-6.01.tar.gz \
                   IPC-Cmd-0.92.tar.gz \
                   ExtUtils-CBuilder-0.280220.tar.gz \
                   ExtUtils-ParseXS-3.24.tar.gz \
                   Module-Metadata-1.000027.tar.gz \
                   IO-1.25.tar.gz \
-                  LWP-Protocol-https-6.06.tar.gz \
+                  LWP-Protocol-https-6.07.tar.gz \
                   List-AllUtils-0.09.tar.gz \
                   libwww-perl-6.13.tar.gz \
                   Module-Build-0.4007.tar.gz \

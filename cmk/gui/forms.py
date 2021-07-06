@@ -8,11 +8,13 @@ import base64
 from typing import Union, Callable, Dict, Optional, Tuple, List, Any, TYPE_CHECKING
 from six import ensure_binary, ensure_str
 
-import cmk.gui.escaping as escaping
+import cmk.gui.utils.escaping as escaping
 from cmk.gui.utils.html import HTML
 from cmk.gui.i18n import _
-from cmk.gui.globals import html, transactions, user_errors, theme
+from cmk.gui.globals import html, request, transactions, user_errors, theme
 from cmk.gui.exceptions import MKUserError
+from cmk.gui.htmllib.foldable_container import (foldable_container_id, foldable_container_onclick,
+                                                foldable_container_img_id)
 import cmk.gui.config as config
 
 if TYPE_CHECKING:
@@ -49,7 +51,7 @@ def edit_dictionaries(dictionaries: 'Sequence[Tuple[str, Union[Transform, Dictio
                       formname: str = "form",
                       consume_transid: bool = True):
 
-    if html.request.get_ascii_input("filled_in") == formname and transactions.transaction_valid():
+    if request.get_ascii_input("filled_in") == formname and transactions.transaction_valid():
         if not preview and consume_transid:
             transactions.check_transaction()
 
@@ -93,7 +95,7 @@ def edit_dictionaries(dictionaries: 'Sequence[Tuple[str, Union[Transform, Dictio
 
     end()
     # Should be ignored be hidden_fields, but I do not dare to change it there
-    html.request.del_var("filled_in")
+    request.del_var("filled_in")
     html.hidden_fields()
     html.end_form()
 
@@ -119,7 +121,7 @@ def header(
     id_ = ensure_str(base64.b64encode(ensure_binary(title)))
     treename = html.form_name or "nform"
     isopen = config.user.get_tree_state(treename, id_, isopen)
-    container_id = html.foldable_container_id(treename, id_)
+    container_id = foldable_container_id(treename, id_)
 
     html.open_table(id_=table_id if table_id else None,
                     class_=[
@@ -155,8 +157,8 @@ def _table_head(
     show_more_toggle: bool,
     help_text: Union[str, HTML, None] = None,
 ) -> None:
-    onclick = html.foldable_container_onclick(treename, id_, fetch_url=None)
-    img_id = html.foldable_container_img_id(treename, id_)
+    onclick = foldable_container_onclick(treename, id_, fetch_url=None)
+    img_id = foldable_container_img_id(treename, id_)
 
     html.open_thead()
     html.open_tr(class_="heading")
@@ -210,13 +212,13 @@ def section(title: Union[None, HTML, str] = None,
         if title:
             html.open_div(class_=["title", "withcheckbox" if checkbox else None],
                           title=escaping.strip_tags(title))
-            html.write(escaping.escape_text(title))
+            html.write_text(title)
             html.span('.' * 200, class_=["dots", "required" if is_required else None])
             html.close_div()
         if checkbox:
             html.open_div(class_="checkbox")
             if isinstance(checkbox, (str, HTML)):
-                html.write(checkbox)
+                html.write_text(checkbox)
             else:
                 name, active, attrname = checkbox
                 html.checkbox(name,

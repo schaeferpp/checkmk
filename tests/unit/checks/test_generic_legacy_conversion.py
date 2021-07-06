@@ -3,7 +3,7 @@
 # Copyright (C) 2019 tribe29 GmbH - License: GNU General Public License v2
 # This file is part of Checkmk (https://checkmk.com). It is subject to the terms and
 # conditions defined in the file COPYING, which is part of this source code package.
-import pytest  # type: ignore[import]
+import pytest
 
 from cmk.utils.check_utils import section_name_of
 from cmk.utils.type_defs import SectionName
@@ -393,7 +393,6 @@ def test_all_check_variables_present(fix_plugin_legacy):
         'dell_powerconnect_temp_default_values',
         'df_zos_exclude_list',
         'discovery_cisco_dom_rules',
-        'discovery_cmciii',
         'discovery_hr_processes_rules',
         'discovery_mssql_backup',
         'discovery_netapp_api_fan_rules',
@@ -1076,7 +1075,6 @@ def test_no_new_or_vanished_legacy_checks(fix_plugin_legacy):
         'aruba_clients',
         'aruba_cpu_util',
         'aruba_wlc_aps',
-        'aruba_wlc_clients',
         'atto_fibrebridge_chassis.temp',
         'atto_fibrebridge_chassis',
         'atto_fibrebridge_fcport',
@@ -1332,7 +1330,6 @@ def test_no_new_or_vanished_legacy_checks(fix_plugin_legacy):
         'cisco_vpn_sessions',
         'cisco_vpn_tunnel',
         'cisco_vss',
-        'cisco_wlc_clients',
         'citrix_controller.services',
         'citrix_controller.registered',
         'citrix_controller.sessions',
@@ -1350,18 +1347,6 @@ def test_no_new_or_vanished_legacy_checks(fix_plugin_legacy):
         'climaveneta_fan',
         'climaveneta_temp',
         'cmc_temp',
-        'cmciii',
-        'cmciii.psm_current',
-        'cmciii.psm_plugs',
-        'cmciii.io',
-        'cmciii.access',
-        'cmciii.temp',
-        'cmciii.temp_in_out',
-        'cmciii.can_current',
-        'cmciii.humidity',
-        'cmciii.phase',
-        'cmciii.leakage',
-        'cmciii.status',
         'cmciii_lcp_airin',
         'cmciii_lcp_airout',
         'cmciii_lcp_fans',

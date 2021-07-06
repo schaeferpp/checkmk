@@ -4,7 +4,7 @@
 # This file is part of Checkmk (https://checkmk.com). It is subject to the terms and
 # conditions defined in the file COPYING, which is part of this source code package.
 
-import pytest  # type: ignore[import]
+import pytest
 
 import cmk.utils.version as cmk_version
 import cmk.gui.dashboard as dashboard
@@ -30,15 +30,16 @@ class DummyDashlet(dashboard.Dashlet):
         return 123
 
     def show(self):
-        html.write("dummy")
+        html.write_text("dummy")
 
 
 def test_dashlet_registry_plugins():
     expected_plugins = [
         'hoststats',
+        'servicestats',
+        'eventstats',
         'notify_failed_notifications',
         'mk_logo',
-        'servicestats',
         'url',
         'overview',
         'pnpgraph',
@@ -66,6 +67,7 @@ def test_dashlet_registry_plugins():
             'ntop_flows',
             'ntop_top_talkers',
             'single_timeseries',
+            'state_service',
         ]
 
     dashboard._transform_old_dict_based_dashlets()

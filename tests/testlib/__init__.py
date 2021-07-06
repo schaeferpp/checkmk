@@ -22,7 +22,7 @@ from typing import (
 )
 
 import urllib3  # type: ignore[import]
-import freezegun  # type: ignore[import]
+import freezegun
 import pytest
 from _pytest.monkeypatch import MonkeyPatch
 
@@ -36,6 +36,7 @@ from testlib.site import Site, SiteFactory  # noqa: F401 # pylint: disable=unuse
 from testlib.version import CMKVersion  # noqa: F401 # pylint: disable=unused-import
 from testlib.web_session import CMKWebSession, APIError  # noqa: F401 # pylint: disable=unused-import
 from testlib.event_console import CMKEventConsole, CMKEventConsoleStatus  # noqa: F401 # pylint: disable=unused-import
+from testlib.compare_html import compare_html
 
 # Disable insecure requests warning message during SSL testing
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -270,7 +271,10 @@ def create_linux_test_host(request, web_fixture, site, hostname):
                 "tmp/check_mk/status_data/%s.gz" % hostname,
                 "var/check_mk/inventory/%s" % hostname,
                 "var/check_mk/inventory/%s.gz" % hostname,
-        ]:
+                "var/check_mk/autochecks/%s.mk" % hostname,
+                "tmp/check_mk/counters/%s" % hostname,
+                "tmp/check_mk/cache/%s" % hostname,
+        ] + [str(p) for p in Path("tmp/check_mk/data_source_cache/").glob(f"*/{hostname}")]:
             if os.path.exists(path):
                 site.delete_file(path)
 

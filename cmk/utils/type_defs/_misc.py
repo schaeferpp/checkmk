@@ -11,9 +11,7 @@ from dataclasses import asdict, dataclass
 from typing import (
     Any,
     Dict,
-    Final,
     List,
-    Literal,
     Mapping,
     NamedTuple,
     NewType,
@@ -95,8 +93,6 @@ MetricTuple = Tuple[MetricName, float, Optional[float], Optional[float], Optiona
                     Optional[float],]
 
 ServiceCheckResult = Tuple[ServiceState, ServiceDetails, List[MetricTuple]]
-ActiveCheckResult = Tuple[ServiceState, Sequence[ServiceDetails],
-                          Sequence[ServiceAdditionalDetails], Sequence[str]]
 
 LegacyCheckParameters = Union[None, Dict, Tuple, List, str]
 
@@ -137,20 +133,12 @@ class AutomationDiscoveryResponse:
         }
 
     @classmethod
-    def deserialize(cls, serialized: Dict[str, Any]) -> "AutomationDiscoveryResponse":
+    def deserialize(cls, serialized: Mapping[str, Any]) -> "AutomationDiscoveryResponse":
         return cls(results={k: DiscoveryResult(**v) for k, v in serialized["results"].items()})
 
 
 UserId = NewType("UserId", str)
 EventRule = Dict[str, Any]  # TODO Improve this
-
-LATEST_SERIAL: Final[Literal["latest"]] = "latest"
-# TODO(ml): The strings in ConfigSerial look like this: "0", "1", "2"...
-#           We should use `int` or even better make a full-blown
-#           abstraction out of that.
-#           See also: a few of its "methods" are in `cmk.base.core_config`.
-ConfigSerial = NewType("ConfigSerial", str)
-OptionalConfigSerial = Union[ConfigSerial, Literal["latest"]]
 
 # This def is used to keep the API-exposed object in sync with our
 # implementation.

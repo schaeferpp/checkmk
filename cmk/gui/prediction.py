@@ -22,7 +22,7 @@ import cmk.utils.prediction as prediction
 import cmk.gui.pages
 import cmk.gui.sites as sites
 from cmk.gui.i18n import _
-from cmk.gui.globals import html
+from cmk.gui.globals import html, request
 from cmk.gui.plugins.views.utils import make_service_breadcrumb
 from cmk.gui.exceptions import MKGeneralException
 
@@ -56,9 +56,9 @@ def _load_prediction_information(
 
 @cmk.gui.pages.register("prediction_graph")
 def page_graph():
-    host = html.request.get_str_input_mandatory("host")
-    service = html.request.get_str_input_mandatory("service")
-    dsname = html.request.get_str_input_mandatory("dsname")
+    host = request.get_str_input_mandatory("host")
+    service = request.get_str_input_mandatory("service")
+    dsname = request.get_str_input_mandatory("dsname")
 
     breadcrumb = make_service_breadcrumb(host, service)
     html.header(_("Prediction for %s - %s - %s") % (host, service, dsname), breadcrumb)
@@ -69,12 +69,12 @@ def page_graph():
     prediction_store = prediction.PredictionStore(host, service, dsname)
 
     timegroup, choices = _load_prediction_information(
-        tg_name=html.request.var("timegroup"),
+        tg_name=request.var("timegroup"),
         prediction_store=prediction_store,
     )
 
     html.begin_form("prediction")
-    html.write(_("Show prediction for "))
+    html.write_text(_("Show prediction for "))
     html.dropdown("timegroup",
                   choices,
                   deflt=timegroup.name,
@@ -249,15 +249,25 @@ def compute_vertical_range(swapped):
 
 
 def create_graph(name, size, bounds, v_range, legend):
-    html.write('<table class=prediction><tr><td>')
-    html.write(
-        '<canvas class=prediction id="content_%s" style="width: %dpx; height: %dpx;" width=%d height=%d></canvas>'
-        % (name, int(size[0] / 2.0), int(size[1] / 2.0), size[0], size[1]))
-    html.write('</td></tr><tr><td class=legend>')
+    html.open_table(class_="prediction")
+    html.open_tr()
+    html.open_td()
+    html.canvas("",
+                class_="prediction",
+                id_="content_%s" % name,
+                style="width: %dpx; height: %dpx;" % (int(size[0] / 2.0), int(size[1] / 2.0)),
+                width=size[0],
+                height=size[1])
+    html.close_td()
+    html.close_tr()
+    html.open_tr()
+    html.open_td(class_="legend")
     for color, title in legend:
-        html.write('<div class=color style="background-color: %s"></div><div class=entry>%s</div>' %
-                   (color, title))
-    html.write('</div></td></tr></table>')
+        html.div("", class_="color", style="background-color: %s" % color)
+        html.div(title, class_="entry")
+    html.close_td()
+    html.close_tr()
+    html.close_table()
     html.javascript('cmk.prediction.create_graph("content_%s", %.4f, %.4f, %.4f, %.4f);' %
                     (name, bounds[0], bounds[1], v_range[0], v_range[1]))
 

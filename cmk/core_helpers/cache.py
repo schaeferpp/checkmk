@@ -51,17 +51,18 @@ Cache hierarchy
 """
 
 import abc
+import copy
 import logging
 from pathlib import Path
 from typing import (
     Any,
     Callable,
-    Dict,
     Final,
     Generic,
     Iterator,
     Mapping,
     MutableMapping,
+    NamedTuple,
     Optional,
     Tuple,
     Type,
@@ -203,13 +204,32 @@ class SectionStore(Generic[TRawDataSection]):
 TFileCache = TypeVar("TFileCache", bound="FileCache")
 
 
+class MaxAge(NamedTuple):
+    """Maximum age allowed for the cached data, in seconds.
+
+    See Also:
+        cmk.base.config.max_cachefile_age() for the default values configured.
+
+    """
+    checking: int
+    discovery: int
+    inventory: int
+
+    @classmethod
+    def none(cls):
+        return cls(0, 0, 0)
+
+    def get(self, mode: Mode, *, default: int = 0) -> int:
+        return self._asdict().get(mode.name.lower(), default)
+
+
 class FileCache(Generic[TRawData], abc.ABC):
     def __init__(
         self,
         hostname: HostName,
         *,
         base_path: Union[str, Path],
-        max_age: int,
+        max_age: MaxAge,
         disabled: bool,
         use_outdated: bool,
         simulation: bool,
@@ -245,7 +265,7 @@ class FileCache(Generic[TRawData], abc.ABC):
             self.simulation == other.simulation,
         ))
 
-    def to_json(self) -> Dict[str, Any]:
+    def to_json(self) -> Mapping[str, Any]:
         return {
             "hostname": str(self.hostname),
             "base_path": str(self.base_path),
@@ -256,8 +276,10 @@ class FileCache(Generic[TRawData], abc.ABC):
         }
 
     @classmethod
-    def from_json(cls: Type[TFileCache], serialized: Dict[str, Any]) -> TFileCache:
-        return cls(**serialized)
+    def from_json(cls: Type[TFileCache], serialized: Mapping[str, Any]) -> TFileCache:
+        serialized_ = copy.deepcopy(dict(serialized))
+        max_age = MaxAge(*serialized_.pop("max_age"))
+        return cls(max_age=max_age, **serialized_)
 
     @staticmethod
     @abc.abstractmethod
@@ -273,9 +295,27 @@ class FileCache(Generic[TRawData], abc.ABC):
     def make_path(self, mode: Mode) -> Path:
         raise NotImplementedError()
 
-    def read(self, mode: Mode) -> Optional[TRawData]:
+    def _do_cache(self, mode: Mode) -> bool:
         if self.disabled:
             self._logger.debug("Not using cache (Cache usage disabled)")
+            return False
+
+        if self.simulation:
+            self._logger.debug("Using cache (simulation)")
+            return True
+
+        if mode in {
+                Mode.NONE,
+                Mode.FORCE_SECTIONS,
+                Mode.RTC,
+        }:
+            self._logger.debug("Not using cache (Mode %s)", mode)
+            return False
+
+        return True
+
+    def read(self, mode: Mode) -> Optional[TRawData]:
+        if not self._do_cache(mode):
             return None
 
         path = self.make_path(mode)
@@ -283,8 +323,14 @@ class FileCache(Generic[TRawData], abc.ABC):
             self._logger.debug("Not using cache (Does not exist)")
             return None
 
-        if not (self.simulation or mode is not Mode.FORCE_SECTIONS):
-            self._logger.debug("Not using cache (Mode %s)", mode)
+        may_use_outdated = self.simulation or self.use_outdated
+        cachefile_age = cmk.utils.cachefile_age(path)
+        if not may_use_outdated and cachefile_age > self.max_age.get(mode):
+            self._logger.debug(
+                "Not using cache (Too old. Age is %d sec, allowed is %s sec)",
+                cachefile_age,
+                self.max_age.get(mode),
+            )
             return None
 
         raw_data = self._read(path)
@@ -296,16 +342,6 @@ class FileCache(Generic[TRawData], abc.ABC):
         return raw_data
 
     def _read(self, path: Path) -> Optional[TRawData]:
-        may_use_outdated = self.simulation or self.use_outdated
-        cachefile_age = cmk.utils.cachefile_age(path)
-        if not may_use_outdated and cachefile_age > self.max_age:
-            self._logger.debug(
-                "Not using cache (Too old. Age is %d sec, allowed is %s sec)",
-                cachefile_age,
-                self.max_age,
-            )
-            return None
-
         # TODO: Use some generic store file read function to generalize error handling,
         # but there is currently no function that simply reads data from the file
         cache_file = path.read_bytes()
@@ -317,8 +353,7 @@ class FileCache(Generic[TRawData], abc.ABC):
         return self._from_cache_file(cache_file)
 
     def write(self, raw_data: TRawData, mode: Mode) -> None:
-        if self.disabled:
-            self._logger.debug("Not writing data to cache file (Cache usage disabled)")
+        if not self._do_cache(mode):
             return
 
         path = self.make_path(mode)
@@ -355,30 +390,19 @@ class FileCacheFactory(Generic[TRawData], abc.ABC):
     # cache files that are even older than the max_cachefile_age of the host/mode.
     use_outdated = False
 
-    @staticmethod
-    def enable_cache():
-        # TODO check these settings vs.
-        # cmk/base/automations/check_mk.py:_set_cache_opts_of_checkers
-        FileCacheFactory.maybe = True
-        FileCacheFactory.use_outdated = True
-
     def __init__(
         self,
         hostname: HostName,
         base_path: Union[Path, str],
         *,
-        max_age: int,
+        max_age: MaxAge,
         simulation: bool = False,
     ):
         super().__init__()
         self.hostname: Final = hostname
         self.base_path: Final[Path] = Path(base_path)
-        self.max_age: Final[int] = max_age
+        self.max_age: Final = max_age
         self.simulation: Final[bool] = simulation
-
-    @classmethod
-    def reset_maybe(cls):
-        cls.maybe = not cls.disabled
 
     @abc.abstractmethod
     def make(self, *, force_cache_refresh: bool = False) -> FileCache[TRawData]:

@@ -18,6 +18,7 @@ import cmk.gui.userdb as userdb
 import cmk.gui.permissions as permissions
 import cmk.gui.config as config
 import cmk.gui.watolib as watolib
+from cmk.gui.htmllib import foldable_container
 from cmk.gui.table import table_element
 import cmk.gui.forms as forms
 from cmk.gui.exceptions import MKUserError
@@ -289,7 +290,7 @@ class ABCNotificationsMode(ABCEventsMode):
                                      _("Context information about this rule"),
                                      "url",
                                      target="_blank")
-                    html.write("&nbsp;")
+                    html.write_text("&nbsp;")
                 html.write_text(rule["description"])
                 table.cell(_("Contacts"))
 
@@ -298,22 +299,21 @@ class ABCNotificationsMode(ABCEventsMode):
                     html.i(_("(no one)"))
                 else:
                     for line in infos:
-                        html.write("&bullet; %s" % line)
+                        html.write_text("&bullet; %s" % line)
                         html.br()
 
                 table.cell(_("Conditions"), css="rule_conditions")
                 num_conditions = len([key for key in rule if key.startswith("match_")])
                 if num_conditions:
                     title = _("%d conditions") % num_conditions
-                    html.begin_foldable_container(
-                        treename="rule_%s_%d" % (userid, nr),
-                        id_="%s" % nr,
-                        isopen=False,
-                        title=title,
-                        indent=False,
-                    )
-                    html.write(vs_match_conditions.value_to_text(rule))
-                    html.end_foldable_container()
+                    with foldable_container(
+                            treename="rule_%s_%d" % (userid, nr),
+                            id_=str(nr),
+                            isopen=False,
+                            title=title,
+                            indent=False,
+                    ):
+                        html.write_text(vs_match_conditions.value_to_text(rule))
                 else:
                     html.i(_("(no conditions)"))
 
@@ -370,7 +370,7 @@ class ABCNotificationsMode(ABCEventsMode):
                 config.user.may(permission_name))
 
     def _rule_links(self, rule, nr, profilemode, userid):
-        anavar = html.request.var("analyse", "")
+        anavar = request.var("analyse", "")
 
         if profilemode:
             listmode = "user_notifications_p"
@@ -525,24 +525,24 @@ class ModeNotifications(ABCNotificationsMode):
             ))
 
     def action(self) -> ActionResult:
-        if html.request.has_var("_show_user"):
+        if request.has_var("_show_user"):
             if transactions.check_transaction():
-                self._show_user_rules = bool(html.request.var("_show_user"))
+                self._show_user_rules = bool(request.var("_show_user"))
                 self._save_notification_display_options()
 
-        elif html.request.has_var("_show_backlog"):
+        elif request.has_var("_show_backlog"):
             if transactions.check_transaction():
-                self._show_backlog = bool(html.request.var("_show_backlog"))
+                self._show_backlog = bool(request.var("_show_backlog"))
                 self._save_notification_display_options()
 
-        elif html.request.has_var("_show_bulks"):
+        elif request.has_var("_show_bulks"):
             if transactions.check_transaction():
-                self._show_bulks = bool(html.request.var("_show_bulks"))
+                self._show_bulks = bool(request.var("_show_bulks"))
                 self._save_notification_display_options()
 
-        elif html.request.has_var("_replay"):
+        elif request.has_var("_replay"):
             if transactions.check_transaction():
-                nr = html.request.get_integer_input_mandatory("_replay")
+                nr = request.get_integer_input_mandatory("_replay")
                 watolib.check_mk_local_automation("notification-replay", [str(nr)], None)
                 flash(_("Replayed notifiation number %d") % (nr + 1))
                 return None
@@ -677,8 +677,8 @@ class ModeNotifications(ABCNotificationsMode):
                 html.icon_button(replay_url, _("Replay this notification, send it again!"),
                                  "reload_cmk")
 
-                if (html.request.var("analyse") and
-                        nr == html.request.get_integer_input_mandatory("analyse")):
+                if (request.var("analyse") and
+                        nr == request.get_integer_input_mandatory("analyse")):
                     html.icon("rulematch", _("You are analysing this notification"))
 
                 table.cell(_("Nr."), str(nr + 1), css="number")
@@ -702,7 +702,9 @@ class ModeNotifications(ABCNotificationsMode):
                         statename = context.get("HOSTSTATE")[:4]
                         state = context["HOSTSTATEID"]
                         css = "state hstate hstate%s" % state
-                    table.cell(_("State"), html.render_span(statename), css=css)
+                    table.cell(_("State"),
+                               html.render_span(statename, class_=["state_rounded_fill"]),
+                               css=css)
                 elif nottype.startswith("DOWNTIME"):
                     table.cell(_("State"))
                     html.icon("downtime", _("Downtime"))
@@ -744,8 +746,8 @@ class ModeNotifications(ABCNotificationsMode):
     # TODO: Refactor this
     def _show_rules(self):
         # Do analysis
-        if html.request.var("analyse"):
-            nr = html.request.get_integer_input_mandatory("analyse")
+        if request.var("analyse"):
+            nr = request.get_integer_input_mandatory("analyse")
             analyse = watolib.check_mk_local_automation("notification-analyse", [str(nr)], None)
         else:
             analyse = False
@@ -779,11 +781,12 @@ class ModeNotifications(ABCNotificationsMode):
                     table.cell(_("Plugin parameters"), ", ".join(parameters))
                     table.cell(_("Bulking"))
                     if bulk:
-                        html.write(_("Time horizon") + ": " + Age().value_to_text(bulk["interval"]))
+                        html.write_text(_("Time horizon") + ": ")
+                        html.write_text(Age().value_to_text(bulk["interval"]))
                         html.write_text(", %s: %d" % (_("Maximum count"), bulk["count"]))
-                        html.write(", %s %s" %
-                                   (_("group by"), self._vs_notification_bulkby().value_to_text(
-                                       bulk["groupby"])))
+                        html.write_text(", %s " % (_("group by")))
+                        html.write_text(self._vs_notification_bulkby().value_to_text(
+                            bulk["groupby"]))
 
     def _vs_notification_scripts(self):
         return DropdownChoice(title=_("Notification Script"),
@@ -798,7 +801,7 @@ class ABCUserNotificationsMode(ABCNotificationsMode):
 
     def _from_vars(self):
         self._users = userdb.load_users(
-            lock=transactions.is_transaction() or html.request.has_var("_move"))
+            lock=transactions.is_transaction() or request.has_var("_move"))
 
         try:
             user = self._users[self._user_id()]
@@ -818,16 +821,16 @@ class ABCUserNotificationsMode(ABCNotificationsMode):
         if not transactions.check_transaction():
             return redirect(self.mode_url(user=self._user_id()))
 
-        if html.request.has_var("_delete"):
-            nr = html.request.get_integer_input_mandatory("_delete")
+        if request.has_var("_delete"):
+            nr = request.get_integer_input_mandatory("_delete")
             del self._rules[nr]
             userdb.save_users(self._users)
             self._add_change("notification-delete-user-rule",
                              _("Deleted notification rule %d of user %s") % (nr, self._user_id()))
 
-        elif html.request.has_var("_move"):
-            from_pos = html.request.get_integer_input_mandatory("_move")
-            to_pos = html.request.get_integer_input_mandatory("_index")
+        elif request.has_var("_move"):
+            from_pos = request.get_integer_input_mandatory("_move")
+            to_pos = request.get_integer_input_mandatory("_index")
             rule = self._rules[from_pos]
             del self._rules[from_pos]  # make to_pos now match!
             self._rules[to_pos:to_pos] = [rule]
@@ -893,7 +896,7 @@ class ModeUserNotifications(ABCUserNotificationsMode):
         return self.mode_url(user=self._user_id())
 
     def _user_id(self):
-        return html.request.get_unicode_input("user")
+        return request.get_unicode_input("user")
 
     def page_menu(self, breadcrumb: Breadcrumb) -> PageMenu:
         menu = PageMenu(
@@ -1039,14 +1042,14 @@ class ABCEditNotificationRuleMode(ABCNotificationsMode):
 
     # TODO: Refactor this
     def _from_vars(self):
-        self._edit_nr = html.request.get_integer_input_mandatory("edit", -1)
-        self._clone_nr = html.request.get_integer_input_mandatory("clone", -1)
+        self._edit_nr = request.get_integer_input_mandatory("edit", -1)
+        self._clone_nr = request.get_integer_input_mandatory("clone", -1)
         self._new = self._edit_nr < 0
 
         self._rules = self._load_rules()
 
         if self._new:
-            if self._clone_nr >= 0 and not html.request.var("_clear"):
+            if self._clone_nr >= 0 and not request.var("_clear"):
                 self._rule = {}
                 try:
                     self._rule.update(self._rules[self._clone_nr])
@@ -1501,7 +1504,7 @@ class ModeEditUserNotificationRule(ABCEditUserNotificationRuleMode):
         return ModeUserNotifications
 
     def _user_id(self):
-        return html.request.get_unicode_input_mandatory("user")
+        return request.get_unicode_input_mandatory("user")
 
     def _back_mode(self) -> ActionResult:
         return redirect(mode_url("user_notifications", user=self._user_id()))

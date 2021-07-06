@@ -9,19 +9,21 @@ manager."""
 
 import ast
 import enum
-from contextlib import contextmanager
 import errno
 import fcntl
+import functools
 import logging
 import os
-from pathlib import Path
 import pprint
 import tempfile
-from typing import Any, Union, Dict, Iterator, Optional, AnyStr, cast, List, Tuple
+import threading
+from contextlib import contextmanager
+from pathlib import Path
+from typing import Any, AnyStr, Dict, Iterator, List, Optional, Tuple, Union
 
 from six import ensure_binary
 
-from cmk.utils.exceptions import MKGeneralException, MKTimeout, MKTerminate
+from cmk.utils.exceptions import MKGeneralException, MKTerminate, MKTimeout
 from cmk.utils.i18n import _
 from cmk.utils.paths import default_config_dir
 
@@ -197,33 +199,22 @@ def save_to_mk_file(path: Union[Path, str],
 # directly read via file/open and then parsed using eval.
 # TODO: Consolidate with load_mk_file?
 def load_object_from_file(path: Union[Path, str], default: Any = None, lock: bool = False) -> Any:
-    content = cast(str, _load_data_from_file(path, lock=lock, encoding="utf-8"))
-    if not content:
-        return default
-    return ast.literal_eval(content)
+    content = _load_bytes_from_file(path, lock=lock).decode("utf-8")
+    return ast.literal_eval(content) if content else default
 
 
-def load_text_from_file(path: Union[Path, str], default: str = u"", lock: bool = False) -> str:
-    content = cast(str, _load_data_from_file(path, lock=lock, encoding="utf-8"))
-    if not content:
-        return default
-    return content
+def load_text_from_file(path: Union[Path, str], default: str = "", lock: bool = False) -> str:
+    return _load_bytes_from_file(path, lock=lock).decode("utf-8") or default
 
 
 def load_bytes_from_file(path: Union[Path, str], default: bytes = b"", lock: bool = False) -> bytes:
-    content = cast(bytes, _load_data_from_file(path, lock=lock))
-    if not content:
-        return default
-    return content
+    return _load_bytes_from_file(path, lock=lock) or default
 
 
-# TODO: This function has to die! Its return type depends on the value of the
-# encoding parameter, which doesn't work at all with mypy and various APIs like
-# ast.literal_eval. As a workaround, we use casts, but this isn't a real
-# solution....
-def _load_data_from_file(path: Union[Path, str],
-                         lock: bool = False,
-                         encoding: Optional[str] = None) -> Union[None, str, bytes]:
+def _load_bytes_from_file(
+    path: Union[Path, str],
+    lock: bool = False,
+) -> bytes:
     if not isinstance(path, Path):
         path = Path(path)
 
@@ -232,11 +223,9 @@ def _load_data_from_file(path: Union[Path, str],
 
     try:
         try:
-            return path.read_text(encoding=encoding) if encoding else path.read_bytes()
-        except IOError as e:
-            if e.errno != errno.ENOENT:  # No such file or directory
-                raise
-            return None
+            return path.read_bytes()
+        except FileNotFoundError:
+            return b''
 
     except (MKTerminate, MKTimeout):
         if lock:
@@ -368,7 +357,80 @@ def _save_data_to_file(path: Union[Path, str], content: bytes, mode: int = 0o660
 #   | wait forever.                                                        |
 #   '----------------------------------------------------------------------'
 
-_acquired_locks: Dict[str, int] = {}
+LockDict = Dict[str, int]
+
+# This will hold our path to file descriptor dicts.
+_locks = threading.local()
+
+
+def with_lock_dict(func):
+    """Decorator to make access to global locking dict thread-safe.
+
+    Only the thread which acquired the lock should see the file descriptor in the locking
+    dictionary. In order to do this, the locking dictionary(*) is now an attribute on a
+    threading.local() object, which has to be created at runtime. This decorator handles
+    the creation of these dicts.
+
+    (*) The dict is a mapping from path-name to file descriptor.
+
+    Additionally, this decorator passes the locking dictionary as the first parameter to the
+    functions, which manipulate the locking dictionary.
+    """
+    @functools.wraps(func)
+    def wrapper(*args):
+        if not hasattr(_locks, 'acquired_locks'):
+            _locks.acquired_locks = {}
+        return func(*args, locks=_locks.acquired_locks)
+
+    return wrapper
+
+
+@with_lock_dict
+def _set_lock(
+    name: str,
+    fd: int,
+    locks: LockDict,
+) -> None:
+    locks[name] = fd
+
+
+@with_lock_dict
+def _get_lock(
+    name: str,
+    locks: LockDict,
+) -> Optional[int]:
+    return locks.get(name)
+
+
+@with_lock_dict
+def _del_lock(
+    name: str,
+    locks: LockDict,
+) -> None:
+    locks.pop(name, None)
+
+
+@with_lock_dict
+def _del_all_locks(locks: LockDict) -> None:
+    locks.clear()
+
+
+@with_lock_dict
+def _get_lock_keys(locks: LockDict) -> List[str]:
+    return list(locks.keys())
+
+
+@with_lock_dict
+def _get_lock_map(locks: LockDict) -> Dict[str, int]:
+    return locks
+
+
+@with_lock_dict
+def _has_lock(
+    name: str,
+    locks: LockDict,
+) -> bool:
+    return name in locks
 
 
 @contextmanager
@@ -387,9 +449,9 @@ def aquire_lock(path: Union[Path, str], blocking: bool = True) -> None:
     if have_lock(path):
         return  # No recursive locking
 
-    logger.debug("Try aquire lock on %s", path)
+    logger.debug("Trying to acquire lock on %s", path)
 
-    # Create file (and base dir) for locking if not existant yet
+    # Create file (and base dir) for locking if not existent yet
     makedirs(path.parent, mode=0o770)
 
     fd = os.open(str(path), os.O_RDONLY | os.O_CREAT, 0o660)
@@ -413,7 +475,7 @@ def aquire_lock(path: Union[Path, str], blocking: bool = True) -> None:
         os.close(fd)
         fd = fd_new
 
-    _acquired_locks[str(path)] = fd
+    _set_lock(str(path), fd)
     logger.debug("Got lock on %s", path)
 
 
@@ -442,7 +504,8 @@ def release_lock(path: Union[Path, str]) -> None:
     if not have_lock(path):
         return  # no unlocking needed
     logger.debug("Releasing lock on %s", path)
-    fd = _acquired_locks.get(str(path))
+
+    fd = _get_lock(str(path))
     if fd is None:
         return
     try:
@@ -450,23 +513,20 @@ def release_lock(path: Union[Path, str]) -> None:
     except OSError as e:
         if e.errno != errno.EBADF:  # Bad file number
             raise
-    _acquired_locks.pop(str(path), None)
+    _del_lock(str(path))
     logger.debug("Released lock on %s", path)
 
 
 def have_lock(path: Union[str, Path]) -> bool:
-    if isinstance(path, Path):
-        path = str(path)
-
-    return path in _acquired_locks
+    return _has_lock(str(path))
 
 
 def release_all_locks() -> None:
     logger.debug("Releasing all locks")
-    logger.debug("_acquired_locks: %r", _acquired_locks)
-    for path in list(_acquired_locks.keys()):
+    logger.debug("Acquired locks: %r", _get_lock_map())
+    for path in _get_lock_keys():
         release_lock(path)
-    _acquired_locks.clear()
+    _del_all_locks()
 
 
 @contextmanager

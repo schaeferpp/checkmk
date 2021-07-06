@@ -4,7 +4,7 @@
 # This file is part of Checkmk (https://checkmk.com). It is subject to the terms and
 # conditions defined in the file COPYING, which is part of this source code package.
 
-import pytest  # type: ignore[import]
+import pytest
 
 from cmk.base.plugins.agent_based.cisco_mem_asa import (
     parse_cisco_mem_asa,
@@ -104,7 +104,7 @@ if __name__ == "__main__":
     # Please keep these lines - they make TDD easy and have no effect on normal test runs.
     # Just run this file from your IDE and dive into the code.
     import os
-    from testlib.utils import cmk_path  # type: ignore[import]
+    from testlib.utils import cmk_path
     assert not pytest.main([
         "--doctest-modules",
         os.path.join(cmk_path(), "cmk/base/plugins/agent_based/cisco_mem_asa.py")

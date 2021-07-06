@@ -7,11 +7,11 @@
 # coding=utf-8
 # yapf: disable
 import collections
-from testlib import Check  # type: ignore[import]
+from testlib import Check
 import datetime as dt
 
-import freezegun  # type: ignore[import]
-import pytest  # type: ignore[import]
+import freezegun
+import pytest
 
 from checktestlib import mock_item_state, assertCheckResultsEqual, CheckResult
 

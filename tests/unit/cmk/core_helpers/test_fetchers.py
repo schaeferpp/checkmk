@@ -12,7 +12,7 @@ from collections import namedtuple
 from pathlib import Path
 from typing import Optional
 
-import pytest  # type: ignore[import]
+import pytest
 from pyghmi.exceptions import IpmiException  # type: ignore[import]
 
 import cmk.utils.version as cmk_version
@@ -31,6 +31,7 @@ from cmk.snmplib.type_defs import (
 
 from cmk.core_helpers import FetcherType, snmp
 from cmk.core_helpers.agent import DefaultAgentFileCache, NoCache
+from cmk.core_helpers.cache import MaxAge
 from cmk.core_helpers.ipmi import IPMIFetcher
 from cmk.core_helpers.piggyback import PiggybackFetcher
 from cmk.core_helpers.program import ProgramFetcher
@@ -70,7 +71,7 @@ class TestFileCache:
         return request.param(
             "hostname",
             base_path=Path(os.devnull),
-            max_age=0,
+            max_age=MaxAge.none(),
             disabled=True,
             use_outdated=False,
             simulation=True,
@@ -93,7 +94,7 @@ class TestNoCache:
         return NoCache(
             "hostname",
             base_path=path,
-            max_age=999,
+            max_age=MaxAge(checking=0, discovery=999, inventory=0),
             disabled=False,
             use_outdated=False,
             simulation=False,
@@ -137,7 +138,7 @@ class TestDefaultFileCache_and_SNMPFileCache:
         return request.param(
             "hostname",
             base_path=path,
-            max_age=999,
+            max_age=MaxAge(checking=0, discovery=999, inventory=0),
             disabled=False,
             use_outdated=False,
             simulation=False,
@@ -197,7 +198,7 @@ class TestIPMIFetcher:
         return DefaultAgentFileCache(
             "hostname",
             base_path=Path(os.devnull),
-            max_age=0,
+            max_age=MaxAge.none(),
             disabled=True,
             use_outdated=True,
             simulation=True,
@@ -258,7 +259,7 @@ class TestPiggybackFetcher:
         return NoCache(
             "hostname",
             base_path=Path(os.devnull),
-            max_age=0,
+            max_age=MaxAge.none(),
             disabled=True,
             use_outdated=True,
             simulation=True,
@@ -290,7 +291,7 @@ class TestProgramFetcher:
         return DefaultAgentFileCache(
             "hostname",
             base_path=Path(os.devnull),
-            max_age=0,
+            max_age=MaxAge.none(),
             disabled=True,
             use_outdated=True,
             simulation=True,
@@ -494,7 +495,7 @@ class TestSNMPFetcherDeserialization(ABCTestSNMPFetcher):
         return SNMPFileCache(
             "hostname",
             base_path=Path(os.devnull),
-            max_age=0,
+            max_age=MaxAge.none(),
             disabled=True,
             use_outdated=True,
             simulation=True,
@@ -536,7 +537,7 @@ class TestSNMPFetcherFetch(ABCTestSNMPFetcher):
         return SNMPFileCache(
             "hostname",
             base_path=Path(os.devnull),
-            max_age=0,
+            max_age=MaxAge.none(),
             disabled=True,
             use_outdated=True,
             simulation=False,
@@ -660,7 +661,7 @@ class TestSNMPFetcherFetchCache(ABCTestSNMPFetcher):
         return StubFileCache(
             "hostname",
             base_path=Path(os.devnull),
-            max_age=0,
+            max_age=MaxAge.none(),
             disabled=True,
             use_outdated=True,
             simulation=False,
@@ -695,7 +696,7 @@ class TestTCPFetcher:
         return DefaultAgentFileCache(
             "hostname",
             base_path=Path(os.devnull),
-            max_age=0,
+            max_age=MaxAge.none(),
             disabled=True,
             use_outdated=True,
             simulation=True,
@@ -787,7 +788,7 @@ class TestFetcherCaching:
         return DefaultAgentFileCache(
             "hostname",
             base_path=Path(os.devnull),
-            max_age=0,
+            max_age=MaxAge.none(),
             disabled=True,
             use_outdated=True,
             simulation=False,
@@ -827,14 +828,21 @@ class TestFetcherCaching:
         assert fetcher.file_cache.cache == b"cached_section"
 
 
+_FACTORIES_CLASSES = (
+    (FetcherType.IPMI, IPMIFetcher),
+    (FetcherType.PIGGYBACK, PiggybackFetcher),
+    (FetcherType.PROGRAM, ProgramFetcher),
+    (FetcherType.SNMP, SNMPFetcher),
+    (FetcherType.TCP, TCPFetcher),
+)
+
+
 class TestFetcherType:
-    @pytest.mark.parametrize("factory, cls", (
-        (FetcherType.IPMI, IPMIFetcher),
-        (FetcherType.PIGGYBACK, PiggybackFetcher),
-        (FetcherType.PROGRAM, ProgramFetcher),
-        (FetcherType.SNMP, SNMPFetcher),
-        (FetcherType.TCP, TCPFetcher),
-    ))
+    def test_all_fetchers_tested(self):
+        tested_fetcher_types = {factory for factory, cls in _FACTORIES_CLASSES}
+        assert set(FetcherType) - tested_fetcher_types == {FetcherType.NONE}
+
+    @pytest.mark.parametrize("factory, cls", _FACTORIES_CLASSES)
     def test_factory(self, factory, cls):
         assert factory.make() is cls
         assert factory.from_fetcher(cls) is factory

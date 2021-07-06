@@ -29,7 +29,7 @@ from cmk.utils.diagnostics import (
 import cmk.utils.version as cmk_version
 
 from cmk.gui.i18n import _
-from cmk.gui.globals import html, request as global_request, transactions, response
+from cmk.gui.globals import html, request, transactions, response
 from cmk.gui.exceptions import (
     HTTPRedirect,
     MKUserError,
@@ -91,7 +91,7 @@ class ModeDiagnostics(WatoMode):
     def _from_vars(self) -> None:
         self._checkmk_config_files_map = get_checkmk_config_files_map()
         self._checkmk_log_files_map = get_checkmk_log_files_map()
-        self._collect_dump = bool(html.request.get_ascii_input("_collect_dump"))
+        self._collect_dump = bool(request.get_ascii_input("_collect_dump"))
         self._diagnostics_parameters = self._get_diagnostics_parameters()
         self._job = DiagnosticsDumpBackgroundJob()
 
@@ -373,14 +373,14 @@ class DiagnosticsDumpBackgroundJob(WatoBackgroundJob):
         )
 
     def _back_url(self) -> str:
-        return makeuri(global_request, [])
+        return makeuri(request, [])
 
     def do_execute(self, diagnostics_parameters: DiagnosticsParameters,
                    job_interface: BackgroundProcessInterface) -> None:
         job_interface.send_progress_update(_("Diagnostics dump started..."))
 
         site = diagnostics_parameters["site"]
-        timeout = html.request.request_timeout - 2
+        timeout = request.request_timeout - 2
         result = check_mk_automation(site,
                                      "create-diagnostics-dump",
                                      args=serialize_wato_parameters(diagnostics_parameters),
@@ -392,7 +392,7 @@ class DiagnosticsDumpBackgroundJob(WatoBackgroundJob):
         if result["tarfile_created"]:
             tarfile_path = result['tarfile_path']
             download_url = makeuri_contextless(
-                global_request,
+                request,
                 [("site", site), ("tarfile_name", str(Path(tarfile_path).name))],
                 filename="download_diagnostics_dump.py",
             )
@@ -412,8 +412,8 @@ class PageDownloadDiagnosticsDump(Page):
             raise MKAuthException(
                 _("Sorry, you lack the permission for downloading diagnostics dumps."))
 
-        site = html.request.get_ascii_input_mandatory("site")
-        tarfile_name = html.request.get_ascii_input_mandatory("tarfile_name")
+        site = request.get_ascii_input_mandatory("site")
+        tarfile_name = request.get_ascii_input_mandatory("tarfile_name")
         file_content = self._get_diagnostics_dump_file(site, tarfile_name)
 
         response.set_content_type("application/x-tgz")
@@ -434,11 +434,11 @@ class AutomationDiagnosticsDumpGetFile(AutomationCommand):
     def command_name(self) -> str:
         return "diagnostics-dump-get-file"
 
-    def execute(self, request: str) -> bytes:
-        return _get_diagnostics_dump_file(request)
+    def execute(self, api_request: str) -> bytes:
+        return _get_diagnostics_dump_file(api_request)
 
     def get_request(self) -> str:
-        return html.request.get_ascii_input_mandatory("tarfile_name")
+        return request.get_ascii_input_mandatory("tarfile_name")
 
 
 def _get_diagnostics_dump_file(tarfile_name: str) -> bytes:

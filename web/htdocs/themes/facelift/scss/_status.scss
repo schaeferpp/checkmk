@@ -55,7 +55,7 @@ div.tile {
     height: 100%;
     padding: 0 1px;
 
-    span {
+    span.state_rounded_fill {
       display: flex;
       align-items: center;
       height: calc(100% - 3px);
@@ -64,12 +64,17 @@ div.tile {
   }
 }
 
-td.state span {
+td.state span.state_rounded_fill {
   justify-content: center;
 }
 
-td.hstate span {
+td.hstate span.state_rounded_fill {
   padding: 0 5px;
+
+  &.host {
+    /* align with host names without state background-color */
+    padding: 0 8px;
+  }
 }
 
 /* OK/UP */
@@ -77,6 +82,7 @@ td.hstate span {
 span.content.state0,
 b.state0,
 td.count.state0,
+td.number.state0,
 td.fillbackground.state0,
 .state0 span,
 .hstate0 span {
@@ -96,6 +102,7 @@ td.fillbackground.state0,
 span.content.state1,
 b.state1,
 td.count.state1,
+td.number.state1,
 td.fillbackground.state1,
 .state1 span {
   &,
@@ -110,6 +117,7 @@ td.fillbackground.state1,
 span.content.state2,
 b.state2,
 td.count.state2,
+td.number.state2,
 td.fillbackground.state2,
 .state2 span,
 .hstate1 span {
@@ -125,6 +133,7 @@ td.fillbackground.state2,
 span.content.state3,
 b.state3,
 td.count.state3,
+td.number.state3,
 td.fillbackground.state3,
 .state3 span,
 .hstate2 span {

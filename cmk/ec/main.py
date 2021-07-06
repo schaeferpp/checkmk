@@ -54,6 +54,7 @@ from six import ensure_binary
 import cmk.utils.version as cmk_version
 import cmk.utils.daemon
 import cmk.utils.defines
+from cmk.utils.iterables import partition
 import cmk.utils.log as log
 from cmk.utils.log import VERBOSE
 import cmk.utils.paths
@@ -761,7 +762,7 @@ class EventServer(ECServerThread):
         # http://www.outflux.net/blog/archives/2008/03/09/using-select-on-a-fifo/
         return os.open(str(self.settings.paths.event_pipe.value), os.O_RDWR | os.O_NONBLOCK)
 
-    def handle_snmptrap(self, trap, ipaddress) -> None:
+    def handle_snmptrap(self, trap: Iterable[Tuple[str, str]], ipaddress: str) -> None:
         self.process_event(create_event_from_trap(trap, ipaddress))
 
     def serve(self) -> None:
@@ -1885,31 +1886,21 @@ class EventServer(ECServerThread):
         return new_event
 
 
-def create_event_from_trap(trap: List[Tuple[str, Any]], ipaddress: AnyStr) -> Event:
-    # use the trap-oid as application
-    application = u''
-    for index, (oid, _unused_val) in enumerate(trap):
-        if oid in ['1.3.6.1.6.3.1.1.4.1.0', 'SNMPv2-MIB::snmpTrapOID.0']:
-            # TODO: This modification-while-enumerating is fragile and confusing!
-            application = scrub_and_decode(trap.pop(index)[1])
-            break
-
-    # once we got here we have a real parsed trap which we convert to an event now
-    safe_ipaddress = scrub_and_decode(ipaddress)
-    text = scrub_and_decode(', '.join(['%s: %s' % (item[0], str(item[1])) for item in trap]))
-
-    event: Event = {
+def create_event_from_trap(trap: Iterable[Tuple[str, str]], ipaddress: str) -> Event:
+    # Use the trap OID as the application.
+    trapOIDs, other = partition(
+        lambda binding: binding[0] in ('1.3.6.1.6.3.1.1.4.1.0', 'SNMPv2-MIB::snmpTrapOID.0'), trap)
+    return {
         'time': time.time(),
-        'host': safe_ipaddress,
-        'ipaddress': safe_ipaddress,
+        'host': scrub_and_decode(ipaddress),
+        'ipaddress': scrub_and_decode(ipaddress),
         'priority': 5,  # notice
         'facility': 31,  # not used by syslog -> we use this for all traps
-        'application': application,
-        'text': text,
+        'application': scrub_and_decode(trapOIDs[0][1] if trapOIDs else ''),
+        'text': scrub_and_decode(', '.join(f'{oid}: {value}' for oid, value in other)),
         'core_host': None,
         'host_in_downtime': False,
     }
-    return event
 
 
 class RuleMatcher:
@@ -3551,7 +3542,6 @@ def make_config(config: ConfigFromWATO) -> Config:
 
 def load_configuration(settings: Settings, logger: Logger, slave_status: SlaveStatus) -> Config:
     config = load_config_using(settings)
-
     # If not set by command line, set the log level by configuration
     if settings.options.verbosity == 0:
         levels = config["log_level"]
@@ -3562,12 +3552,7 @@ def load_configuration(settings: Settings, logger: Logger, slave_status: SlaveSt
         logger.getChild("EventStatus").setLevel(levels["cmk.mkeventd.EventStatus"])
         logger.getChild("StatusServer").setLevel(levels["cmk.mkeventd.StatusServer"])
         logger.getChild("lock").setLevel(levels["cmk.mkeventd.lock"])
-
-    if config.get("translate_snmptraps") is True:  # type: ignore[comparison-overlap]
-        config["translate_snmptraps"] = (True, {})  # convert from pre-1.6.0 format
-
-    # Are we a replication slave? Parts of the configuration
-    # will be overridden by values from the master.
+    # Are we a replication slave? Parts of the configuration will be overridden by values from the master.
     update_slave_status(slave_status, settings, config)
     if is_replication_slave(config):
         logger.info("Replication: slave configuration, current mode: %s" % slave_status["mode"])

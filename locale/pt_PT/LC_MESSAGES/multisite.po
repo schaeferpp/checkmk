@@ -1,6 +1,7 @@
 # Copyright (C) 2019 tribe29 GmbH - License: GNU General Public License v2
 # This file is part of Checkmk (https://checkmk.com). It is subject to the terms and
 # conditions defined in the file COPYING, which is part of this source code package.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: Checkmk user interface translation 0.1\n"
@@ -289,13 +290,13 @@ msgstr "% utilizado"
 msgid "%% of %s"
 msgstr "%% de %s"
 
-#, fuzzy, python-format
+#, python-format
 msgid "%%d locked element"
-msgstr "Elemento clone"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "%%d locked elements"
-msgstr "Elemento clone"
+msgstr ""
 
 #, python-format
 msgid "%.1f mm"
@@ -315,7 +316,7 @@ msgid "%H:%M:%S"
 msgstr "%H:%M:%S"
 
 msgid "%Y-%m-%d"
-msgstr "%A-%m-%d"
+msgstr ""
 
 #, python-format
 msgid "%d Filter settings"
@@ -377,13 +378,13 @@ msgstr "%d Werks incompativeis foram confirmados"
 msgid "%d links"
 msgstr "%d links"
 
-#, fuzzy, python-format
+#, python-format
 msgid "%d locked site"
-msgstr "Em locais selecionados"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "%d locked sites"
-msgstr "Em locais selecionados"
+msgstr ""
 
 #, python-format
 msgid "%d of %d connections used"
@@ -434,7 +435,7 @@ msgstr "%d traduções"
 #, python-format
 msgid "%d unacknowledged incompatible werk"
 msgid_plural "%d unacknowledged incompatible werks"
-msgstr[0] "% não reconhecidos incompatíveis"
+msgstr[0] ""
 msgstr[1] ""
 
 msgid "%m-%d"
@@ -1105,13 +1106,6 @@ msgstr "<b>%s até ao final do ano</b>"
 msgid "<b>%s until sunday night</b>"
 msgstr "<b>%s até domingo à noite</b>"
 
-msgid ""
-"<b>Do you really want to rename to following hosts? This involves a restart "
-"of the monitoring core!</b>"
-msgstr ""
-"<b> Você realmente quer renomear para seguir os anfitriões? Isto envolve um "
-"reinício do núcleo de monitoramento!</b>"
-
 msgid "<b>Negate:</b> make rule apply for <b>all but</b> the above entries"
 msgstr ""
 "<b>Negate:</b> faça com que a regra se aplique a <b>tudo mas</b> as entradas "
@@ -1483,10 +1477,6 @@ msgstr ""
 "não reduzir o uso de alguma forma.</p>"
 
 #, python-format
-msgid "<p>Sent notification to: %s</p>"
-msgstr "<p>Notificação enviada para: %s</p>"
-
-#, python-format
 msgid ""
 "<p>The Checkmk Microcore uses Checkmk checker processes to execute the "
 "Checkmk and Checkmk Discovery services of the hosts monitored with Checkmk. "
@@ -1525,7 +1515,7 @@ msgstr ""
 "causar picos de carga quando se tem muitos processos Checkmk helper "
 "configurados.</p>"
 
-#, python-format
+#, fuzzy, python-format
 msgid ""
 "<p>The Checkmk Microcore uses Checkmk fetcher processes to obtain data about "
 "the Checkmk and Checkmk Discovery services of the hosts monitored with "
@@ -1536,12 +1526,12 @@ msgid ""
 "whether or not you can decrease check timeouts</li><li>Check which checks / "
 "plugins are <a href=\"view.py?view_name=service_check_durations\">consuming "
 "most helper process time</a></li><li>Increase the <a href=\"wato.py?"
-"mode=edit_configvar&varname=cmc_cmk_helpers\">number of Checkmk helpers</a></"
-"li></ul></p><p>But you need to be careful that you don't configure too many "
-"Checkmk fetcher helpers, because they consume resources. An additional "
-"problem is that the Checkmk fetchers are initialized in parallel during "
-"startup of the Microcore, which may cause load peaks when having a lot of "
-"Checkmk helper processes configured.</p>"
+"mode=edit_configvar&varname=cmc_fetcher_helpers\">number of Checkmk "
+"fetchers</a></li></ul></p><p>But you need to be careful that you don't "
+"configure too many Checkmk fetcher helpers, because they consume resources. "
+"An additional problem is that the Checkmk fetchers are initialized in "
+"parallel during startup of the Microcore, which may cause load peaks when "
+"having a lot of Checkmk helper processes configured.</p>"
 msgstr ""
 "<p>O Checkmk Microcore utiliza os processos Checkmk fetcher para obter dados "
 "sobre os serviços Checkmk e Checkmk Discovery dos anfitriões monitorizados "
@@ -3757,6 +3747,10 @@ msgstr "Adhoc por %d minutos"
 
 msgid "Admin"
 msgstr "Admin"
+
+#, fuzzy
+msgid "Admin state"
+msgstr "Administrador"
 
 msgid "Admin state (SNMP with 64-bit counters only)"
 msgstr "Estado de administração (SNMP com contadores de 64 bits apenas)"
@@ -6072,6 +6066,10 @@ msgstr "Tabela de disponibilidade"
 
 msgid "Available"
 msgstr "Disponível em"
+
+#, fuzzy
+msgid "Available (missing)"
+msgstr "Variável necessária em falta"
 
 msgid "Available Spare"
 msgstr "Sobressalentes disponíveis"
@@ -8531,6 +8529,10 @@ msgstr "Ligação LDAP alterada %s"
 msgid "Changed alert handler rule %d"
 msgstr "Alteração da regra do manipulador de alertas %d"
 
+#, fuzzy
+msgid "Changed entries"
+msgstr "entradas modificadas"
+
 #, python-format
 msgid "Changed global configuration variable %s to %s."
 msgstr "Alterada a variável de configuração global %s para %s."
@@ -10402,12 +10404,11 @@ msgstr ""
 "correspondências sensíveis a maiúsculas e minúsculas, <tt>!</tt> para "
 "negação e <tt>~~</tt> para correspondências regex."
 
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "Configure the language of the user interface. Feel free to contribute to the "
 "translations on %s."
 msgstr ""
-"Configure aqui o idioma a ser usado pelo usuário na interface do usuário."
 
 msgid ""
 "Configure the maximum number of bytes that is sent to the monitoring site. "
@@ -11140,6 +11141,10 @@ msgid ""
 msgstr ""
 "Não foi possível recarregar o Livestatus Proxy: %s. Veja web.log e "
 "liveproxyd.log para mais informações."
+
+#, fuzzy, python-format
+msgid "Could not render: %r"
+msgstr "Não foi possível salvar as mudanças: %s"
 
 #, python-format
 msgid "Could not save changes: %s"
@@ -14214,6 +14219,10 @@ msgid "Disabled %s are kept in the configuration but are not active."
 msgstr ""
 "Os %s desabilitados são mantidos na configuração, mas não estão ativos."
 
+#, fuzzy
+msgid "Disabled (configured away by admin)"
+msgstr "Desactivar a configuração remota"
+
 msgid "Disabled active checks"
 msgstr "Verificações ativas para deficientes"
 
@@ -14665,6 +14674,10 @@ msgstr "Exibe o conteúdo de um site personalizado."
 
 msgid "Displays the content of a view"
 msgstr "Exibe o conteúdo de uma vista"
+
+#, fuzzy
+msgid "Displays the state of a specific service."
+msgstr "Exibe uma métrica única de um host e serviço específico."
 
 msgid "Dissolve operation"
 msgstr "Operação de dissolução"
@@ -15293,6 +15306,14 @@ msgstr "Você realmente quer mover as regras selecionadas?"
 msgid "Do you really want to remove the package <tt>%s</tt> from your system?"
 msgstr "Você realmente quer remover o pacote <tt>%s</tt> do seu sistema?"
 
+#, fuzzy
+msgid ""
+"Do you really want to rename to following hosts?This involves a restart of "
+"the monitoring core!"
+msgstr ""
+"<b> Você realmente quer renomear para seguir os anfitriões? Isto envolve um "
+"reinício do núcleo de monitoramento!</b>"
+
 msgid ""
 "Do you really want to reset all rule hit counters in <b>all rule packs</b> "
 "to zero?"
@@ -15415,6 +15436,10 @@ msgstr "Não publicar para outros usuários"
 
 msgid "Don't remove matching vanished services"
 msgstr "Não remova serviços desaparecidos correspondentes"
+
+#, fuzzy
+msgid "Don't show Summary"
+msgstr "Não mostrar uma linha de resumo"
 
 msgid "Don't show and check"
 msgstr "Não mostrar e verificar"
@@ -19060,6 +19085,10 @@ msgstr "Gráfico de Previsão"
 msgid "Forecast Model Configuration"
 msgstr "Configuração do Modelo de Previsão"
 
+#, fuzzy
+msgid "Forecast Parametrization"
+msgstr "Previsão da parametrização do modelo"
+
 msgid "Forecast Trend (Slow)"
 msgstr "Tendência Prevista (Lenta)"
 
@@ -19987,7 +20016,7 @@ msgstr "HTTP"
 
 #, python-format
 msgid "HTTP %s errors"
-msgstr "Erros HTTP"
+msgstr ""
 
 msgid "HTTP 3/4/5XX Errors"
 msgstr "Erros HTTP 3/4/5XX"
@@ -24671,6 +24700,10 @@ msgid "InfluxDB connections"
 msgstr "Conexões ociosas"
 
 #, fuzzy
+msgid "InfluxDB instance"
+msgstr "instâncias do BD"
+
+#, fuzzy
 msgid "InfluxDB service rules"
 msgstr "Excluir grupos de serviços"
 
@@ -26273,7 +26306,7 @@ msgstr "A última verificação de serviço não é suficientemente recente"
 
 #, python-format
 msgid "Last successful sync %d seconds ago."
-msgstr "Última sincronização bem sucedida há alguns segundos."
+msgstr ""
 
 msgid "Last synchronization result"
 msgstr "Último resultado da sincronização"
@@ -28598,6 +28631,19 @@ msgstr "Mapa auto encolhimento status"
 msgid "Map channel state to service state"
 msgstr "Mapa de canal estado a estado de serviço"
 
+#, fuzzy
+msgid "Map combinations of operational and admin state"
+msgstr "Mapa estados operacionais"
+
+msgid ""
+"Map combinations of the operational state (<tt>ifOperStatus</tt>) and the "
+"admin state (<tt>ifAdminStatus</tt>) to a monitoring state. Here, you can "
+"for example configure that an interface which is down <i>and</i> admin down "
+"should be considered OK. Such a setting will only apply to interfaces "
+"matching the operational <i>and</i> the admin state. For example, an "
+"interface which is down but admin up would not be affected. "
+msgstr ""
+
 msgid "Map data relating to VMs"
 msgstr "Dados do mapa relativos aos VMs"
 
@@ -28631,6 +28677,10 @@ msgstr "Mapear os estados do sistema para monitorar os estados"
 
 msgid "Map mount point names"
 msgstr "Nomes dos pontos de montagem no mapa"
+
+#, fuzzy
+msgid "Map operational and admin state independently"
+msgstr "Mapa estados operacionais"
 
 msgid "Map operational states"
 msgstr "Mapa estados operacionais"
@@ -28677,6 +28727,10 @@ msgid "Mapping of LED color to monitoring state"
 msgstr "Mapeamento da cor do LED para o estado de monitoramento"
 
 msgid "Mapping of MTree state to monitoring state"
+msgstr "Mapeamento do estado de MTree para o estado de monitoramento"
+
+#, fuzzy
+msgid "Mapping of operational and admin state to monitoring state"
 msgstr "Mapeamento do estado de MTree para o estado de monitoramento"
 
 msgid "March"
@@ -29855,6 +29909,10 @@ msgstr "Dados de previsão em falta."
 
 msgid "Missing render parameter"
 msgstr "Parâmetro de renderização em falta"
+
+#, fuzzy
+msgid "Missing required context information"
+msgstr "Informações de contato do serviço"
 
 #, python-format
 msgid "Missing required key(s): %s"
@@ -31092,6 +31150,10 @@ msgstr "Novo gráfico personalizado..."
 
 msgid "New element"
 msgstr "Novo elemento"
+
+#, fuzzy
+msgid "New entries"
+msgstr "entradas novas"
 
 msgid "New event created"
 msgstr "Novo evento criado"
@@ -34662,7 +34724,7 @@ msgstr "Porcentagem %s"
 
 #, python-format
 msgid "Percentage %s Requests"
-msgstr "Porcentagem de pedidos"
+msgstr ""
 
 #, python-format
 msgid "Percentage %s space"
@@ -34805,7 +34867,7 @@ msgstr "Níveis percentuais para taxas de erro"
 
 #, python-format
 msgid "Percentual levels for free %s"
-msgstr "Níveis percentuais para as % livres"
+msgstr ""
 
 msgid "Percentual levels for unused licenses"
 msgstr "Níveis percentuais para licenças não utilizadas"
@@ -35235,6 +35297,9 @@ msgstr "Por favor, acrescente pelo menos um nó de criança."
 msgid "Please add at least one column to your view."
 msgstr "Por favor, adicione pelo menos uma coluna à sua vista."
 
+msgid "Please add the hostname here, eg. my_influxdb.com."
+msgstr ""
+
 msgid "Please check one metric you want to apply a transformation"
 msgstr ""
 "Por favor, verifique uma métrica que você deseja aplicar uma transformação"
@@ -35468,9 +35533,10 @@ msgstr ""
 msgid "Please provide a valid name"
 msgstr "Por favor, forneça um nome válido"
 
+#, fuzzy
 msgid ""
-"Please refer to the [cms_dashboards#host_problems|Checkmk user guide] for "
-"more details."
+"Please refer to the [dashboards#host_problems|Checkmk user guide] for more "
+"details."
 msgstr ""
 "Por favor consulte o [cms_dashboards#host_problems|Checkmk user guide] para "
 "mais detalhes."
@@ -35850,10 +35916,6 @@ msgstr "Índice de portos ou 'Total'."
 
 msgid "Port number"
 msgstr "Número da porta"
-
-#, fuzzy
-msgid "Port number for HTTPS connection to InfluxDB."
-msgstr "Número de porta para conexão HTTPS à vSphere"
 
 msgid "Port number for HTTPS connection to vSphere"
 msgstr "Número de porta para conexão HTTPS à vSphere"
@@ -39559,6 +39621,14 @@ msgstr "Segundos para esperar entre o envio do fio e a votação para resposta"
 msgid "Section"
 msgstr "Secção"
 
+#, fuzzy
+msgid "Section Content"
+msgstr "Nome da seção"
+
+#, fuzzy
+msgid "Section Name"
+msgstr "Nome da seção"
+
 msgid "Section name"
 msgstr "Nome da seção"
 
@@ -39907,6 +39977,10 @@ msgstr "Sensores"
 msgid "Sent"
 msgstr "Enviado para"
 
+#, fuzzy, python-format
+msgid "Sent notification to: %s"
+msgstr "<p>Notificação enviada para: %s</p>"
+
 msgid "Sent vs Received Traffic Breakdown"
 msgstr "Distribuição do Tráfego Enviado vs Recebido"
 
@@ -40048,6 +40122,10 @@ msgstr "Serviço Regex:"
 
 msgid "Service Speed-O-Meter"
 msgstr "Medidor de Velocidade de Serviço"
+
+#, fuzzy
+msgid "Service State"
+msgstr "Estado de serviço"
 
 msgid "Service Status Grouping"
 msgstr "Agrupamento do status do serviço"
@@ -41238,6 +41316,10 @@ msgstr "Mostrar espaço reservado para o usuário <tt>root</tt>"
 
 msgid "Show stale hosts and services"
 msgstr "Mostrar hospedeiros e serviços obsoletos"
+
+#, fuzzy
+msgid "Show summary for not OK states"
+msgstr "Resumo das notificações do anfitrião"
 
 msgid ""
 "Show the dialog that can be used to update the dashboard context on initial "
@@ -47567,7 +47649,8 @@ msgstr ""
 "Os detalhes do nó podem ser exibidos tanto no host consultado quanto no nó "
 "Graylog."
 
-msgid "The notification has been sent via<br>"
+#, fuzzy
+msgid "The notification has been sent via"
 msgstr "A notificação foi enviada via<br>"
 
 msgid "The notification is being processed"
@@ -53328,6 +53411,10 @@ msgstr "Cores da linha do tempo:"
 msgid "Timeline of"
 msgstr "Linha do tempo de"
 
+#, fuzzy, python-format
+msgid "Timeline of %s"
+msgstr "Linha do tempo de"
+
 msgid "Timemachine backup age"
 msgstr "Era de backup da Timemachine"
 
@@ -54415,10 +54502,6 @@ msgstr "Prefixo URL para links para Checkmk"
 msgid "URL to HiveManagerNG, e.g. https://cloud.aerohive.com"
 msgstr "URL para HiveManagerNG, por exemplo https://cloud.aerohive.com"
 
-#, fuzzy
-msgid "URL to InfluxDB, e.g. https://my_influxdb.com"
-msgstr "URL para HiveManagerNG, por exemplo https://cloud.aerohive.com"
-
 msgid ""
 "URL to access the central site from the remote site, including the protocol "
 "(<tt>http://</tt> or <tt>https://</tt>) and </tt>/check_mk/</tt>. In case of "
@@ -54589,11 +54672,11 @@ msgstr ""
 "Incapaz de se conectar a exemplo %s. Por favor verifique as credenciais em "
 "Global Settings."
 
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "Unable to convert configuration into 2.0 format\n"
 "%s"
-msgstr "Inventariar a informação de configuração da rede"
+msgstr ""
 
 msgid "Unable to create parent folder(s)."
 msgstr "Impossível criar a(s) pasta(s) mãe(s)."
@@ -54753,8 +54836,6 @@ msgid ""
 "Unable to transform dashlet %d of dashboard %s: the dashlet is using "
 "\"urlfunc\" which can not be converted automatically."
 msgstr ""
-"Incapaz de transformar dashlet %d do painel de instrumentos %d: o dashlet "
-"está usando \"urlfunc\" que não pode ser convertido automaticamente."
 
 #, python-format
 msgid "Unable to upload icon: %s"
@@ -56908,6 +56989,10 @@ msgstr "Valores a serem buscados neste dispositivo"
 
 msgid "Vanished"
 msgstr "Desapareceu"
+
+#, fuzzy
+msgid "Vanished (checked, but no longer exist)"
+msgstr "Serviços desaparecidos (monitorados, mas que já não existem)"
 
 msgid "Vanished clustered services (located on cluster host)"
 msgstr "Serviços em cluster desaparecidos (localizados em cluster host)"
@@ -60414,6 +60499,11 @@ msgstr ""
 "um serviço não serão prestados. Se vários padrões corresponderem a um "
 "serviço, o serviço será adicionado ao primeiro grupo correspondente."
 
+msgid ""
+"You can use this ruleset to exclude or include the metrics of specific "
+"services."
+msgstr ""
+
 #, python-format
 msgid ""
 "You can use, modify and distribute Check_MK under the terms of the <a href="
@@ -61430,12 +61520,6 @@ msgstr "especificação do cartucho"
 msgid "change the state"
 msgstr "alterar o estado"
 
-msgid "changed"
-msgstr "alterado"
-
-msgid "changed entries"
-msgstr "entradas modificadas"
-
 msgid "check plugins"
 msgstr "plugins de verificação"
 
@@ -62281,12 +62365,6 @@ msgstr "n/d"
 msgid "negate"
 msgstr "negar"
 
-msgid "new"
-msgstr "novo"
-
-msgid "new entries"
-msgstr "entradas novas"
-
 msgid "new host name"
 msgstr "novo nome de anfitrião"
 
@@ -62895,6 +62973,10 @@ msgstr "vezes o desvio padrão abaixo do valor previsto"
 msgid "to"
 msgstr "para"
 
+#, python-format
+msgid "to %d of %d recipients"
+msgstr ""
+
 msgid "to port:"
 msgstr "ao porto:"
 
@@ -63099,6 +63181,20 @@ msgstr "z/OS"
 msgid "© 2020 tribe29 GmbH. All Rights Reserved."
 msgstr "© 2020 tribe29 GmbH. Todos os direitos reservados."
 
+#~ msgid "changed"
+#~ msgstr "alterado"
+
+#~ msgid "new"
+#~ msgstr "novo"
+
+#, fuzzy
+#~ msgid "Port number for HTTPS connection to InfluxDB."
+#~ msgstr "Número de porta para conexão HTTPS à vSphere"
+
+#, fuzzy
+#~ msgid "URL to InfluxDB, e.g. https://my_influxdb.com"
+#~ msgstr "URL para HiveManagerNG, por exemplo https://cloud.aerohive.com"
+
 #~ msgid "Unsupported context type '%s'"
 #~ msgstr "Contexto não suportado tipo '%s"
 
@@ -63134,21 +63230,6 @@ msgstr "© 2020 tribe29 GmbH. Todos os direitos reservados."
 
 #~ msgid "Full service scan"
 #~ msgstr "Serviço completo de varredura"
-
-#, fuzzy
-#~| msgid "%s notifications"
-#~ msgid "Notifications today"
-#~ msgstr "%s notificações"
-
-#, fuzzy
-#~| msgid "%s alerts"
-#~ msgid "Top alerters (last 7 days)"
-#~ msgstr "%s alertas"
-
-#~ msgid "%d site is not connected"
-#~ msgid_plural "%d sites are not connected"
-#~ msgstr[0] "$d site não conectado"
-#~ msgstr[1] "$d sites não conectados"
 
 #~ msgid "%s alerts"
 #~ msgstr "%s alertas"

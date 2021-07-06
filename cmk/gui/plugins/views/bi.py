@@ -8,7 +8,7 @@ from typing import Optional, Type
 
 from cmk.utils.defines import short_service_state_name
 
-import cmk.gui.escaping as escaping
+import cmk.gui.utils.escaping as escaping
 import cmk.gui.bi as bi
 from cmk.gui.valuespec import DropdownChoice
 from cmk.gui.htmllib import HTML
@@ -266,7 +266,7 @@ def _paint_aggr_state_short(state, assumed=False):
     classes = "state svcstate state%s" % state["state"]
     if assumed:
         classes += " assumed"
-    return classes, html.render_span(name)
+    return classes, html.render_span(name, class_=["state_rounded_fill"])
 
 
 @painter_registry.register

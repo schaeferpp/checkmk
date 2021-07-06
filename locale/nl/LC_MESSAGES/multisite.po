@@ -1,13 +1,14 @@
 # Copyright (C) 2019 tribe29 GmbH - License: GNU General Public License v2
 # This file is part of Checkmk (https://checkmk.com). It is subject to the terms and
 # conditions defined in the file COPYING, which is part of this source code package.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: Checkmk user interface translation 0.1\n"
 "Report-Msgid-Bugs-To: feedback@checkmk.com\n"
 "POT-Creation-Date: 2011-05-13 09:42+0200\n"
-"PO-Revision-Date: 2021-05-19 06:00+0000\n"
-"Last-Translator: Weblate Admin <marketing@tribe29.com>\n"
+"PO-Revision-Date: 2021-06-16 06:00+0000\n"
+"Last-Translator: Louis Wevers <louis@wevers.tv>\n"
 "Language-Team: Dutch <https://translate.checkmk.com/projects/checkmk/"
 "software/nl/>\n"
 "Language: nl\n"
@@ -290,13 +291,13 @@ msgstr "% gebruikt"
 msgid "%% of %s"
 msgstr "%% van %s"
 
-#, fuzzy, python-format
+#, python-format
 msgid "%%d locked element"
-msgstr "Kloon element"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "%%d locked elements"
-msgstr "Kloon element"
+msgstr ""
 
 #, python-format
 msgid "%.1f mm"
@@ -378,13 +379,13 @@ msgstr "%d incompatibele Werks zijn bevestigd."
 msgid "%d links"
 msgstr "%d links"
 
-#, fuzzy, python-format
+#, python-format
 msgid "%d locked site"
-msgstr "Op geselecteerde plaatsen"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "%d locked sites"
-msgstr "Op geselecteerde plaatsen"
+msgstr ""
 
 #, python-format
 msgid "%d of %d connections used"
@@ -1108,13 +1109,6 @@ msgstr "<b>%s tot einde van het jaar</b>"
 msgid "<b>%s until sunday night</b>"
 msgstr "<b>%s tot zondag nacht</b>"
 
-msgid ""
-"<b>Do you really want to rename to following hosts? This involves a restart "
-"of the monitoring core!</b>"
-msgstr ""
-"<b>Wilt U echt deze hosts hernoemen? Hiervoor wordt automatisch de "
-"monitoring core herstart!</b>"
-
 msgid "<b>Negate:</b> make rule apply for <b>all but</b> the above entries"
 msgstr ""
 "<b>Sluit uit:</b> pas de regel toe voor <b>alles behalve</b> de bovenstaande "
@@ -1144,6 +1138,11 @@ msgid ""
 "settings to <i>enforce</i>, Checkmk will expect encrypted data from all "
 "matching hosts. Please keep this in mind when configuring this ruleset."
 msgstr ""
+"<b>Opmerking</b>: Aan de kant van de agent, wordt deze encryptie alleen "
+"ondersteund door de Linux agent en de Windows agent. Echter, indien de "
+"encryptie instellingen op <i>enforce</i> gezet worden, dan verwacht Checkmk "
+"versleutelde gegevens van alle hosts die aan de selectiecriteria voldoen. "
+"Houdt dit in het achterhoofd bij het configureren van deze set regels."
 
 msgid ""
 "<b>Note</b>: Real-time check data is encrypted by default. Hence, an "
@@ -1229,7 +1228,7 @@ msgstr "<b>U heeft geen rollen.</b>"
 
 #, python-format
 msgid "<b>acknowledge the problems%s</b> of"
-msgstr "<b>de problemen te kennen</b> van"
+msgstr ""
 
 msgid "<b>add a comment to</b>"
 msgstr "<b>een reactie toevoegen aan</b>"
@@ -1485,10 +1484,6 @@ msgstr ""
 "u het gebruik op de een of andere manier kunt verminderen.</p>"
 
 #, python-format
-msgid "<p>Sent notification to: %s</p>"
-msgstr "<p>Verzonden bericht naar: %s</p>"
-
-#, python-format
 msgid ""
 "<p>The Checkmk Microcore uses Checkmk checker processes to execute the "
 "Checkmk and Checkmk Discovery services of the hosts monitored with Checkmk. "
@@ -1526,7 +1521,7 @@ msgstr ""
 "de belasting kan veroorzaken als er veel Checkmk helper processen zijn "
 "geconfigureerd.</p>"
 
-#, python-format
+#, fuzzy, python-format
 msgid ""
 "<p>The Checkmk Microcore uses Checkmk fetcher processes to obtain data about "
 "the Checkmk and Checkmk Discovery services of the hosts monitored with "
@@ -1537,12 +1532,12 @@ msgid ""
 "whether or not you can decrease check timeouts</li><li>Check which checks / "
 "plugins are <a href=\"view.py?view_name=service_check_durations\">consuming "
 "most helper process time</a></li><li>Increase the <a href=\"wato.py?"
-"mode=edit_configvar&varname=cmc_cmk_helpers\">number of Checkmk helpers</a></"
-"li></ul></p><p>But you need to be careful that you don't configure too many "
-"Checkmk fetcher helpers, because they consume resources. An additional "
-"problem is that the Checkmk fetchers are initialized in parallel during "
-"startup of the Microcore, which may cause load peaks when having a lot of "
-"Checkmk helper processes configured.</p>"
+"mode=edit_configvar&varname=cmc_fetcher_helpers\">number of Checkmk "
+"fetchers</a></li></ul></p><p>But you need to be careful that you don't "
+"configure too many Checkmk fetcher helpers, because they consume resources. "
+"An additional problem is that the Checkmk fetchers are initialized in "
+"parallel during startup of the Microcore, which may cause load peaks when "
+"having a lot of Checkmk helper processes configured.</p>"
 msgstr ""
 "<p>De Checkmk Microcore gebruikt Checkmk fetcher processen om gegevens te "
 "verkrijgen over de Checkmk en Checkmk Discovery services van de hosts die "
@@ -3754,6 +3749,10 @@ msgstr "Adhoc voor %d minuten"
 
 msgid "Admin"
 msgstr "Admin"
+
+#, fuzzy
+msgid "Admin state"
+msgstr "Beheerder"
 
 msgid "Admin state (SNMP with 64-bit counters only)"
 msgstr "Admin status (alleen SNMP met 64-bit tellers)"
@@ -6065,6 +6064,10 @@ msgstr "Beschikbaarheidstabel"
 
 msgid "Available"
 msgstr "Beschikbaar"
+
+#, fuzzy
+msgid "Available (missing)"
+msgstr "Needed variable missing"
 
 msgid "Available Spare"
 msgstr "Beschikbare reserve"
@@ -8518,6 +8521,10 @@ msgstr "Gewijzigde LDAP-verbinding %s"
 msgid "Changed alert handler rule %d"
 msgstr "Waarschuwings afhandel regel %d veranderd"
 
+#, fuzzy
+msgid "Changed entries"
+msgstr "gewijzigde vermeldingen"
+
 #, python-format
 msgid "Changed global configuration variable %s to %s."
 msgstr "Veranderde globale configuratie variabele %s in %s."
@@ -10386,13 +10393,11 @@ msgstr ""
 "hoofdlettergevoelige overeenkomsten, <tt>!</tt> voor negatie en <tt>~</tt> "
 "voor regex overeenkomsten."
 
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "Configure the language of the user interface. Feel free to contribute to the "
 "translations on %s."
 msgstr ""
-"Configureer hier de taal die door de gebruiker in de gebruikersinterface "
-"moet worden gebruikt."
 
 msgid ""
 "Configure the maximum number of bytes that is sent to the monitoring site. "
@@ -10722,9 +10727,8 @@ msgstr "Overweeg perioden van flappentoestanden"
 msgid "Consider state of Archivelogmode: "
 msgstr "Bekijk de toestand van Archivelogmode: "
 
-#, fuzzy
 msgid "Consider the input states during discovery to be OK"
-msgstr "Negeer poorttypes tijdens het zoeken"
+msgstr "Neem aan dat de invoer status tijdens ontdekking OK is"
 
 msgid "Consider the state of the job"
 msgstr "Denk aan de toestand van de baan"
@@ -10904,9 +10908,8 @@ msgstr "Doorgaan met tellen wanneer gebeurtenis <b>erkend</b> is"
 msgid "Continue search"
 msgstr "Zoek verder"
 
-#, fuzzy
 msgid "Control encryption of data sent from agents to Checkmk."
-msgstr "Controle encryptie van gegevens verzonden van agent naar host."
+msgstr "Controle encryptie van gegevens verzonden van agent naar Checkmk."
 
 msgid "Control group:"
 msgstr "Controlegroep:"
@@ -11126,6 +11129,10 @@ msgid ""
 msgstr ""
 "Kon Livestatus Proxy niet herladen: %s. Zie web.log en liveproxyd.log voor "
 "meer informatie."
+
+#, fuzzy, python-format
+msgid "Could not render: %r"
+msgstr "Kon wijzigingen niet opslaan: %s"
 
 #, python-format
 msgid "Could not save changes: %s"
@@ -12046,9 +12053,8 @@ msgstr "Aangepaste samenvatting van incidenten voor hostwaarschuwingen"
 msgid "Custom incident summary for service alerts"
 msgstr "Aangepaste samenvatting van incidenten voor servicewaarschuwingen"
 
-#, fuzzy
 msgid "Custom input state mapping"
-msgstr "Klantnaam ontbreekt"
+msgstr "Aangepaste invoer status mapping"
 
 msgid "Custom integrations"
 msgstr "Aangepaste integraties"
@@ -14192,7 +14198,10 @@ msgstr "Uitgeschakeld "
 #, python-format
 msgid "Disabled %s are kept in the configuration but are not active."
 msgstr ""
-"Uitgeschakelde %'s worden in de configuratie bewaard, maar zijn niet actief."
+
+#, fuzzy
+msgid "Disabled (configured away by admin)"
+msgstr "Externe configuratie uitschakelen"
 
 msgid "Disabled active checks"
 msgstr "Uitgeschakelde actieve controles"
@@ -14647,6 +14656,10 @@ msgstr "Toont de inhoud van een aangepaste website."
 
 msgid "Displays the content of a view"
 msgstr "Geeft de inhoud van een view weer"
+
+#, fuzzy
+msgid "Displays the state of a specific service."
+msgstr "Geeft een enkele metric weer van een specifieke host en service."
 
 msgid "Dissolve operation"
 msgstr "Oplossen"
@@ -15279,6 +15292,14 @@ msgstr "Wilt u echt de geselecteerde regels verplaatsen?"
 msgid "Do you really want to remove the package <tt>%s</tt> from your system?"
 msgstr "Wilt u echt het pakket <tt>%s</tt> van uw systeem verwijderen?"
 
+#, fuzzy
+msgid ""
+"Do you really want to rename to following hosts?This involves a restart of "
+"the monitoring core!"
+msgstr ""
+"<b>Wilt U echt deze hosts hernoemen? Hiervoor wordt automatisch de "
+"monitoring core herstart!</b>"
+
 msgid ""
 "Do you really want to reset all rule hit counters in <b>all rule packs</b> "
 "to zero?"
@@ -15400,6 +15421,10 @@ msgstr "Niet publiceren naar andere gebruikers"
 
 msgid "Don't remove matching vanished services"
 msgstr "Verwijder niet overeenkomende verdwenen diensten"
+
+#, fuzzy
+msgid "Don't show Summary"
+msgstr "Geen samenvattingsregel tonen"
 
 msgid "Don't show and check"
 msgstr "Laat je niet zien en controleer"
@@ -19051,6 +19076,10 @@ msgstr "Voorspellingsgrafiek"
 
 msgid "Forecast Model Configuration"
 msgstr "Configuratie prognosemodel"
+
+#, fuzzy
+msgid "Forecast Parametrization"
+msgstr "Voorspellingsmodel parametrisering"
 
 msgid "Forecast Trend (Slow)"
 msgstr "Verwachte trend (traag)"
@@ -24664,6 +24693,10 @@ msgid "InfluxDB connections"
 msgstr "Onbelaste verbindingen"
 
 #, fuzzy
+msgid "InfluxDB instance"
+msgstr "DB-instanties"
+
+#, fuzzy
 msgid "InfluxDB service rules"
 msgstr "Dienstengroepen uitsluiten"
 
@@ -28582,6 +28615,19 @@ msgstr "Kaart automatisch krimpen status"
 msgid "Map channel state to service state"
 msgstr "Map kanaal toestand naar dienst toestand"
 
+#, fuzzy
+msgid "Map combinations of operational and admin state"
+msgstr "Kaart operationele staten"
+
+msgid ""
+"Map combinations of the operational state (<tt>ifOperStatus</tt>) and the "
+"admin state (<tt>ifAdminStatus</tt>) to a monitoring state. Here, you can "
+"for example configure that an interface which is down <i>and</i> admin down "
+"should be considered OK. Such a setting will only apply to interfaces "
+"matching the operational <i>and</i> the admin state. For example, an "
+"interface which is down but admin up would not be affected. "
+msgstr ""
+
 msgid "Map data relating to VMs"
 msgstr "Kaartgegevens met betrekking tot VM's"
 
@@ -28615,6 +28661,10 @@ msgstr "Map systemd states naar monitoring states"
 
 msgid "Map mount point names"
 msgstr "Map mount punt namen"
+
+#, fuzzy
+msgid "Map operational and admin state independently"
+msgstr "Kaart operationele staten"
 
 msgid "Map operational states"
 msgstr "Kaart operationele staten"
@@ -28660,6 +28710,10 @@ msgid "Mapping of LED color to monitoring state"
 msgstr "In kaart brengen van LED-kleur naar bewakingstoestand"
 
 msgid "Mapping of MTree state to monitoring state"
+msgstr "Mapping van MTree-status naar bewakingstoestand"
+
+#, fuzzy
+msgid "Mapping of operational and admin state to monitoring state"
 msgstr "Mapping van MTree-status naar bewakingstoestand"
 
 msgid "March"
@@ -29836,6 +29890,10 @@ msgstr "Ontbrekende voorspellingsgegevens."
 
 msgid "Missing render parameter"
 msgstr "Ontbrekende render parameter"
+
+#, fuzzy
+msgid "Missing required context information"
+msgstr "Contactinformatie dienst"
 
 #, python-format
 msgid "Missing required key(s): %s"
@@ -31067,6 +31125,10 @@ msgstr "Nieuwe aangepaste grafiek..."
 
 msgid "New element"
 msgstr "Nieuw element"
+
+#, fuzzy
+msgid "New entries"
+msgstr "nieuwe inzendingen"
 
 msgid "New event created"
 msgstr "Nieuw evenement gecreëerd"
@@ -35210,6 +35272,9 @@ msgstr "Voeg ten minste één kindknooppunt toe."
 msgid "Please add at least one column to your view."
 msgstr "Voeg ten minste één kolom toe aan je uitzicht."
 
+msgid "Please add the hostname here, eg. my_influxdb.com."
+msgstr ""
+
 msgid "Please check one metric you want to apply a transformation"
 msgstr "Gelieve een metriek aan te vinken die u wilt omvormen"
 
@@ -35435,9 +35500,10 @@ msgstr ""
 msgid "Please provide a valid name"
 msgstr "Geef een geldige naam"
 
+#, fuzzy
 msgid ""
-"Please refer to the [cms_dashboards#host_problems|Checkmk user guide] for "
-"more details."
+"Please refer to the [dashboards#host_problems|Checkmk user guide] for more "
+"details."
 msgstr ""
 "Raadpleeg de [cms_dashboards#host_problems|Checkmk user guide] voor meer "
 "details."
@@ -35812,10 +35878,6 @@ msgstr "Havenindex of \"Totaal"
 
 msgid "Port number"
 msgstr "Poortnummer"
-
-#, fuzzy
-msgid "Port number for HTTPS connection to InfluxDB."
-msgstr "Poortnummer voor HTTPS-verbinding met vSphere"
 
 msgid "Port number for HTTPS connection to vSphere"
 msgstr "Poortnummer voor HTTPS-verbinding met vSphere"
@@ -39511,6 +39573,14 @@ msgstr ""
 msgid "Section"
 msgstr "Sectie"
 
+#, fuzzy
+msgid "Section Content"
+msgstr "Naam van de sectie"
+
+#, fuzzy
+msgid "Section Name"
+msgstr "Naam van de sectie"
+
 msgid "Section name"
 msgstr "Naam van de sectie"
 
@@ -39864,6 +39934,10 @@ msgstr "Sensoren"
 msgid "Sent"
 msgstr "Verzonden"
 
+#, fuzzy, python-format
+msgid "Sent notification to: %s"
+msgstr "<p>Verzonden bericht naar: %s</p>"
+
 msgid "Sent vs Received Traffic Breakdown"
 msgstr "Verzonden vs ontvangen verkeer Breakdown"
 
@@ -40005,6 +40079,10 @@ msgstr "Service Regex:"
 
 msgid "Service Speed-O-Meter"
 msgstr "Service Snelheids-O-Meter"
+
+#, fuzzy
+msgid "Service State"
+msgstr "Dienststaat"
 
 msgid "Service Status Grouping"
 msgstr "Groepering van dienstverleningsstatussen"
@@ -41201,6 +41279,10 @@ msgstr "Toon ruimte gereserveerd voor de <tt>root</tt> gebruiker"
 
 msgid "Show stale hosts and services"
 msgstr "Toon verouderde hosts en diensten"
+
+#, fuzzy
+msgid "Show summary for not OK states"
+msgstr "Samenvatting voor hostmeldingen"
 
 msgid ""
 "Show the dialog that can be used to update the dashboard context on initial "
@@ -47546,7 +47628,8 @@ msgstr ""
 "De details van het knooppunt kunnen zowel op de opgevraagde host als op het "
 "Graylog knooppunt worden weergegeven."
 
-msgid "The notification has been sent via<br>"
+#, fuzzy
+msgid "The notification has been sent via"
 msgstr "De kennisgeving is verstuurd via<br>"
 
 msgid "The notification is being processed"
@@ -53349,6 +53432,10 @@ msgstr "Tijdlijn kleuren:"
 msgid "Timeline of"
 msgstr "Tijdlijn van"
 
+#, fuzzy, python-format
+msgid "Timeline of %s"
+msgstr "Tijdlijn van"
+
 msgid "Timemachine backup age"
 msgstr "Timemachine back-up leeftijd"
 
@@ -54442,10 +54529,6 @@ msgstr "URL prefix voor links naar Checkmk"
 msgid "URL to HiveManagerNG, e.g. https://cloud.aerohive.com"
 msgstr "URL naar HiveManagerNG, b.v. https://cloud.aerohive.com"
 
-#, fuzzy
-msgid "URL to InfluxDB, e.g. https://my_influxdb.com"
-msgstr "URL naar HiveManagerNG, b.v. https://cloud.aerohive.com"
-
 msgid ""
 "URL to access the central site from the remote site, including the protocol "
 "(<tt>http://</tt> or <tt>https://</tt>) and </tt>/check_mk/</tt>. In case of "
@@ -54617,11 +54700,11 @@ msgstr ""
 "Kan geen verbinding maken met instantie %s. Controleer de credentials onder "
 "Global Settings."
 
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "Unable to convert configuration into 2.0 format\n"
 "%s"
-msgstr "Inventariseer netwerk configuratie informatie"
+msgstr ""
 
 msgid "Unable to create parent folder(s)."
 msgstr "Kan geen bovenliggende map(pen) aanmaken."
@@ -56938,6 +57021,10 @@ msgstr "Waarden af te halen van dit apparaat"
 
 msgid "Vanished"
 msgstr "Verdwenen"
+
+#, fuzzy
+msgid "Vanished (checked, but no longer exist)"
+msgstr "Verdwenen diensten (gecontroleerd, maar bestaan niet meer)"
 
 msgid "Vanished clustered services (located on cluster host)"
 msgstr "Verdwenen geclusterde diensten (gelokaliseerd op cluster host)"
@@ -59852,9 +59939,6 @@ msgid ""
 "will be sorted first. Topics with the same number will be sorted "
 "alphabetically."
 msgstr ""
-"U kunt de volgorde van de %'s aanpassen door dit getal te veranderen. Lagere "
-"nummers worden eerst gesorteerd. Onderwerpen met hetzelfde nummer worden "
-"alfabetisch gesorteerd."
 
 msgid ""
 "You can customize the order of the topics by changing this number. Lower "
@@ -60460,6 +60544,11 @@ msgstr ""
 "overeenkomen met een dienst, zal de dienst worden toegevoegd aan de eerste "
 "overeenkomende groep."
 
+msgid ""
+"You can use this ruleset to exclude or include the metrics of specific "
+"services."
+msgstr ""
+
 #, python-format
 msgid ""
 "You can use, modify and distribute Check_MK under the terms of the <a href="
@@ -60634,7 +60723,6 @@ msgstr "Je hebt niet het recht om hosts te hernoemen"
 #, python-format
 msgid "You have %d <a href=\"%s\">rules</a> for deploying the update plugin"
 msgstr ""
-"U heeft <a href=\"%s\">regels</a> voor het implementeren van de update plugin"
 
 #, python-format
 msgid "You have %d baked agents containing the update plugin"
@@ -61475,12 +61563,6 @@ msgstr "cartridge specificatie"
 
 msgid "change the state"
 msgstr "de toestand veranderen"
-
-msgid "changed"
-msgstr "gewijzigd"
-
-msgid "changed entries"
-msgstr "gewijzigde vermeldingen"
 
 msgid "check plugins"
 msgstr "plugins controleren"
@@ -62327,12 +62409,6 @@ msgstr "n.v.t."
 msgid "negate"
 msgstr "ontkennen"
 
-msgid "new"
-msgstr "nieuw"
-
-msgid "new entries"
-msgstr "nieuwe inzendingen"
-
 msgid "new host name"
 msgstr "nieuwe hostnaam"
 
@@ -62942,6 +63018,10 @@ msgstr "maal de standaardafwijking onder de voorspelde waarde"
 msgid "to"
 msgstr "naar"
 
+#, python-format
+msgid "to %d of %d recipients"
+msgstr ""
+
 msgid "to port:"
 msgstr "naar de haven:"
 
@@ -63146,6 +63226,20 @@ msgstr "z/OS"
 msgid "© 2020 tribe29 GmbH. All Rights Reserved."
 msgstr "© 2020 tribe29 GmbH. Alle rechten voorbehouden."
 
+#~ msgid "changed"
+#~ msgstr "gewijzigd"
+
+#~ msgid "new"
+#~ msgstr "nieuw"
+
+#, fuzzy
+#~ msgid "Port number for HTTPS connection to InfluxDB."
+#~ msgstr "Poortnummer voor HTTPS-verbinding met vSphere"
+
+#, fuzzy
+#~ msgid "URL to InfluxDB, e.g. https://my_influxdb.com"
+#~ msgstr "URL naar HiveManagerNG, b.v. https://cloud.aerohive.com"
+
 #~ msgid "Unsupported context type '%s'"
 #~ msgstr "Niet-ondersteund context type '%s'"
 
@@ -63195,19 +63289,8 @@ msgstr "© 2020 tribe29 GmbH. Alle rechten voorbehouden."
 #~ msgstr "(Deze service heeft geen statistieken)"
 
 #, fuzzy
-#~| msgid "(Please select a metric)"
 #~ msgid "Metric: "
 #~ msgstr "(Selecteer een waarde)"
-
-#, fuzzy
-#~| msgid "%s notifications"
-#~ msgid "Notifications today"
-#~ msgstr "%s berichten"
-
-#, fuzzy
-#~| msgid "%s alerts"
-#~ msgid "Top alerters (last 7 days)"
-#~ msgstr "%s waarschuwingen"
 
 #~ msgid "%d site is not connected"
 #~ msgid_plural "%d sites are not connected"

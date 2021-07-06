@@ -21,6 +21,7 @@ from typing import (
 )
 
 from cmk.utils.type_defs import UserId
+from cmk.utils.cpu_tracking import Snapshot
 
 HTTPVariables = List[Tuple[str, Union[None, int, str]]]
 LivestatusQuery = str
@@ -197,6 +198,11 @@ SearchResultsByTopic = Iterable[Tuple[str, Iterable[SearchResult]]]
 # Metric & graph specific
 GraphIdentifier = Tuple[str, Any]
 RenderingExpression = Tuple[Any, ...]
+TranslatedMetrics = Dict[str, Dict[str, Any]]
+PerfometerSpec = Dict[str, Any]
+PerfdataTuple = Tuple[str, float, str, Optional[float], Optional[float], Optional[float],
+                      Optional[float]]
+Perfdata = List[PerfdataTuple]
 
 
 class RenderableRecipe(NamedTuple):
@@ -205,3 +211,13 @@ class RenderableRecipe(NamedTuple):
     color: str
     line_type: str
     visible: bool
+
+
+@dataclass
+class ViewProcessTracking:
+    amount_unfiltered_rows: int = 0
+    amount_filtered_rows: int = 0
+    amount_rows_after_limit: int = 0
+    duration_fetch_rows: Snapshot = Snapshot.null()
+    duration_filter_rows: Snapshot = Snapshot.null()
+    duration_view_render: Snapshot = Snapshot.null()

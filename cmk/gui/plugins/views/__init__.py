@@ -20,6 +20,10 @@ from cmk.gui.view_utils import (  # noqa: F401 # pylint: disable=unused-import
     render_tag_groups, get_labels, render_labels,
 )
 
+from cmk.gui.type_defs import (  # noqa: F401 # pylint: disable=unused-import
+    Perfdata, TranslatedMetrics, PerfometerSpec,
+)
+
 from cmk.gui.plugins.views.utils import (  # noqa: F401 # pylint: disable=unused-import
     get_tag_groups, get_label_sources, get_permitted_views, cmp_custom_variable, cmp_ip_address,
     cmp_num_split, cmp_service_name_equiv, cmp_simple_number, cmp_simple_string, cmp_string_list,
@@ -33,7 +37,8 @@ from cmk.gui.plugins.views.utils import (  # noqa: F401 # pylint: disable=unused
     output_csv_headers, paint_age, PainterOptions, paint_host_list, paint_nagiosflag,
     paint_stalified, render_cache_info, replace_action_url_macros, row_id, transform_action_url,
     url_to_visual, view_is_enabled, view_title, query_livestatus, exporter_registry, Exporter,
-    VisualLinkSpec, Cell, CommandActionResult, CommandSpec, CellSpec, Row,
+    VisualLinkSpec, Cell, CommandActionResult, CommandSpec, CellSpec, Row, InventoryHintSpec,
+    ExportCellContent,
 )
 
 #.

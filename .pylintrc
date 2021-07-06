@@ -12,9 +12,7 @@
 init-hook=
     import inspect, os, sys
     config_file = inspect.stack()[2][0].f_locals["linter"].config_file
-    tests_dir2 = os.path.join(os.path.dirname(config_file), "tests")
-    tests_dir3 = os.path.join(os.path.dirname(config_file), "tests")
-    tests_dir = tests_dir3 if sys.version.split('.')[0] == '3' else tests_dir2
+    tests_dir = os.path.join(os.path.dirname(config_file), "tests")
     sys.path.insert(0, os.environ.get("TEST_PATH", tests_dir))
     import conftest
 load-plugins=
@@ -27,6 +25,8 @@ jobs=0
 persistent=yes
 extension-pkg-whitelist=rrdtool,_ldap,netifaces,pymssql
 bad-functions=unichr,basestring,unicode,file,cmp,apply,execfile,reduce,reload
+
+signature-mutators=cmk.utils.store.with_lock_dict
 
 [MESSAGES CONTROL]
 disable=
@@ -153,6 +153,15 @@ disable=
     #---------------------------------------------------------------------------
     # Emergency suppressions, must be removed SOON!
     consider-using-with,
+    #---------------------------------------------------------------------------
+    ## pylint 2.9.0 introduced these checker. Investigate.
+    consider-using-from-import,
+    consider-using-dict-items,
+    # pylint 2.9.0 introduced this checker which fails because of the
+    # definition in cmk/base/check_api.py. The test could not be disabled in
+    # the file for some reason and the code is OK. Last defense line: disable
+    # it globally.
+    invalid-all-format,
 
 enable=
     #---------------------------------------------------------------------------

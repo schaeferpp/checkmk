@@ -1,6 +1,7 @@
 # Copyright (C) 2019 tribe29 GmbH - License: GNU General Public License v2
 # This file is part of Checkmk (https://checkmk.com). It is subject to the terms and
 # conditions defined in the file COPYING, which is part of this source code package.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: Checkmk user interface translation 0.1\n"
@@ -9,7 +10,7 @@ msgstr ""
 "PO-Revision-Date: 2011-05-13 09:42+0200\n"
 "Last-Translator: Marius Pană\n"
 "Language-Team: SpearHead Systems\n"
-"Language: ro \n"
+"Language: ro\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -27,9 +28,9 @@ msgstr ""
 msgid " (Copy)"
 msgstr " (Copiază)"
 
-#, fuzzy, python-format
+#, python-format
 msgid " (Duration: %s)"
-msgstr "doua nivele"
+msgstr ""
 
 #, python-format
 msgid " (Duration: %s, %sIO: %s/s)"
@@ -122,9 +123,9 @@ msgstr ""
 msgid " and %s '%s'"
 msgstr " și %s '%s'"
 
-#, fuzzy, python-format
+#, python-format
 msgid " and the %s '%s'."
-msgstr " si %s 's'."
+msgstr ""
 
 #, python-format
 msgid " for a period of %s"
@@ -134,9 +135,9 @@ msgstr " pentru o perioadâ de %s"
 msgid " for host %s"
 msgstr " pentru elementul %s"
 
-#, fuzzy, python-format
+#, python-format
 msgid " for the following %d Event Console  %s"
-msgstr "Acces la Consola de Evenimente"
+msgstr ""
 
 #, python-format
 msgid " in %d days"
@@ -146,9 +147,8 @@ msgstr " în %d zile"
 msgid " in relation to %s"
 msgstr ""
 
-#, fuzzy
 msgid " larger than"
-msgstr "%s mai mare decât"
+msgstr ""
 
 msgid " next week"
 msgstr " săptămâna viitoare"
@@ -157,9 +157,9 @@ msgstr " săptămâna viitoare"
 msgid " of"
 msgstr "(nimic)"
 
-#, fuzzy, python-format
+#, python-format
 msgid " of the following %d Event Console %s"
-msgstr "Acces la Consola de Evenimente"
+msgstr ""
 
 msgid " or "
 msgstr " sau "
@@ -171,13 +171,13 @@ msgstr " sau int"
 msgid " spread over %d minutes "
 msgstr " peste următoarele %d minute "
 
-#, fuzzy, python-format
+#, python-format
 msgid " the following %d Event Console %s"
-msgstr "Acces la Consola de Evenimente"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid " the following %d crash %s"
-msgstr "Adaugă instanță NGINX"
+msgstr ""
 
 msgid " to:"
 msgstr " către:"
@@ -281,17 +281,17 @@ msgstr "% utilizare"
 msgid "% used"
 msgstr "(nefolosit)"
 
-#, fuzzy, python-format
+#, python-format
 msgid "%% of %s"
-msgstr "% din Flash"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "%%d locked element"
-msgstr "Adaungă un nou element"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "%%d locked elements"
-msgstr "Adaungă un nou element"
+msgstr ""
 
 #, python-format
 msgid "%.1f mm"
@@ -341,9 +341,9 @@ msgstr "%d coloane"
 msgid "%d conditions"
 msgstr "%d condiții"
 
-#, fuzzy, python-format
+#, python-format
 msgid "%d custom service attributes"
-msgstr "Atribute personalizate"
+msgstr ""
 
 #, python-format
 msgid "%d days ago"
@@ -353,9 +353,9 @@ msgstr "%d zile în urmă"
 msgid "%d errors occured:"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "%d failed notifications"
-msgstr "Adaugă notificare"
+msgstr ""
 
 #, fuzzy, python-format
 msgid "%d icons and actions"
@@ -373,17 +373,17 @@ msgstr ""
 msgid "%d links"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "%d locked site"
-msgstr "Reguli neaplicate"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "%d locked sites"
-msgstr "Reguli neaplicate"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "%d of %d connections used"
-msgstr "Numarul maxim de conexiuni"
+msgstr ""
 
 #, python-format
 msgid ""
@@ -391,28 +391,28 @@ msgid ""
 "%0.2f %%."
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "%d open incompatible werks"
-msgstr "Confirmă Problemele"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "%d rows"
-msgstr "randuri"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "%d site is %s."
 msgid_plural "%d sites are %s."
-msgstr[0] "Adaugă element"
+msgstr[0] ""
 msgstr[1] "Adaugă element"
 msgstr[2] "Adaugă element"
 
-#, fuzzy, python-format
+#, python-format
 msgid "%d sites %s: %s"
-msgstr "Adaugă element"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "%d sites without history: %s"
-msgstr "Adaugă element"
+msgstr ""
 
 #, fuzzy, python-format
 msgid "%d specific settings"
@@ -426,10 +426,10 @@ msgstr "%d schimbări"
 msgid "%d translations"
 msgstr "%d traduceri"
 
-#, fuzzy, python-format
+#, python-format
 msgid "%d unacknowledged incompatible werk"
 msgid_plural "%d unacknowledged incompatible werks"
-msgstr[0] "Confirmă Problemele"
+msgstr[0] ""
 msgstr[1] "Confirmă Problemele"
 msgstr[2] "Confirmă Problemele"
 
@@ -487,21 +487,21 @@ msgstr ""
 msgid "%s Preview of report finished"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "%s Properties"
-msgstr "Proprietatile Folderului"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "%s Requests"
-msgstr "cereri"
+msgstr ""
 
 #, python-format
 msgid "%s Retrieve created dump file"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "%s by host"
-msgstr "RAID: starea sistemului"
+msgstr ""
 
 #, python-format
 msgid ""
@@ -544,9 +544,9 @@ msgstr ""
 msgid "%s is too high. The maximum allowed value is %s."
 msgstr "%s este prea mare. Valoarea maximală permisă este %s."
 
-#, fuzzy, python-format
+#, python-format
 msgid "%s is too low. The minimum allowed value is %s."
-msgstr "este prea mică. Valoarea minimă permisă este %s."
+msgstr ""
 
 #, python-format
 msgid "%s larger than"
@@ -556,9 +556,9 @@ msgstr "%s mai mare decât"
 msgid "%s latency"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "%s latency %s"
-msgstr "Dezactiveaza Notificarile"
+msgstr ""
 
 #, python-format
 msgid "%s matching labels: %s"
@@ -584,29 +584,29 @@ msgstr ""
 msgid "%s not monitored by one of the explicitly selected sites."
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "%s of %s"
-msgstr "% din Flash"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "%s of %s%%"
-msgstr "% din Flash"
+msgstr ""
 
 #, python-format
 msgid "%s on the exclusion list."
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "%s operations"
-msgstr "Optiuni tabel"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "%s other %s"
-msgstr "% din Flash"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "%s per Second"
-msgstr " secunde "
+msgstr ""
 
 #, python-format
 msgid "%s rate"
@@ -616,9 +616,9 @@ msgstr ""
 msgid "%s read %s"
 msgstr "%s regulă %s"
 
-#, fuzzy, python-format
+#, python-format
 msgid "%s running for %s"
-msgstr ", rulează pe %s"
+msgstr ""
 
 #, fuzzy, python-format
 msgid "%s this customer"
@@ -652,9 +652,9 @@ msgstr ""
 msgid "%s: Not using SSL. Consider enabling it in the connection settings."
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "%s: Uses SSL"
-msgstr "foloseste SSL"
+msgstr ""
 
 #, python-format
 msgid "%sPacket loss"
@@ -810,9 +810,9 @@ msgstr "(setat de câtre syslog)"
 msgid "(syslog)"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "(unknown: %d)"
-msgstr "necunoscut"
+msgstr ""
 
 msgid "(unset)"
 msgstr "(neconfigurat)"
@@ -885,9 +885,8 @@ msgstr ""
 msgid "1 Host"
 msgstr "1 Element"
 
-#, fuzzy
 msgid "1 change"
-msgstr "%d schimbări"
+msgstr ""
 
 #, fuzzy
 msgid "1 row"
@@ -910,9 +909,8 @@ msgstr ""
 msgid "10 seconds"
 msgstr "10 secunde"
 
-#, fuzzy
 msgid "10+ changes"
-msgstr "%d schimbări"
+msgstr ""
 
 msgid "10.0 - 20.0 ms"
 msgstr ""
@@ -948,9 +946,8 @@ msgstr "15 minute"
 msgid "18.000 Services"
 msgstr "servicii"
 
-#, fuzzy
 msgid "2 weeks back"
-msgstr "%d zile în urmă"
+msgstr ""
 
 msgid "2.0 - 5.0 ms"
 msgstr ""
@@ -1082,9 +1079,8 @@ msgstr ""
 msgid "7.000 Services"
 msgstr "servicii"
 
-#, fuzzy
 msgid "8 days back"
-msgstr "%d zile în urmă"
+msgstr ""
 
 msgid "86% - 1.5 standard deviations"
 msgstr ""
@@ -1101,34 +1097,28 @@ msgid ""
 "than one docker node."
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "<b>%%s of %s length</b>"
-msgstr "<b>programează o întrerupere imediată până la sfârșitul lunii</b> pe"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "<b>%s for the next %d minutes</b>"
 msgstr ""
-"<b>programează o întrerupere imediată pentru următoarele %d minute</b> pe"
 
-#, fuzzy, python-format
+#, python-format
 msgid "<b>%s until 24:00:00</b>"
-msgstr "<b>programează o întrerupere imediată până la 24:00:00</b> pe"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "<b>%s until end of month</b>"
-msgstr "<b>programează o întrerupere imediată până la sfârșitul lunii</b> pe"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "<b>%s until end of year</b>"
-msgstr "<b>programează o întrerupere imediată până la sfârșitul lunii</b> pe"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "<b>%s until sunday night</b>"
-msgstr "<b>programează o întrerupere imediată până duminică noaptea</b> pe"
-
-msgid ""
-"<b>Do you really want to rename to following hosts? This involves a restart "
-"of the monitoring core!</b>"
 msgstr ""
 
 #, fuzzy
@@ -1177,16 +1167,12 @@ msgid ""
 "\"requests\" and \"PySocks\" is required on the target hosts."
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "<b>WARNING: </b> the IP address lookup of <b>%s</b> has failed. The core has "
 "been started by using the address <tt>0.0.0.0</tt> for the while. Please "
 "update your DNS or configure an IP address for the affected host."
 msgstr ""
-"<b>AVERTIZARE:</b> căutarea adresei IP al <tt>%s</tt> e eșuat. Nucleu a fost "
-"pornit folosind adresa <tt>0.0.0.0</tt> pentru moment. Nu vei putea să "
-"aplici/activezi schimbprile până nu actualizezi DNS-ul sau configurezi o "
-"adresă explicită pentru <tt>%s</tt>."
 
 #, python-format
 msgid "<b>Warning:</b> There are %d unacknowledged incompatible werks:"
@@ -1273,13 +1259,10 @@ msgstr "<b>trimite o notificare personalizată</b> cu privire la"
 msgid "<br><b>Note</b>: this key has created by user <b>%s</b>"
 msgstr ""
 
-#, fuzzy
 msgid ""
 "<br>If there are permission problems, please ensure the site user has write "
 "permissions."
 msgstr ""
-"<br>Dacă sunt probleme cu permisiunile, asigurațivă că grupul este '%s' și "
-"are drepturi de scriere."
 
 msgid ""
 "<br>Note: Some files may contain highly sensitive data like passwords. These "
@@ -1399,10 +1382,6 @@ msgid ""
 msgstr ""
 
 #, python-format
-msgid "<p>Sent notification to: %s</p>"
-msgstr "<p>Trimis notificare câtre: %s</p>"
-
-#, python-format
 msgid ""
 "<p>The Checkmk Microcore uses Checkmk checker processes to execute the "
 "Checkmk and Checkmk Discovery services of the hosts monitored with Checkmk. "
@@ -1433,12 +1412,12 @@ msgid ""
 "whether or not you can decrease check timeouts</li><li>Check which checks / "
 "plugins are <a href=\"view.py?view_name=service_check_durations\">consuming "
 "most helper process time</a></li><li>Increase the <a href=\"wato.py?"
-"mode=edit_configvar&varname=cmc_cmk_helpers\">number of Checkmk helpers</a></"
-"li></ul></p><p>But you need to be careful that you don't configure too many "
-"Checkmk fetcher helpers, because they consume resources. An additional "
-"problem is that the Checkmk fetchers are initialized in parallel during "
-"startup of the Microcore, which may cause load peaks when having a lot of "
-"Checkmk helper processes configured.</p>"
+"mode=edit_configvar&varname=cmc_fetcher_helpers\">number of Checkmk "
+"fetchers</a></li></ul></p><p>But you need to be careful that you don't "
+"configure too many Checkmk fetcher helpers, because they consume resources. "
+"An additional problem is that the Checkmk fetchers are initialized in "
+"parallel during startup of the Microcore, which may cause load peaks when "
+"having a lot of Checkmk helper processes configured.</p>"
 msgstr ""
 
 #, python-format
@@ -1802,9 +1781,9 @@ msgstr ""
 msgid "A rule pack with this ID already exists."
 msgstr "O regulă cu acest ID există deja."
 
-#, fuzzy, python-format
+#, python-format
 msgid "A rule with this ID already exists in rule pack <b>%s</b>."
-msgstr "O regulă cu acest ID există deja."
+msgstr ""
 
 msgid "A scheduled job on Microsoft SQL Server."
 msgstr ""
@@ -2242,9 +2221,9 @@ msgstr "Absolut"
 msgid "Absolute %s"
 msgstr "Absolut %s"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Absolute %s space"
-msgstr "Spațiu liber exact"
+msgstr ""
 
 msgid "Absolute Time of Alert"
 msgstr "Timpul Exact al Alertei"
@@ -2273,9 +2252,9 @@ msgstr "Spațiu liber exact"
 msgid "Absolute levels"
 msgstr "Liber Exact"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Absolute levels for %s memory"
-msgstr "Memorie liberă exactă"
+msgstr ""
 
 #, fuzzy
 msgid "Absolute levels for committed heap space"
@@ -2293,9 +2272,9 @@ msgstr "Nivel-urile absolute de licențe neutilizate"
 msgid "Absolute levels for error rates"
 msgstr "Nivel-urile absolute de licențe neutilizate"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Absolute levels for free %s"
-msgstr "Nivel-urile absolute de licențe neutilizate"
+msgstr ""
 
 #, fuzzy
 msgid "Absolute levels for free RAM"
@@ -2328,9 +2307,9 @@ msgstr "Nivel-urile absolute de licențe neutilizate"
 msgid "Absolute levels for unused licenses"
 msgstr "Nivel-urile absolute de licențe neutilizate"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Absolute levels for used %s"
-msgstr "Nivel-urile absolute de licențe neutilizate"
+msgstr ""
 
 #, fuzzy
 msgid "Absolute levels for used heap space"
@@ -2638,9 +2617,9 @@ msgstr ""
 msgid "Activated"
 msgstr " Activează această opțiune"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Activated changes by %s."
-msgstr "Activare Schimbări!"
+msgstr ""
 
 msgid "Activated changes of event console configuration"
 msgstr ""
@@ -2838,9 +2817,9 @@ msgstr "Numele Elementului"
 msgid "Add"
 msgstr "Adaugă Condiție"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Add %s"
-msgstr "Adaugă Contoar"
+msgstr ""
 
 #, fuzzy
 msgid "Add Aggregation"
@@ -2862,9 +2841,9 @@ msgstr "Adaugă bookmark"
 msgid "Add BI rule"
 msgstr "Adaugă o regulă de rol"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Add BI rule %s"
-msgstr "Adaugă o regulă de rol"
+msgstr ""
 
 msgid "Add Bookmark"
 msgstr "Adaugă bookmark"
@@ -2876,9 +2855,8 @@ msgstr "Adaugă notificare"
 msgid "Add Condition"
 msgstr "Adaugă Condiție"
 
-#, fuzzy
 msgid "Add Contact Group"
-msgstr " Se potriveste grupurilor: %s"
+msgstr ""
 
 msgid "Add Counter"
 msgstr "Adaugă Contoar"
@@ -2989,9 +2967,8 @@ msgstr "Conexiune Noua"
 msgid "Add contact"
 msgstr "Adaugă comentariu"
 
-#, fuzzy
 msgid "Add contact group"
-msgstr " Se potriveste grupurilor: %s"
+msgstr ""
 
 msgid "Add contact information"
 msgstr "Adaugă informații despre contact"
@@ -3125,9 +3102,9 @@ msgstr "Adaugă nume"
 msgid "Add new"
 msgstr "Adaugă nume"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Add new BI aggregation %s"
-msgstr "Agregare noua"
+msgstr ""
 
 msgid "Add new CA certificate or chain"
 msgstr ""
@@ -3219,9 +3196,9 @@ msgstr "Adaugă notificare"
 msgid "Add notification rule"
 msgstr "Adaugă notificare"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Add notification rule for user %s"
-msgstr "%d reguli de notificări globale"
+msgstr ""
 
 msgid "Add one or multiple MIBs"
 msgstr ""
@@ -3388,9 +3365,9 @@ msgstr "Adaugă model/tipar"
 msgid "Add to"
 msgstr "Adaugă Condiție"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Add to %s"
-msgstr "Adaugă Condiție"
+msgstr ""
 
 msgid "Add to Favorites"
 msgstr "Adaugă la Favorite"
@@ -3448,9 +3425,9 @@ msgstr "Adaugă o nouă mapare"
 msgid "Add. addresses"
 msgstr "Adresă"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Added %d random hosts."
-msgstr "Adaugă sau șterge elemente"
+msgstr ""
 
 #, python-format
 msgid "Added CA with fingerprint %s to trusted certificate authorities"
@@ -3462,17 +3439,16 @@ msgid ""
 "configuration after the scan."
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Added new BI pack %s"
-msgstr "Sterge Elementul"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Added the %s '%s'"
-msgstr " si %s 's'."
+msgstr ""
 
-#, fuzzy
 msgid "Added to stack"
-msgstr "Adăugat %s"
+msgstr ""
 
 #, python-format
 msgid "Added: %s"
@@ -3588,6 +3564,10 @@ msgstr "Adhoc pentru %d minute"
 
 msgid "Admin"
 msgstr ""
+
+#, fuzzy
+msgid "Admin state"
+msgstr "Nume Administrator:"
 
 msgid "Admin state (SNMP with 64-bit counters only)"
 msgstr ""
@@ -3828,9 +3808,9 @@ msgstr ""
 msgid "Agent %s currently running in <a href=\"%s\">background job</a>."
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Agent %s successful"
-msgstr "API accesibil"
+msgstr ""
 
 msgid "Agent Deployment: Downloaded Agent Hash"
 msgstr ""
@@ -3900,9 +3880,9 @@ msgstr ""
 msgid "Agent deployment status"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Agent for %s (%s)"
-msgstr " pentru elementul %s"
+msgstr ""
 
 msgid "Agent output"
 msgstr ""
@@ -4282,9 +4262,8 @@ msgstr ""
 msgid "All directions"
 msgstr "Acțiune"
 
-#, fuzzy
 msgid "All editions"
-msgstr "%d condiții"
+msgstr ""
 
 #, python-format
 msgid "All elements of the tuple must be of type int, you have %s"
@@ -4293,9 +4272,8 @@ msgstr ""
 msgid "All even pages"
 msgstr ""
 
-#, fuzzy
 msgid "All flows"
-msgstr " pentru hostul %s"
+msgstr ""
 
 msgid "All graphs for a certain host."
 msgstr ""
@@ -4361,9 +4339,8 @@ msgstr ""
 msgid "All hosts of site"
 msgstr ""
 
-#, fuzzy
 msgid "All log files"
-msgstr " pentru hostul %s"
+msgstr ""
 
 msgid "All matching rules will add to the resulting list."
 msgstr ""
@@ -4429,9 +4406,8 @@ msgid ""
 "variables."
 msgstr ""
 
-#, fuzzy
 msgid "All problematic logfiles"
-msgstr " pentru hostul %s"
+msgstr ""
 
 msgid "All problems of services not currently in a downtime."
 msgstr ""
@@ -5099,9 +5075,8 @@ msgstr ""
 msgid "Apply Lag Minimum Time"
 msgstr ""
 
-#, fuzzy
 msgid "Apply conditions"
-msgstr "%d condiții"
+msgstr ""
 
 #, fuzzy
 msgid "Apply filters"
@@ -5757,6 +5732,10 @@ msgid "Available"
 msgstr ""
 
 #, fuzzy
+msgid "Available (missing)"
+msgstr "spatiu utilizat"
+
+#, fuzzy
 msgid "Available Spare"
 msgstr "Optiuni tabel"
 
@@ -5931,9 +5910,9 @@ msgstr "Numarul maxim de mesaje"
 msgid "Average usage"
 msgstr "% utilizare"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Average utilization core %d"
-msgstr "Dezactiveaza Notificarile"
+msgstr ""
 
 #, fuzzy
 msgid "Average utilization per core"
@@ -6119,9 +6098,8 @@ msgstr "Adaugă bookmark"
 msgid "BI pack ID"
 msgstr ""
 
-#, fuzzy
 msgid "BI rule or aggregation"
-msgstr "%d reguli și agregări BI"
+msgstr ""
 
 #, python-format
 msgid "BI rules %s from BI pack '%s'"
@@ -6207,9 +6185,8 @@ msgstr ""
 msgid "Backplanes"
 msgstr ""
 
-#, fuzzy
 msgid "Backup conditions"
-msgstr "%d condiții"
+msgstr ""
 
 msgid "Backup configured"
 msgstr ""
@@ -7340,9 +7317,8 @@ msgstr ""
 msgid "CPU in percent"
 msgstr ""
 
-#, fuzzy
 msgid "CPU inventory of all hosts"
-msgstr " pentru hostul %s"
+msgstr ""
 
 #, fuzzy
 msgid "CPU load"
@@ -7969,9 +7945,8 @@ msgstr ""
 msgid "Certificates for HTTPS verification"
 msgstr "Dezactiveaza Notificarile"
 
-#, fuzzy
 msgid "Change"
-msgstr "%d schimbări"
+msgstr ""
 
 msgid "Change CRITICAL State to"
 msgstr ""
@@ -8025,9 +8000,8 @@ msgstr ""
 msgid "Change infotext in check output"
 msgstr ""
 
-#, fuzzy
 msgid "Change log"
-msgstr "%d schimbări"
+msgstr ""
 
 #, fuzzy
 msgid "Change password"
@@ -8039,25 +8013,28 @@ msgstr ""
 msgid "Change the default user interface theme of your Checkmk installation"
 msgstr ""
 
-#, fuzzy
 msgid "Changed"
-msgstr "%d schimbări"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Changed %s from %s to %s"
-msgstr " pentru elementul %s"
+msgstr ""
 
 #, python-format
 msgid "Changed Configuration variable %s to %s."
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Changed LDAP connection %s"
-msgstr "Numarul maxim de conexiuni"
+msgstr ""
 
 #, python-format
 msgid "Changed alert handler rule %d"
 msgstr ""
+
+#, fuzzy
+msgid "Changed entries"
+msgstr "% întrări libere"
 
 #, python-format
 msgid "Changed global configuration variable %s to %s."
@@ -8119,9 +8096,9 @@ msgid ""
 "Changed properties of rule \"%s\", moved rule from folder \"%s\" to \"%s\""
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Changed properties of rule #%d in ruleset \"%s\" in folder \"%s\""
-msgstr "%d reguli de notificări globale"
+msgstr ""
 
 #, python-format
 msgid "Changed site specific configuration variable %s to %s."
@@ -8130,9 +8107,8 @@ msgstr ""
 msgid "Changes"
 msgstr ""
 
-#, fuzzy
 msgid "Changes since last dump"
-msgstr " pentru elementul %s"
+msgstr ""
 
 #, fuzzy
 msgid "Channel"
@@ -8212,9 +8188,8 @@ msgstr "Numele Elementului"
 msgid "Check MK status of piggybacked host within this period"
 msgstr ""
 
-#, fuzzy
 msgid "Check Parameter"
-msgstr " Parametrul este: %r"
+msgstr ""
 
 #, fuzzy
 msgid "Check Plugin"
@@ -8580,9 +8555,9 @@ msgstr ""
 msgid "Checkmk automation"
 msgstr "foloseste configuratia locala"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Checkmk automation %s %s"
-msgstr "Activare Configurare"
+msgstr ""
 
 #, fuzzy
 msgid "Checkmk check helpers"
@@ -8602,9 +8577,9 @@ msgstr "Nivelurile maxime pentru voltaj"
 msgid "Checkmk config filename"
 msgstr "Activare Configurare"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Checkmk exception: %s"
-msgstr "Adaugă Excepție"
+msgstr ""
 
 #, fuzzy
 msgid "Checkmk fetcher latency"
@@ -8635,9 +8610,8 @@ msgstr "Privire de ansamblu"
 msgid "Checkmk site objects"
 msgstr ""
 
-#, fuzzy
 msgid "Checkmk site performance and settings"
-msgstr "%d setări de Filtrare"
+msgstr ""
 
 #, fuzzy
 msgid "Checkmk sites"
@@ -8678,9 +8652,8 @@ msgstr "rapoarte"
 msgid "Checkmk: Notification"
 msgstr "Notificari"
 
-#, fuzzy
 msgid "Checkmk: Other"
-msgstr " Parametrul este: %r"
+msgstr ""
 
 #, fuzzy
 msgid "Checkmk: Sidebar elements"
@@ -8771,9 +8744,9 @@ msgid ""
 "&gt;."
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Choose another %s"
-msgstr "% din Flash"
+msgstr ""
 
 msgid ""
 "Choose between Normal (Utilize this node as much as possible) and Exclusive "
@@ -8905,9 +8878,9 @@ msgstr ""
 msgid "Cisco Memory Usage"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Cisco Memory Usage (%s)"
-msgstr "% utilizare"
+msgstr ""
 
 msgid "Cisco Nexus Supervisor Memory Usage"
 msgstr ""
@@ -8987,9 +8960,8 @@ msgstr ""
 msgid "Class"
 msgstr ""
 
-#, fuzzy
 msgid "Class of hosts"
-msgstr " pentru elementul %s"
+msgstr ""
 
 msgid "Classes"
 msgstr ""
@@ -9108,9 +9080,9 @@ msgstr ""
 msgid "Clone %s"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Clone Aggregation %s"
-msgstr "Agregare noua"
+msgstr ""
 
 msgid "Clone SLA"
 msgstr ""
@@ -9146,9 +9118,9 @@ msgstr ""
 msgid "Clone stored report"
 msgstr "(nici un raport)"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Clone this %s"
-msgstr "Adaungă un nou element"
+msgstr ""
 
 msgid "Clone this connection in order to create a new one"
 msgstr ""
@@ -9168,9 +9140,9 @@ msgstr ""
 msgid "Clone topic"
 msgstr "Adaungă un nou element"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Cloned rule from rule %s in ruleset \"%s\" in folder \"%s\""
-msgstr "%d reguli de notificări globale"
+msgstr ""
 
 msgid "Close Timewarp"
 msgstr ""
@@ -9230,9 +9202,8 @@ msgstr ""
 msgid "Cluster health"
 msgstr ""
 
-#, fuzzy
 msgid "Cluster host"
-msgstr " pentru elementul %s"
+msgstr ""
 
 #, fuzzy
 msgid "Cluster name"
@@ -9248,9 +9219,8 @@ msgstr ""
 msgid "Cluster roles"
 msgstr "trei nivele"
 
-#, fuzzy
 msgid "Cluster statistics"
-msgstr " pentru elementul %s"
+msgstr ""
 
 msgid "Cluster status"
 msgstr ""
@@ -9484,9 +9454,9 @@ msgstr ""
 msgid "Comment type (host/service)"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Comment: %s"
-msgstr "Adaugă comentarii"
+msgstr ""
 
 msgid "Comments"
 msgstr ""
@@ -9934,9 +9904,9 @@ msgstr ""
 msgid "Confirm overwrite of the remote site configuration"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Confirm renaming of %d %s"
-msgstr ", rulează pe %s"
+msgstr ""
 
 #, fuzzy
 msgid "Confirm tag group deletion"
@@ -10424,9 +10394,9 @@ msgstr "(fără elemente)"
 msgid "Copy of existing view"
 msgstr "(fără elemente)"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Copy rule: %s"
-msgstr "%s regulă %s"
+msgstr ""
 
 msgid "Core"
 msgstr ""
@@ -10448,9 +10418,8 @@ msgstr ""
 msgid "Core started"
 msgstr ""
 
-#, fuzzy
 msgid "Core statistics"
-msgstr " Se potriveste grupurilor: %s"
+msgstr ""
 
 msgid "Core stopped"
 msgstr ""
@@ -10579,9 +10548,13 @@ msgid ""
 "further information."
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
+msgid "Could not render: %r"
+msgstr ""
+
+#, python-format
 msgid "Could not save changes: %s"
-msgstr "Activare schimbări"
+msgstr ""
 
 msgid ""
 "Couldn't lock the Checkmk configuration. Another process is running that "
@@ -10622,9 +10595,8 @@ msgstr ""
 msgid "Count of offline hosts"
 msgstr ""
 
-#, fuzzy
 msgid "Count of other hosts"
-msgstr " pentru elementul %s"
+msgstr ""
 
 #, fuzzy
 msgid "Count only"
@@ -10716,9 +10688,9 @@ msgstr "rapoarte"
 msgid "Crash report fallback mail address"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Crash report: %s"
-msgstr "rapoarte"
+msgstr ""
 
 #, fuzzy
 msgid "Crash reports"
@@ -11026,17 +10998,17 @@ msgstr ""
 msgid "Created new notification rule"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Created new notification rule for user %s"
-msgstr "%d reguli de notificări globale"
+msgstr ""
 
 #, python-format
 msgid "Created new role '%s'"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Created new rule #%d in ruleset \"%s\" in folder \"%s\""
-msgstr "%d reguli de notificări globale"
+msgstr ""
 
 #, python-format
 msgid "Created new rule in ruleset \"%s\" in folder \"%s\""
@@ -11054,9 +11026,9 @@ msgstr ""
 msgid "Created new user: %s"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Created new users: %s"
-msgstr "Sterge Elementul"
+msgstr ""
 
 #, python-format
 msgid "Created snapshot %s"
@@ -11358,9 +11330,9 @@ msgstr "Parola"
 msgid "Current state"
 msgstr "Parola"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Current status of %s process"
-msgstr "Acces la Consola de Evenimente"
+msgstr ""
 
 #, fuzzy
 msgid "Current status of local Event Console"
@@ -11429,9 +11401,9 @@ msgstr ""
 msgid "Currently there are %d changes to activate."
 msgstr "%d schimbări"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Currently there are %s to activate."
-msgstr "%d schimbări"
+msgstr ""
 
 msgid "Currently there are no changes to activate."
 msgstr ""
@@ -11439,13 +11411,11 @@ msgstr ""
 msgid "Currently there are no unsent notification bulks pending."
 msgstr ""
 
-#, fuzzy
 msgid "Currently there is one change to activate"
-msgstr "%d schimbări"
+msgstr ""
 
-#, fuzzy
 msgid "Currently there is one change to activate."
-msgstr "%d schimbări"
+msgstr ""
 
 msgid "Custom Action"
 msgstr ""
@@ -11453,9 +11423,9 @@ msgstr ""
 msgid "Custom Downtime Timeranges"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Custom GUI design of %s"
-msgstr "Atribute personalizate"
+msgstr ""
 
 #, fuzzy
 msgid "Custom Graph"
@@ -11550,9 +11520,8 @@ msgstr ""
 msgid "Custom icons or actions for services in status GUI"
 msgstr ""
 
-#, fuzzy
 msgid "Custom incident summary for host alerts"
-msgstr " pentru elementul %s"
+msgstr ""
 
 #, fuzzy
 msgid "Custom incident summary for service alerts"
@@ -11580,9 +11549,9 @@ msgstr ""
 msgid "Custom notification"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Custom notification table for user %s"
-msgstr "%d reguli de notificări globale"
+msgstr ""
 
 msgid "Custom notification table of this user"
 msgstr ""
@@ -11635,9 +11604,9 @@ msgstr "Atribute personalizate"
 msgid "Custom user attributes"
 msgstr "Atribute personalizate"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Custom variable: %s"
-msgstr "Atribute personalizate"
+msgstr ""
 
 msgid "Customcheck"
 msgstr ""
@@ -11991,9 +11960,8 @@ msgstr ""
 msgid "DOWN"
 msgstr ""
 
-#, fuzzy
 msgid "DOWN hosts"
-msgstr " pentru elementul %s"
+msgstr ""
 
 msgid "DPI"
 msgstr ""
@@ -12403,13 +12371,13 @@ msgstr ""
 msgid "Default"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Default %s template"
-msgstr "doua nivele"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Default (%s)"
-msgstr "doua nivele"
+msgstr ""
 
 #, fuzzy
 msgid "Default BI Visualization Settings"
@@ -12567,9 +12535,9 @@ msgid ""
 "used by the check."
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Define levels on the %s detection rate."
-msgstr "Nivel-urile absolute de licențe neutilizate"
+msgstr ""
 
 msgid ""
 "Define levels on the number of authentication failures within the last 5 "
@@ -12625,9 +12593,8 @@ msgid ""
 "Splunk. You can also query for component health and fired alerts."
 msgstr ""
 
-#, fuzzy
 msgid "Degraded hosts"
-msgstr " pentru elementul %s"
+msgstr ""
 
 msgid "Degree Celsius"
 msgstr ""
@@ -12657,9 +12624,9 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Delete %s"
-msgstr "Sterge Elementul"
+msgstr ""
 
 #, python-format
 msgid "Delete %s number %d?"
@@ -12700,9 +12667,9 @@ msgstr ""
 msgid "Delete files older than"
 msgstr "Sterge Elementul"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Delete foreign %s"
-msgstr "Sterge Elementul"
+msgstr ""
 
 #, fuzzy
 msgid "Delete hosts"
@@ -12713,9 +12680,9 @@ msgid ""
 "piggyback data available anymore."
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Delete job %s%s?"
-msgstr "Sterge Elementul"
+msgstr ""
 
 msgid "Delete last alert handler rule"
 msgstr ""
@@ -12737,9 +12704,9 @@ msgstr ""
 msgid "Delete report schedule entry '%s'?"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Delete rule #%d (ID: %s) of folder '%s'?"
-msgstr "Sterge Elementul"
+msgstr ""
 
 #, fuzzy
 msgid "Delete rules"
@@ -12750,9 +12717,9 @@ msgid ""
 "positive sense. Just remove that tag if it's used negated."
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Delete scheduled report '%s'?"
-msgstr "(nici un raport)"
+msgstr ""
 
 #, fuzzy
 msgid "Delete selected"
@@ -12770,9 +12737,9 @@ msgstr "Sterge Elementul"
 msgid "Delete the current logo"
 msgstr "Sterge Elementul"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Delete this %s"
-msgstr "Sterge Elementul"
+msgstr ""
 
 #, fuzzy
 msgid "Delete this BI pack"
@@ -12889,37 +12856,37 @@ msgstr "Sterge Elementul"
 msgid "Delete!"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Deleted %s %d"
-msgstr "Sterge Elementul"
+msgstr ""
 
 #, python-format
 msgid "Deleted %s group %s"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Deleted BI aggregation %s"
-msgstr "Sterge Elementul"
+msgstr ""
 
 #, python-format
 msgid "Deleted BI aggregation with ID %s"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Deleted BI pack %s"
-msgstr "Sterge Elementul"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Deleted BI rule with ID %s"
-msgstr "Sterge Elementul"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Deleted LDAP connection %s"
-msgstr "Sterge Elementul"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Deleted MIB %s"
-msgstr "Sterge Elementul"
+msgstr ""
 
 #, python-format
 msgid "Deleted agent signature key '%s'"
@@ -12932,9 +12899,9 @@ msgstr ""
 msgid "Deleted custom GUI logo"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Deleted folder %s"
-msgstr "Sterge Elementul"
+msgstr ""
 
 #, python-format
 msgid "Deleted host %s"
@@ -12948,9 +12915,9 @@ msgstr ""
 msgid "Deleted role '%s'"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Deleted rule #%d in ruleset \"%s\" in folder \"%s\""
-msgstr "%d reguli de notificări globale"
+msgstr ""
 
 #, python-format
 msgid "Deleted rule %s"
@@ -12972,9 +12939,9 @@ msgstr ""
 msgid "Deleted timeperiod %s"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Deleted user: %s"
-msgstr "Sterge Elementul"
+msgstr ""
 
 msgid "Deletes"
 msgstr ""
@@ -13489,17 +13456,14 @@ msgstr ""
 msgid "Diagnostics"
 msgstr ""
 
-#, fuzzy
 msgid "Diagnostics dump"
-msgstr " pentru elementul %s"
+msgstr ""
 
-#, fuzzy
 msgid "Diagnostics dump started..."
-msgstr " pentru elementul %s"
+msgstr ""
 
-#, fuzzy
 msgid "Did not changed"
-msgstr "%d schimbări"
+msgstr ""
 
 msgid "Did not find any global setting matching your search."
 msgstr ""
@@ -13658,9 +13622,9 @@ msgstr ""
 msgid "Disable configuration via WATO on this site"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Disable extension package %s"
-msgstr "Dezactiveaza Notificarile"
+msgstr ""
 
 msgid "Disable flap detection"
 msgstr ""
@@ -13738,6 +13702,10 @@ msgstr "(dezactivat)"
 #, python-format
 msgid "Disabled %s are kept in the configuration but are not active."
 msgstr ""
+
+#, fuzzy
+msgid "Disabled (configured away by admin)"
+msgstr "foloseste configuratia locala"
 
 #, fuzzy
 msgid "Disabled active checks"
@@ -13867,9 +13835,8 @@ msgstr "Setari"
 msgid "Discovery mode"
 msgstr "Inventariere in masa"
 
-#, fuzzy
 msgid "Discovery of Datadog monitors"
-msgstr "%d setări de Filtrare"
+msgstr ""
 
 msgid "Discovery of empty DHCP pools"
 msgstr ""
@@ -14111,9 +14078,8 @@ msgstr ""
 msgid "Display sidecar details on"
 msgstr "Nivelurile maxime pentru voltaj"
 
-#, fuzzy
 msgid "Display snapshot summary on ESX hosts"
-msgstr " pentru elementul %s"
+msgstr ""
 
 #, fuzzy
 msgid "Display source details on"
@@ -14161,9 +14127,8 @@ msgstr "% / gamă"
 msgid "Displays Top Talkers"
 msgstr "% / gamă"
 
-#, fuzzy
 msgid "Displays a bar chart for host and service alerts."
-msgstr "<b>setează manual rezultatele verificării la %s</b> pentru"
+msgstr ""
 
 #, fuzzy
 msgid "Displays a bar chart for host and service notifications."
@@ -14224,6 +14189,10 @@ msgid "Displays the content of a view"
 msgstr ""
 
 #, fuzzy
+msgid "Displays the state of a specific service."
+msgstr "O listă cu utilizatori specifici"
+
+#, fuzzy
 msgid "Dissolve operation"
 msgstr "Optiuni tabel"
 
@@ -14265,9 +14234,8 @@ msgstr "servicii"
 msgid "Do a replication every"
 msgstr ""
 
-#, fuzzy
 msgid "Do actions"
-msgstr "%d acțiuni"
+msgstr ""
 
 msgid "Do an <tt>apt-get update</tt> before the check"
 msgstr ""
@@ -14676,9 +14644,9 @@ msgstr ""
 msgid "Do transfer context"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Do you really want to %s"
-msgstr "O agregare legată de un singur element"
+msgstr ""
 
 #, python-format
 msgid ""
@@ -14708,11 +14676,11 @@ msgstr ""
 msgid "Do you really want to delete the %s group \"%s\"?"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "Do you really want to delete the BI pack <b>%s</b> <i>%s</i> with <b>%d</b> "
 "aggregations?"
-msgstr "O agregare legată de un singur element"
+msgstr ""
 
 #, python-format
 msgid "Do you really want to delete the LDAP connection <b>%s</b>?"
@@ -14722,9 +14690,9 @@ msgstr ""
 msgid "Do you really want to delete the MIB file <b>%s</b>?"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Do you really want to delete the aggregation <b>%s</b>?"
-msgstr "O agregare legată de un singur element"
+msgstr ""
 
 #, python-format
 msgid "Do you really want to delete the auxiliary tag '%s'?"
@@ -14776,9 +14744,9 @@ msgstr ""
 msgid "Do you really want to delete the rule with the ID <b>%s</b>?"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Do you really want to delete the selected %s?"
-msgstr "O agregare legată de un singur element"
+msgstr ""
 
 #, fuzzy
 msgid "Do you really want to delete the selected MIBs?"
@@ -14804,9 +14772,9 @@ msgstr "O agregare legată de un singur element"
 msgid "Do you really want to delete the tag group '%s'?"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Do you really want to delete the time period '%s'?"
-msgstr "O agregare legată de un singur element"
+msgstr ""
 
 #, python-format
 msgid ""
@@ -14848,6 +14816,11 @@ msgstr "O agregare legată de un singur element"
 
 #, python-format
 msgid "Do you really want to remove the package <tt>%s</tt> from your system?"
+msgstr ""
+
+msgid ""
+"Do you really want to rename to following hosts?This involves a restart of "
+"the monitoring core!"
 msgstr ""
 
 msgid ""
@@ -14980,6 +14953,10 @@ msgstr ""
 msgid "Don't remove matching vanished services"
 msgstr "nemonitorizat"
 
+#, fuzzy
+msgid "Don't show Summary"
+msgstr "Numele Elementului"
+
 msgid "Don't show and check"
 msgstr ""
 
@@ -15037,13 +15014,13 @@ msgstr "Descarca"
 msgid "Download %s package of agent for %s"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Download Checkmk %s agent"
-msgstr "Descarca"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Download Checkmk Agent for host %s"
-msgstr "Descarca"
+msgstr ""
 
 #, fuzzy
 msgid "Download SNMP walk"
@@ -15193,9 +15170,9 @@ msgstr ""
 msgid "Dummy"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Dump file: %s"
-msgstr "Atribute personalizate"
+msgstr ""
 
 #, python-format
 msgid ""
@@ -15448,9 +15425,9 @@ msgstr "Întreruperi adhoc"
 msgid "Edit GUI design for this customer"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Edit LDAP connection: %s"
-msgstr "Conexiune Noua"
+msgstr ""
 
 msgid "Edit Reports"
 msgstr ""
@@ -15512,9 +15489,9 @@ msgstr ""
 msgid "Edit custom graph"
 msgstr "Atribute personalizate"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Edit customer %s"
-msgstr "Editeaza regulile de loguri"
+msgstr ""
 
 #, fuzzy
 msgid "Edit dashboard"
@@ -15529,9 +15506,9 @@ msgstr "Adaugă element"
 msgid "Edit forecast graph"
 msgstr "Grup nou"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Edit foreign %s"
-msgstr "Sterge Elementul"
+msgstr ""
 
 #, fuzzy
 msgid "Edit global setting"
@@ -15567,9 +15544,9 @@ msgstr "Editeaza regulile de loguri"
 msgid "Edit notification rule %d"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Edit notification rule %d of user %s"
-msgstr "%d reguli de notificări globale"
+msgstr ""
 
 msgid "Edit parameter rule set for this check type"
 msgstr ""
@@ -15596,9 +15573,9 @@ msgstr ""
 msgid "Edit report schedule entry %s"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Edit role %s"
-msgstr "Editeaza regulile de loguri"
+msgstr ""
 
 #, python-format
 msgid "Edit rule %s"
@@ -15608,9 +15585,9 @@ msgstr ""
 msgid "Edit rule pack %s"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Edit rule: %s"
-msgstr "Editeaza regulile de loguri"
+msgstr ""
 
 msgid "Edit service group"
 msgstr ""
@@ -15651,9 +15628,9 @@ msgstr ""
 msgid "Edit the services of this host, do a service discovery"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Edit this %s"
-msgstr "Adaugă element"
+msgstr ""
 
 #, fuzzy
 msgid "Edit this LDAP connection"
@@ -15730,9 +15707,9 @@ msgstr ""
 msgid "Editable by Users"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Edited %d hosts"
-msgstr " pentru elementul %s"
+msgstr ""
 
 #, python-format
 msgid "Edited host tag group %s (%s)"
@@ -15746,9 +15723,9 @@ msgstr ""
 msgid "Edited rule in ruleset \"%s\" in folder \"%s\""
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Edited the %s '%s'"
-msgstr " si %s 's'."
+msgstr ""
 
 #, fuzzy
 msgid "Edition"
@@ -15867,9 +15844,9 @@ msgstr ""
 msgid "Element"
 msgstr "Adaugă element"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Element %s is already enabled"
-msgstr "Acces la Consola de Evenimente"
+msgstr ""
 
 #, python-format
 msgid "Element '%r' does not exist anymore"
@@ -16124,9 +16101,9 @@ msgstr "Tabel"
 msgid "Enabled agent updates"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Enabled extension package %s"
-msgstr "Dezactiveaza Notificarile"
+msgstr ""
 
 msgid "Enabled in time range"
 msgstr ""
@@ -16872,9 +16849,8 @@ msgstr ""
 msgid "Exceptions for piggybacked hosts (VMs, ...)"
 msgstr ""
 
-#, fuzzy
 msgid "Exchanges"
-msgstr "%d schimbări"
+msgstr ""
 
 msgid "Exclude"
 msgstr ""
@@ -16958,9 +16934,8 @@ msgstr ""
 msgid "Exclusive locks"
 msgstr ""
 
-#, fuzzy
 msgid "Executable Python script"
-msgstr "%s acest site"
+msgstr ""
 
 msgid "Executable format (Linux)"
 msgstr ""
@@ -17012,13 +16987,13 @@ msgstr ""
 msgid "Execution history"
 msgstr "Verificări active"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Execution history of %s"
-msgstr "Verificări active"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Execution history of this %s"
-msgstr "Verificări active"
+msgstr ""
 
 #, fuzzy
 msgid "Execution interval"
@@ -17197,9 +17172,8 @@ msgstr ""
 msgid "Explicit Queue Names"
 msgstr ""
 
-#, fuzzy
 msgid "Explicit conditions"
-msgstr "%d condiții"
+msgstr ""
 
 #, fuzzy
 msgid "Explicit email addresses"
@@ -17247,9 +17221,8 @@ msgstr ""
 msgid "Explicitly set on folders"
 msgstr ""
 
-#, fuzzy
 msgid "Explicitly set on hosts"
-msgstr "%d condiții"
+msgstr ""
 
 msgid "Explicitly specify resources"
 msgstr ""
@@ -17518,9 +17491,9 @@ msgstr ""
 msgid "Failed to determine origin rule of %s / %s"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Failed to discover %s: %s"
-msgstr "Inventariere in masa"
+msgstr ""
 
 msgid "Failed to estimate the apache process size"
 msgstr ""
@@ -17533,9 +17506,9 @@ msgstr ""
 msgid "Failed to execute the test %s: %s"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Failed to extract %s"
-msgstr "Optiuni tabel"
+msgstr ""
 
 #, python-format
 msgid "Failed to fetch peer certificate (%s)"
@@ -17571,9 +17544,9 @@ msgstr ""
 msgid "Failed to parse file: %s"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Failed to parse labels: %s"
-msgstr "Optiuni tabel"
+msgstr ""
 
 #, python-format
 msgid "Failed to parse performance data string: %s"
@@ -17609,13 +17582,13 @@ msgstr ""
 msgid "Failed to render value: %r"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Failed to search rule of ruleset '%s' in folder '%s' (%r): %s"
-msgstr "%d reguli de notificări globale"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Failed to send %s notifications to the following users:"
-msgstr "(nu trimite notificări câtre Event Console)"
+msgstr ""
 
 #, python-format
 msgid ""
@@ -17700,9 +17673,8 @@ msgstr ""
 msgid "Failover State: NONE"
 msgstr ""
 
-#, fuzzy
 msgid "Failover states"
-msgstr "%d setări de Filtrare"
+msgstr ""
 
 msgid "Failures of the join launcher service"
 msgstr ""
@@ -17743,9 +17715,8 @@ msgstr ""
 msgid "Fans"
 msgstr ""
 
-#, fuzzy
 msgid "Favorite entry of user"
-msgstr "%d întrări preferate de la %d utilizatori"
+msgstr ""
 
 msgid "Favorites"
 msgstr ""
@@ -17883,9 +17854,8 @@ msgstr ""
 msgid "File Name"
 msgstr "Editeaza regulile de loguri"
 
-#, fuzzy
 msgid "File Parsing Settings"
-msgstr "%d setări de Filtrare"
+msgstr ""
 
 msgid "File Size Levels"
 msgstr ""
@@ -18051,9 +18021,8 @@ msgstr "%s nu este un număr întreg valid."
 msgid "Filter / Search"
 msgstr ""
 
-#, fuzzy
 msgid "Filter Host"
-msgstr "%d setări de Filtrare"
+msgstr ""
 
 #, fuzzy
 msgid "Filter aggregations"
@@ -18102,9 +18071,8 @@ msgstr ""
 msgid "Filters"
 msgstr ""
 
-#, fuzzy
 msgid "Final notification result"
-msgstr "%d reguli de notificări globale"
+msgstr ""
 
 msgid "Final string to send"
 msgstr ""
@@ -18273,9 +18241,8 @@ msgstr ""
 msgid "Flexible downtime duration:"
 msgstr ""
 
-#, fuzzy
 msgid "Flexible notification rule"
-msgstr "%d reguli de notificări globale"
+msgstr ""
 
 #, fuzzy
 msgid "Floating point number"
@@ -18308,9 +18275,9 @@ msgstr ""
 msgid "Folder %s does not exist"
 msgstr "Un utilizator cu id-ul \"%s\" nu există."
 
-#, fuzzy, python-format
+#, python-format
 msgid "Folder %s not found."
-msgstr "de sus in jos"
+msgstr ""
 
 #, fuzzy
 msgid "Folder Selection"
@@ -18414,9 +18381,9 @@ msgstr ""
 msgid "For all SIDs"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "For all hosts on site %s"
-msgstr "Un titlu pentru view"
+msgstr ""
 
 msgid ""
 "For consumable supplies, this is configured as the percentage of remaining "
@@ -18516,13 +18483,11 @@ msgstr ""
 msgid "For this %s"
 msgstr "%s acest site"
 
-#, fuzzy
 msgid "For this host"
-msgstr " pentru elementul %s"
+msgstr ""
 
-#, fuzzy
 msgid "For this service"
-msgstr "%s acest site"
+msgstr ""
 
 msgid ""
 "For your Kubernetes cluster select for which entity levels you would like to "
@@ -18590,6 +18555,10 @@ msgstr "Grup nou"
 
 #, fuzzy
 msgid "Forecast Model Configuration"
+msgstr "Activare Configurare"
+
+#, fuzzy
+msgid "Forecast Parametrization"
 msgstr "Activare Configurare"
 
 msgid "Forecast Trend (Slow)"
@@ -19128,9 +19097,8 @@ msgstr ""
 msgid "Global memory bound"
 msgstr "Nivelurile maxime pentru voltaj"
 
-#, fuzzy
 msgid "Global notification rule"
-msgstr "%d reguli de notificări globale"
+msgstr ""
 
 msgid "Global notification rules"
 msgstr ""
@@ -19148,9 +19116,9 @@ msgstr ""
 msgid "Global settings for Checkmk, Multisite and the monitoring core."
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Global settings matching '%s'"
-msgstr "Setari"
+msgstr ""
 
 #, fuzzy
 msgid "Globally enforced"
@@ -19174,9 +19142,9 @@ msgstr ""
 msgid "Go up one tree level"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Going to update %d sites"
-msgstr "Stare adiministrativă"
+msgstr ""
 
 #, fuzzy
 msgid "Got invalid data"
@@ -19294,9 +19262,8 @@ msgstr ""
 msgid "Graphs for averaged single-core utilizations"
 msgstr ""
 
-#, fuzzy
 msgid "Graphs for individual cores"
-msgstr " pentru elementul %s"
+msgstr ""
 
 msgid "Graphs of services with description:"
 msgstr ""
@@ -19425,9 +19392,8 @@ msgstr ""
 msgid "Grouping applies to"
 msgstr "sesiuni"
 
-#, fuzzy
 msgid "Grouping condition"
-msgstr "%d condiții"
+msgstr ""
 
 #, fuzzy
 msgid "Grouping expression"
@@ -19442,9 +19408,8 @@ msgstr ""
 msgid "Groups on cluster"
 msgstr ""
 
-#, fuzzy
 msgid "Groups on single host"
-msgstr " pentru elementul %s"
+msgstr ""
 
 #, fuzzy
 msgid "Groups to custom user attributes"
@@ -19527,9 +19492,9 @@ msgstr ""
 msgid "HTTP"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "HTTP %s errors"
-msgstr "afiseaza erori"
+msgstr ""
 
 #, fuzzy
 msgid "HTTP 3/4/5XX Errors"
@@ -19618,9 +19583,8 @@ msgstr ""
 msgid "HW container"
 msgstr ""
 
-#, fuzzy
 msgid "HW containers"
-msgstr "%d condiții"
+msgstr ""
 
 msgid "HW/SW inventory"
 msgstr ""
@@ -19771,9 +19735,8 @@ msgstr ""
 msgid "Has Inventory Data"
 msgstr ""
 
-#, fuzzy
 msgid "Has changed"
-msgstr "%d schimbări"
+msgstr ""
 
 msgid "Has never been activated"
 msgstr ""
@@ -19957,7 +19920,7 @@ msgid ""
 "This can save quite a lot of CPU load on larger systems."
 msgstr ""
 
-#  georgem ###
+# georgem ###
 #, fuzzy
 msgid ""
 "Here you can configure which messages should be discovered and reported from "
@@ -20390,9 +20353,8 @@ msgstr ""
 msgid "Hidden"
 msgstr ""
 
-#, fuzzy
 msgid "Hide Checkmk version"
-msgstr " Parametrul este: %r"
+msgstr ""
 
 #, fuzzy
 msgid "Hide analysis"
@@ -20591,9 +20553,9 @@ msgid ""
 "folder=&mode=changelog\">activate changes page</a> for further information."
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Host %s not known in ntopng"
-msgstr "de sus in jos"
+msgstr ""
 
 #, fuzzy
 msgid "Host & service events"
@@ -20611,9 +20573,9 @@ msgstr "(fără Nivel de serviciu)"
 msgid "Host Address"
 msgstr "Adresă"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Host Address %s"
-msgstr "Adresă"
+msgstr ""
 
 #, fuzzy
 msgid "Host Alert"
@@ -20679,9 +20641,9 @@ msgstr "Numele Elementului"
 msgid "Host Labels"
 msgstr "Numele Elementului"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Host Name %s"
-msgstr "Numele Elementului"
+msgstr ""
 
 msgid "Host Parent/Child topology"
 msgstr ""
@@ -20810,9 +20772,9 @@ msgstr ""
 msgid "Host customer"
 msgstr "Numele Elementului"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Host does not have tag <b>%s</b>"
-msgstr "<b>Nu ai definit nici un rol</b>"
+msgstr ""
 
 #, fuzzy
 msgid "Host down"
@@ -20851,9 +20813,9 @@ msgstr ""
 msgid "Host has software package"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Host has tag <b>%s</b>"
-msgstr "Numele Elementului"
+msgstr ""
 
 msgid "Host hover menu shown in BI visualization"
 msgstr ""
@@ -20952,9 +20914,8 @@ msgstr "Numele Elementului"
 msgid "Host name (as sent by syslog)"
 msgstr "(setat de câtre syslog)"
 
-#, fuzzy
 msgid "Host name used for containers"
-msgstr "%d condiții"
+msgstr ""
 
 msgid "Host network"
 msgstr ""
@@ -20976,9 +20937,9 @@ msgid ""
 "Host or Service must be in the following service level to get notification"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Host or service %ss"
-msgstr "serviciu"
+msgstr ""
 
 msgid ""
 "Host or service must be in the following service level to get notification"
@@ -21012,9 +20973,9 @@ msgstr ""
 msgid "Host properties"
 msgstr "Grup nou"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Host properties of: %s"
-msgstr "Grup nou"
+msgstr ""
 
 msgid "Host related aggregations"
 msgstr ""
@@ -21054,13 +21015,11 @@ msgstr ""
 msgid "Host state (first character)"
 msgstr ""
 
-#, fuzzy
 msgid "Host state translation"
-msgstr "%d traduceri"
+msgstr ""
 
-#, fuzzy
 msgid "Host statistics"
-msgstr " Se potriveste grupurilor: %s"
+msgstr ""
 
 msgid "Host status"
 msgstr ""
@@ -21113,13 +21072,13 @@ msgstr ""
 msgid "Host: %s"
 msgstr "(altul: %s)"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Host: %s is <b>%s</b>"
-msgstr "Numele Elementului"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Host: %s is <b>not</b> <b>%s</b>"
-msgstr "<b>Nu ai definit nici un rol</b>"
+msgstr ""
 
 #, fuzzy
 msgid "Hostaddress"
@@ -21198,13 +21157,11 @@ msgstr ""
 msgid "Hosts Connected"
 msgstr ""
 
-#, fuzzy
 msgid "Hosts Contacted (as Client)"
-msgstr " Se potriveste grupurilor: %s"
+msgstr ""
 
-#, fuzzy
 msgid "Hosts Contacts (as Server)"
-msgstr " Se potriveste grupurilor: %s"
+msgstr ""
 
 #, fuzzy
 msgid "Hosts and Folders"
@@ -22674,9 +22631,8 @@ msgstr ""
 msgid "Ignore TLS errors"
 msgstr ""
 
-#, fuzzy
 msgid "Ignore acknowledged events"
-msgstr "Confirmată %s"
+msgstr ""
 
 msgid "Ignore certificate errors (unsecure)"
 msgstr ""
@@ -22797,9 +22753,8 @@ msgstr ""
 msgid "Import"
 msgstr ""
 
-#, fuzzy
 msgid "Import Hosts"
-msgstr " pentru elementul %s"
+msgstr ""
 
 msgid "Import hosts via CSV file"
 msgstr ""
@@ -23331,6 +23286,10 @@ msgstr "Conexiuni Active"
 msgid "InfluxDB connections"
 msgstr "Conexiune Noua"
 
+#, fuzzy
+msgid "InfluxDB instance"
+msgstr "Adaugă instanță NGINX"
+
 # georgem ##############
 #, fuzzy
 msgid "InfluxDB service rules"
@@ -23642,9 +23601,9 @@ msgid "Interface"
 msgstr ""
 
 # georgem ##############
-#, fuzzy, python-format
+#, python-format
 msgid "Interface %s"
-msgstr "Grup nou"
+msgstr ""
 
 # georgem ##############
 #, fuzzy
@@ -23753,9 +23712,9 @@ msgstr ""
 msgid "Interval:"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Invalid %s address: %s"
-msgstr " Parametrul este: %r"
+msgstr ""
 
 msgid "Invalid (Not loaded)"
 msgstr ""
@@ -23767,9 +23726,9 @@ msgstr ""
 msgid "Invalid DCD command: %r"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Invalid IPv4 address: %s"
-msgstr " Parametrul este: %r"
+msgstr ""
 
 #, python-format
 msgid "Invalid None argument at for %s idx %d"
@@ -23820,13 +23779,12 @@ msgstr ""
 msgid "Invalid call: The snapshot is missing."
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Invalid certificate file: %s"
-msgstr " Parametrul este: %r"
+msgstr ""
 
-#, fuzzy
 msgid "Invalid check parameter"
-msgstr " Parametrul este: %r"
+msgstr ""
 
 msgid "Invalid check type"
 msgstr ""
@@ -23854,9 +23812,9 @@ msgstr ""
 msgid "Invalid end time given"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Invalid expected callable for %s at idx %d: %r"
-msgstr " Parametrul este: %r"
+msgstr ""
 
 #, fuzzy
 msgid "Invalid file name"
@@ -23887,13 +23845,13 @@ msgstr ""
 msgid "Invalid graph specification type \"%s\" given"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Invalid graph type '%s'"
-msgstr " Parametrul este: %r"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Invalid graph type: %s"
-msgstr " Parametrul este: %r"
+msgstr ""
 
 msgid ""
 "Invalid group name. Only the characters a-z, A-Z, 0-9, _, . and - are "
@@ -23915,13 +23873,13 @@ msgstr ""
 msgid "Invalid ident"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Invalid ident: %s"
-msgstr " Parametrul este: %r"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Invalid key(s): %s"
-msgstr " Parametrul este: %r"
+msgstr ""
 
 msgid "Invalid login credentials."
 msgstr ""
@@ -23943,13 +23901,12 @@ msgstr "Nume tablespace"
 msgid "Invalid package part"
 msgstr "Nume tablespace"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Invalid parameter %r: %s"
-msgstr " Parametrul este: %r"
+msgstr ""
 
-#, fuzzy
 msgid "Invalid pass phrase"
-msgstr " Parametrul este: %r"
+msgstr ""
 
 #, python-format
 msgid "Invalid path in inventory tree: '%s' >> %s"
@@ -23959,9 +23916,9 @@ msgstr ""
 msgid "Invalid perfometer declaration: %r"
 msgstr " Parametrul este: %r"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Invalid perfometer type: %s"
-msgstr " Parametrul este: %r"
+msgstr ""
 
 msgid "Invalid regular expression"
 msgstr ""
@@ -23994,9 +23951,9 @@ msgstr ""
 msgid "Invalid rule <tt>%s</tt>"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Invalid sidebar element %s"
-msgstr " Parametrul este: %r"
+msgstr ""
 
 msgid "Invalid site"
 msgstr ""
@@ -24021,9 +23978,9 @@ msgstr ""
 msgid "Invalid start time given"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Invalid subscription %s date"
-msgstr "foloseste descrierea"
+msgstr ""
 
 #, fuzzy
 msgid "Invalid subscription period. Must be at least one year"
@@ -24043,18 +24000,18 @@ msgstr ""
 msgid "Invalid time format '<tt>%s</tt>', please use <tt>24:00</tt> format."
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Invalid time resolution key \"%s\" given"
-msgstr " pe siteul de monitorizare: "
+msgstr ""
 
 msgid ""
 "Invalid timeperiod name. Only the characters a-z, A-Z, 0-9, _ and - are "
 "allowed."
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Invalid timestep \"%d\" given"
-msgstr " pe siteul de monitorizare: "
+msgstr ""
 
 msgid "Invalid topic"
 msgstr ""
@@ -24063,13 +24020,12 @@ msgstr ""
 msgid "Invalid topology_config %r"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Invalid topology_settings %r"
-msgstr "%d setări de Filtrare"
+msgstr ""
 
-#, fuzzy
 msgid "Invalid transaction"
-msgstr "%d traduceri"
+msgstr ""
 
 msgid "Invalid type specified."
 msgstr ""
@@ -24077,13 +24033,12 @@ msgstr ""
 msgid "Invalid user authentication"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Invalid user connection: %s"
-msgstr "Conexiune Noua"
+msgstr ""
 
-#, fuzzy
 msgid "Invalid user input"
-msgstr " Parametrul este: %r"
+msgstr ""
 
 msgid "Invalid valid for based on. Must be id of builtin rule."
 msgstr ""
@@ -24419,9 +24374,8 @@ msgstr "Atribute personalizate"
 msgid "Jira instance to query"
 msgstr "Adaugă instanță pentru monitorizare"
 
-#, fuzzy
 msgid "Jira statistics"
-msgstr " Se potriveste grupurilor: %s"
+msgstr ""
 
 msgid "Jira workflow"
 msgstr ""
@@ -24511,9 +24465,9 @@ msgstr ""
 msgid "Juniper Memory Usage"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Juniper Memory Usage (%s)"
-msgstr "% utilizare"
+msgstr ""
 
 msgid "Juniper Modules Memory Usage"
 msgstr ""
@@ -24555,9 +24509,8 @@ msgstr ""
 msgid "Keepalive"
 msgstr ""
 
-#, fuzzy
 msgid "Keepalived Parameters"
-msgstr " Parametrul este: %r"
+msgstr ""
 
 msgid "Kelvin"
 msgstr ""
@@ -24840,9 +24793,9 @@ msgstr ""
 msgid "Last"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Last %d %s"
-msgstr " în %d zile"
+msgstr ""
 
 #, fuzzy
 msgid "Last 25 hours"
@@ -24852,9 +24805,8 @@ msgstr "2 ore"
 msgid "Last 3 months"
 msgstr "2 ore"
 
-#, fuzzy
 msgid "Last 35 days"
-msgstr " în %d zile"
+msgstr ""
 
 #, fuzzy
 msgid "Last 6 months"
@@ -24864,9 +24816,8 @@ msgstr "2 ore"
 msgid "Last Change"
 msgstr "Nici o schimbare"
 
-#, fuzzy
 msgid "Last Contact"
-msgstr " Se potriveste grupurilor: %s"
+msgstr ""
 
 #, fuzzy
 msgid "Last Download"
@@ -24918,9 +24869,8 @@ msgstr "Numele Elementului"
 msgid "Last host check is not recent enough"
 msgstr ""
 
-#, fuzzy
 msgid "Last known details"
-msgstr " în %d zile"
+msgstr ""
 
 msgid "Last known summary"
 msgstr ""
@@ -24931,9 +24881,8 @@ msgstr ""
 msgid "Last progress info"
 msgstr ""
 
-#, fuzzy
 msgid "Last progress update"
-msgstr " Se potriveste grupurilor: %s"
+msgstr ""
 
 #, fuzzy
 msgid "Last put age"
@@ -25426,9 +25375,9 @@ msgstr "Nivelurile maxime pentru voltaj"
 msgid "Levels for swap usage"
 msgstr "Nivelurile maxime pentru voltaj"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Levels for the %s %s size"
-msgstr "Nivelurile maxime pentru voltaj"
+msgstr ""
 
 msgid "Levels for the Tablespace size"
 msgstr ""
@@ -25517,9 +25466,9 @@ msgstr "Nivelurile maxime pentru voltaj"
 msgid "Levels for wait"
 msgstr "Nivelurile maxime pentru voltaj"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Levels of %s %s"
-msgstr "Nivel-urile absolute de licențe neutilizate"
+msgstr ""
 
 msgid "Levels of active sessions"
 msgstr ""
@@ -25537,9 +25486,9 @@ msgstr "Nivel-urile absolute de licențe neutilizate"
 msgid "Levels of folders to create"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Levels on %s single-request consumption"
-msgstr "Nivel-urile absolute de licențe neutilizate"
+msgstr ""
 
 msgid "Levels on CPU utilization of a single process"
 msgstr ""
@@ -25964,9 +25913,9 @@ msgstr ""
 msgid "List grouped interfaces separately"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "List of %s"
-msgstr "% din Flash"
+msgstr ""
 
 msgid ""
 "List of all aggregations, containing the name of aggregations and state "
@@ -26085,9 +26034,9 @@ msgstr ""
 msgid "Livestatus encryption"
 msgstr "Conexiuni Active"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Livestatus encryption of %s"
-msgstr "Conexiuni Active"
+msgstr ""
 
 msgid "Livestatus error"
 msgstr ""
@@ -26490,9 +26439,9 @@ msgstr " pentru hostul %s"
 msgid "Logfile patterns of logfile %s on all hosts"
 msgstr " pentru hostul %s"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Logfile patterns of logfile %s on host %s"
-msgstr " pentru hostul %s"
+msgstr ""
 
 #, fuzzy
 msgid "Logfiles"
@@ -26506,9 +26455,9 @@ msgstr ""
 msgid "Logfiles of host %s"
 msgstr " pentru hostul %s"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Logged out of remote site %s"
-msgstr "(Nu trimite site-ului de la distanță)"
+msgstr ""
 
 msgid "Logged out."
 msgstr ""
@@ -27027,9 +26976,8 @@ msgstr ""
 msgid "MSSQL Transactionlog Sizes"
 msgstr ""
 
-#, fuzzy
 msgid "MSSQL Transactions"
-msgstr "%d traduceri"
+msgstr ""
 
 msgid "MSSQL Version"
 msgstr ""
@@ -27374,6 +27322,19 @@ msgstr ""
 msgid "Map channel state to service state"
 msgstr " pe siteul de monitorizare: "
 
+#, fuzzy
+msgid "Map combinations of operational and admin state"
+msgstr "Optiuni tabel"
+
+msgid ""
+"Map combinations of the operational state (<tt>ifOperStatus</tt>) and the "
+"admin state (<tt>ifAdminStatus</tt>) to a monitoring state. Here, you can "
+"for example configure that an interface which is down <i>and</i> admin down "
+"should be considered OK. Such a setting will only apply to interfaces "
+"matching the operational <i>and</i> the admin state. For example, an "
+"interface which is down but admin up would not be affected. "
+msgstr ""
+
 msgid "Map data relating to VMs"
 msgstr ""
 
@@ -27411,6 +27372,10 @@ msgstr " pe siteul de monitorizare: "
 #, fuzzy
 msgid "Map mount point names"
 msgstr " pe siteul de monitorizare: "
+
+#, fuzzy
+msgid "Map operational and admin state independently"
+msgstr "Optiuni tabel"
 
 #, fuzzy
 msgid "Map operational states"
@@ -27463,6 +27428,10 @@ msgstr " pe siteul de monitorizare: "
 msgid "Mapping of MTree state to monitoring state"
 msgstr " pe siteul de monitorizare: "
 
+#, fuzzy
+msgid "Mapping of operational and admin state to monitoring state"
+msgstr " pe siteul de monitorizare: "
+
 msgid "March"
 msgstr ""
 
@@ -27487,20 +27456,17 @@ msgstr ""
 msgid "Match"
 msgstr ""
 
-#, fuzzy
 msgid "Match Groups"
-msgstr " Se potriveste grupurilor: %s"
+msgstr ""
 
 msgid "Match admin states (SNMP with 64-bit counters only)"
 msgstr ""
 
-#, fuzzy
 msgid "Match all control groups"
-msgstr " Se potriveste grupurilor: %s"
+msgstr ""
 
-#, fuzzy
 msgid "Match all interfaces"
-msgstr " Se potriveste grupurilor: %s"
+msgstr ""
 
 msgid "Match all nodes"
 msgstr ""
@@ -27521,17 +27487,14 @@ msgstr ""
 msgid "Match check plugin output"
 msgstr "Output adițional de la Plugin"
 
-#, fuzzy
 msgid "Match check types"
-msgstr " Se potriveste grupurilor: %s"
+msgstr ""
 
-#, fuzzy
 msgid "Match contact groups"
-msgstr " Se potriveste grupurilor: %s"
+msgstr ""
 
-#, fuzzy
 msgid "Match contacts"
-msgstr " Se potriveste grupurilor: %s"
+msgstr ""
 
 msgid "Match event comment"
 msgstr ""
@@ -27543,9 +27506,8 @@ msgstr ""
 msgid "Match folder"
 msgstr "Folder nou"
 
-#, fuzzy
 msgid "Match folders"
-msgstr " Se potriveste grupurilor: %s"
+msgstr ""
 
 msgid "Match host"
 msgstr ""
@@ -27553,26 +27515,24 @@ msgstr ""
 msgid "Match host event type"
 msgstr ""
 
-#, fuzzy
 msgid "Match host groups"
-msgstr " Se potriveste grupurilor: %s"
+msgstr ""
 
 #, fuzzy
 msgid "Match host labels"
 msgstr "Verificări active"
 
-#, fuzzy
 msgid "Match host tags"
-msgstr " pentru elementul %s"
+msgstr ""
 
 #, fuzzy
 msgid "Match hosts"
 msgstr "Cautare"
 
 # georgem ##############
-#, fuzzy, python-format
+#, python-format
 msgid "Match interface %s (regex)"
-msgstr "Grup nou"
+msgstr ""
 
 #, fuzzy
 msgid "Match notification comment"
@@ -27587,17 +27547,14 @@ msgstr ""
 msgid "Match original source IP address"
 msgstr ""
 
-#, fuzzy
 msgid "Match port states"
-msgstr " Se potriveste grupurilor: %s"
+msgstr ""
 
-#, fuzzy
 msgid "Match port types"
-msgstr " Se potriveste grupurilor: %s"
+msgstr ""
 
-#, fuzzy
 msgid "Match process path"
-msgstr " Se potriveste grupurilor: %s"
+msgstr ""
 
 msgid "Match service event type"
 msgstr ""
@@ -27623,13 +27580,11 @@ msgstr ""
 msgid "Match services"
 msgstr "servicii"
 
-#, fuzzy
 msgid "Match site"
-msgstr " Se potriveste grupurilor: %s"
+msgstr ""
 
-#, fuzzy
 msgid "Match sites"
-msgstr " Se potriveste grupurilor: %s"
+msgstr ""
 
 msgid "Match syslog application (tag)"
 msgstr ""
@@ -27644,9 +27599,8 @@ msgstr ""
 msgid "Match textual description"
 msgstr "foloseste descrierea"
 
-#, fuzzy
 msgid "Match the alias"
-msgstr " Se potriveste grupurilor: %s"
+msgstr ""
 
 msgid "Match the hosts with..."
 msgstr ""
@@ -27813,9 +27767,9 @@ msgstr "Dimensiunea maxima pentru cel mai mic fisier"
 msgid "Maximum"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Maximum %s instances of duration greater than %s"
-msgstr "Distanta maxima pana la gateway (TTL)"
+msgstr ""
 
 #, fuzzy
 msgid "Maximum Age for RMAN backups"
@@ -28034,9 +27988,9 @@ msgstr "Numarul maxim de conexiuni"
 msgid "Maximum number of messages"
 msgstr "Numarul maxim de mesaje"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Maximum number of nodes exceeded %d/%d"
-msgstr "Numarum maxim de biti pentru primire"
+msgstr ""
 
 msgid "Maximum number of parsed lines per log file"
 msgstr "Numarul maxim de linii parsate per fisier de loguri"
@@ -28190,9 +28144,9 @@ msgstr ""
 msgid "McAfee web gateway statistics"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Mean %s"
-msgstr "Cautare"
+msgstr ""
 
 msgid "Mean time in queue for the last few messages."
 msgstr ""
@@ -28423,9 +28377,8 @@ msgstr "Mesajul Text"
 msgid "Message count"
 msgstr ""
 
-#, fuzzy
 msgid "Message for host alerts"
-msgstr " pentru elementul %s"
+msgstr ""
 
 msgid "Message for service alerts"
 msgstr ""
@@ -28698,9 +28651,9 @@ msgstr ""
 msgid "Missing Prerequisite"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Missing connection parameter: %s"
-msgstr "%d reguli de notificări globale"
+msgstr ""
 
 #, python-format
 msgid ""
@@ -28723,9 +28676,9 @@ msgstr ""
 msgid "Missing mandatory topology keys: %r"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Missing needed %s parameter."
-msgstr "(fără parametri)"
+msgstr ""
 
 msgid "Missing needed custom_graph parameter."
 msgstr ""
@@ -28736,15 +28689,19 @@ msgstr ""
 msgid "Missing or invalid mode. Allowed are 'agent' and 'status'"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Missing parameter \"%s\"."
-msgstr "(fără parametri)"
+msgstr ""
 
 msgid "Missing prediction data."
 msgstr ""
 
 msgid "Missing render parameter"
 msgstr ""
+
+#, fuzzy
+msgid "Missing required context information"
+msgstr "Informații Adiționale"
 
 #, python-format
 msgid "Missing required key(s): %s"
@@ -28823,13 +28780,13 @@ msgstr ""
 msgid "Modifications"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Modified %s attribute %s"
-msgstr "Atribute personalizate"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Modified BI aggregation %s"
-msgstr "Agregare noua"
+msgstr ""
 
 #, python-format
 msgid "Modified BI pack %s"
@@ -28853,9 +28810,9 @@ msgstr ""
 msgid "Modified folders: %d, modified hosts: %d, modified rulesets: %d"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Modified host %s."
-msgstr "(fără elemente)"
+msgstr ""
 
 #, python-format
 msgid "Modified rule pack %s"
@@ -28877,9 +28834,9 @@ msgstr ""
 msgid "Modified user: %s"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Modified users: %s"
-msgstr "(fără elemente)"
+msgstr ""
 
 msgid "Modify"
 msgstr ""
@@ -29036,9 +28993,8 @@ msgstr ""
 msgid "Monitored clustered services (located on cluster host)"
 msgstr ""
 
-#, fuzzy
 msgid "Monitored hosts"
-msgstr " pentru elementul %s"
+msgstr ""
 
 #, fuzzy
 msgid "Monitored jobs"
@@ -29100,25 +29056,25 @@ msgstr " pe siteul de monitorizare: "
 msgid "Monitoring state for any other service state"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Monitoring state if HAProxy frontend is %s"
-msgstr " pe siteul de monitorizare: "
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Monitoring state if HAProxy server is %s"
-msgstr " pe siteul de monitorizare: "
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Monitoring state if LED color is %s"
-msgstr " pe siteul de monitorizare: "
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Monitoring state if MTree state is '%s'"
-msgstr " pe siteul de monitorizare: "
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Monitoring state if VM state is %s"
-msgstr " pe siteul de monitorizare: "
+msgstr ""
 
 msgid "Monitoring state if a monitored service is not found at all."
 msgstr ""
@@ -29261,9 +29217,9 @@ msgstr ""
 msgid "Move this host to:"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Move to %s services"
-msgstr "Afectat de serviciu"
+msgstr ""
 
 #, fuzzy
 msgid "Move to folder:"
@@ -29311,14 +29267,14 @@ msgstr ""
 msgid "Moved from"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Moved host from \"%s\" to \"%s\""
-msgstr " pentru elementul %s"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "Moved rule %s from position #%d to #%d in ruleset \"%s\" in folder \"%s\""
-msgstr "%d reguli de notificări globale"
+msgstr ""
 
 #, python-format
 msgid "Moved rule %s to pack %s"
@@ -29804,9 +29760,8 @@ msgstr ""
 msgid "Negotiate SSL"
 msgstr ""
 
-#, fuzzy
 msgid "Neither"
-msgstr "(altul: %s)"
+msgstr ""
 
 msgid "Nested group memberships are resolved"
 msgstr ""
@@ -29883,9 +29838,9 @@ msgstr "Statusul Serverului"
 msgid "Network"
 msgstr "Adresă"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Network Adapter %d"
-msgstr "Adresă"
+msgstr ""
 
 #, fuzzy
 msgid "Network Adapters"
@@ -29957,9 +29912,8 @@ msgstr "Adresă"
 msgid "Network specification"
 msgstr ""
 
-#, fuzzy
 msgid "Network statistics"
-msgstr " Se potriveste grupurilor: %s"
+msgstr ""
 
 #, fuzzy, python-format
 msgid "Network statistics and flows of %s"
@@ -30011,9 +29965,9 @@ msgstr ""
 msgid "New"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "New %s"
-msgstr "Utilizator nou"
+msgstr ""
 
 msgid "New Action"
 msgstr ""
@@ -30060,6 +30014,10 @@ msgstr "Grup nou"
 msgid "New element"
 msgstr "Adaungă un nou element"
 
+#, fuzzy
+msgid "New entries"
+msgstr "% întrări libere"
+
 msgid "New event created"
 msgstr ""
 
@@ -30096,9 +30054,9 @@ msgstr "Element nou"
 msgid "New name"
 msgstr "Nume nou"
 
-#, fuzzy, python-format
+#, python-format
 msgid "New rule: %s"
-msgstr "%s regulă %s"
+msgstr ""
 
 msgid "New stored report"
 msgstr ""
@@ -30384,9 +30342,8 @@ msgstr "Conexiune Noua"
 msgid "No password given."
 msgstr ""
 
-#, fuzzy
 msgid "No pending changes"
-msgstr "%d schimbări"
+msgstr ""
 
 #, python-format
 msgid "No performance data: %s"
@@ -30979,9 +30936,9 @@ msgstr ""
 msgid "Notification rule"
 msgstr "Notificari"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Notification rule of user '%s'"
-msgstr "Notificari"
+msgstr ""
 
 msgid "Notification rules"
 msgstr ""
@@ -31238,9 +31195,8 @@ msgstr "Numarul maxim de mesaje"
 msgid "Number of busy executors"
 msgstr "Numarul maxim de conexiuni"
 
-#, fuzzy
 msgid "Number of changes since last dump"
-msgstr " pentru elementul %s"
+msgstr ""
 
 msgid "Number of channels to keep open"
 msgstr ""
@@ -31325,9 +31281,8 @@ msgstr ""
 msgid "Number of entries"
 msgstr "Cluster nou"
 
-#, fuzzy
 msgid "Number of excluded hosts"
-msgstr " pentru elementul %s"
+msgstr ""
 
 #, fuzzy
 msgid "Number of excluded services"
@@ -31371,9 +31326,8 @@ msgstr ""
 msgid "Number of hops"
 msgstr "Numele elementului pentru eveniment"
 
-#, fuzzy
 msgid "Number of hosts"
-msgstr " pentru elementul %s"
+msgstr ""
 
 msgid "Number of hosts in state DOWN (Host Group)"
 msgstr ""
@@ -32021,9 +31975,8 @@ msgstr ""
 msgid "On all sites"
 msgstr "Scaneaza toate elementele"
 
-#, fuzzy
 msgid "On down host"
-msgstr " pentru elementul %s"
+msgstr ""
 
 #, fuzzy
 msgid "On selected MIBs"
@@ -32168,9 +32121,8 @@ msgstr ""
 msgid "Only check during the following times of the day"
 msgstr ""
 
-#, fuzzy
 msgid "Only digits and dots are allowed in the version number."
-msgstr "%s nu este un număr întreg valid."
+msgstr ""
 
 #, fuzzy
 msgid "Only discover monitors in the following states"
@@ -32283,10 +32235,9 @@ msgid "Only show services in this states"
 msgstr ""
 "Arata doar elementele si serviciile pentru care utilizatorul este contact"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Only show the %s if show more is active"
 msgstr ""
-"Arata doar elementele si serviciile pentru care utilizatorul este contact"
 
 #, python-format
 msgid "Only str and unicode values are allowed, got %s"
@@ -32682,9 +32633,8 @@ msgstr "Setari"
 msgid "Other entity"
 msgstr "Setari"
 
-#, fuzzy
 msgid "Other hosts"
-msgstr " pentru elementul %s"
+msgstr ""
 
 #, fuzzy
 msgid "Other integrations"
@@ -33063,9 +33013,9 @@ msgstr ""
 msgid "Package"
 msgstr "Acces la Agenți"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Package %s"
-msgstr "Acces la Agenți"
+msgstr ""
 
 msgid "Package Version"
 msgstr ""
@@ -33406,9 +33356,8 @@ msgstr "Parola"
 msgid "Paste PEM Content"
 msgstr ""
 
-#, fuzzy
 msgid "Patch release"
-msgstr " Se potriveste grupurilor: %s"
+msgstr ""
 
 msgid "Path"
 msgstr ""
@@ -33475,9 +33424,8 @@ msgstr ""
 msgid "Paused"
 msgstr "(nefolosit)"
 
-#, fuzzy
 msgid "Paused containers"
-msgstr "%d condiții"
+msgstr ""
 
 msgid "Paused containers lower levels"
 msgstr ""
@@ -33510,9 +33458,8 @@ msgstr ""
 msgid "Pending Services of Site"
 msgstr "Afectat de serviciu"
 
-#, fuzzy
 msgid "Pending changes"
-msgstr "%d schimbări"
+msgstr ""
 
 msgid "Pending memory"
 msgstr ""
@@ -33535,13 +33482,11 @@ msgstr "(fără Nivel de serviciu)"
 msgid "Pending services"
 msgstr "Afectat de serviciu"
 
-#, fuzzy
 msgid "Pending tasks"
-msgstr "%d schimbări"
+msgstr ""
 
-#, fuzzy
 msgid "Pending tasks delta"
-msgstr "%d schimbări"
+msgstr ""
 
 msgid "Pending updates"
 msgstr ""
@@ -33628,13 +33573,13 @@ msgstr ""
 msgid "Percentage %s"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Percentage %s Requests"
-msgstr "trei nivele"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Percentage %s space"
-msgstr "spatiu utilizat"
+msgstr ""
 
 msgid "Percentage (0...100)"
 msgstr ""
@@ -33669,9 +33614,9 @@ msgstr "trei nivele"
 msgid "Percentage levels of current thread count in threadpool"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Percentage of HTTP %s errors"
-msgstr "trei nivele"
+msgstr ""
 
 #, fuzzy
 msgid "Percentage of HTTP 3/4/5XX Errors"
@@ -33780,9 +33725,9 @@ msgstr ""
 msgid "Percentual levels ->"
 msgstr "trei nivele"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Percentual levels for %s memory"
-msgstr "trei nivele"
+msgstr ""
 
 #, fuzzy
 msgid "Percentual levels for error rates"
@@ -33968,9 +33913,8 @@ msgstr ""
 msgid "Permitted"
 msgstr ""
 
-#, fuzzy
 msgid "Permitted Contact Groups"
-msgstr " Se potriveste grupurilor: %s"
+msgstr ""
 
 msgid "Permitted HW/SW inventory paths"
 msgstr ""
@@ -34024,13 +33968,13 @@ msgstr ""
 msgid "Phase"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Phase 1.1: Executing on site \"%s\""
-msgstr "Activare Schimbări!"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Phase 1.1: Fetching from site \"%s\""
-msgstr "Activare Schimbări!"
+msgstr ""
 
 #, fuzzy
 msgid "Phase 2.1: Extracting result"
@@ -34220,11 +34164,13 @@ msgid ""
 "The latter one is just being displayed as a further information."
 msgstr ""
 
-#, fuzzy
 msgid "Please add at least one child node."
-msgstr "%s nu este un număr întreg valid."
+msgstr ""
 
 msgid "Please add at least one column to your view."
+msgstr ""
+
+msgid "Please add the hostname here, eg. my_influxdb.com."
 msgstr ""
 
 msgid "Please check one metric you want to apply a transformation"
@@ -34243,9 +34189,8 @@ msgstr ""
 msgid "Please choose a PNG image."
 msgstr ""
 
-#, fuzzy
 msgid "Please choose a file to upload."
-msgstr "%s nu este un număr întreg valid."
+msgstr ""
 
 msgid "Please choose a report to schedule"
 msgstr ""
@@ -34253,9 +34198,8 @@ msgstr ""
 msgid "Please choose a target to perform the restore from."
 msgstr ""
 
-#, fuzzy
 msgid "Please choose a valid PNG image."
-msgstr "%s nu este un număr întreg valid."
+msgstr ""
 
 msgid "Please choose the check plugin"
 msgstr ""
@@ -34325,9 +34269,8 @@ msgstr ""
 msgid "Please enter a valid integer number"
 msgstr ""
 
-#, fuzzy
 msgid "Please enter a valid number"
-msgstr "%s nu este un număr întreg valid."
+msgstr ""
 
 msgid "Please enter a valid time of day range"
 msgstr ""
@@ -34406,13 +34349,12 @@ msgid ""
 "00:00 you need to select <i>last week</i>."
 msgstr ""
 
-#, fuzzy
 msgid "Please provide a valid name"
-msgstr "%s nu este un număr întreg valid."
+msgstr ""
 
 msgid ""
-"Please refer to the [cms_dashboards#host_problems|Checkmk user guide] for "
-"more details."
+"Please refer to the [dashboards#host_problems|Checkmk user guide] for more "
+"details."
 msgstr ""
 
 msgid ""
@@ -34423,29 +34365,23 @@ msgstr ""
 msgid "Please select a file."
 msgstr ""
 
-#, fuzzy
 msgid "Please select a graph."
-msgstr "%s nu este un număr întreg valid."
+msgstr ""
 
-#, fuzzy
 msgid "Please select a metric"
-msgstr "%s nu este un număr întreg valid."
+msgstr ""
 
-#, fuzzy
 msgid "Please select a number between 0 and 100"
-msgstr "%s nu este un număr întreg valid."
+msgstr ""
 
-#, fuzzy
 msgid "Please select a service"
-msgstr "%s nu este un număr întreg valid."
+msgstr ""
 
-#, fuzzy
 msgid "Please select at least one element"
-msgstr "%s nu este un număr întreg valid."
+msgstr ""
 
-#, fuzzy
 msgid "Please select at least one metric"
-msgstr "%s nu este un număr întreg valid."
+msgstr ""
 
 msgid "Please select at least one notification method."
 msgstr ""
@@ -34483,9 +34419,8 @@ msgid ""
 "in case that new host labels are found."
 msgstr ""
 
-#, fuzzy
 msgid "Please set a hostname for host state reclassification"
-msgstr "%s nu este un număr întreg valid."
+msgstr ""
 
 msgid "Please set a service description for service state reclassification"
 msgstr ""
@@ -34545,13 +34480,11 @@ msgstr ""
 msgid "Please specify an application name"
 msgstr ""
 
-#, fuzzy
 msgid "Please specify at least one \"Piggyback creation option\""
-msgstr "%s nu este un număr întreg valid."
+msgstr ""
 
-#, fuzzy
 msgid "Please specify at least one condition or this rule will never match."
-msgstr "%s nu este un număr întreg valid."
+msgstr ""
 
 msgid "Please specify at least one entry"
 msgstr ""
@@ -34572,9 +34505,8 @@ msgstr ""
 msgid "Please specify at least one time."
 msgstr ""
 
-#, fuzzy
 msgid "Please specify at least one type of levels"
-msgstr "%s nu este un număr întreg valid."
+msgstr ""
 
 msgid "Please specify at least one value"
 msgstr ""
@@ -34750,10 +34682,6 @@ msgid "Port number"
 msgstr "Portul TCO"
 
 #, fuzzy
-msgid "Port number for HTTPS connection to InfluxDB."
-msgstr "TCP port pentru conexiunile la agentul Check_MK"
-
-#, fuzzy
 msgid "Port number for HTTPS connection to vSphere"
 msgstr "TCP port pentru conexiunile la agentul Check_MK"
 
@@ -34913,9 +34841,8 @@ msgstr ""
 msgid "Predefined condition: <a href=\"%s\">%s</a>"
 msgstr ""
 
-#, fuzzy
 msgid "Predefined conditions"
-msgstr "%d condiții"
+msgstr ""
 
 #, fuzzy
 msgid "Predefined searches"
@@ -35124,9 +35051,9 @@ msgstr ""
 msgid "Prob."
 msgstr "Probleme"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Problem %s"
-msgstr "Probleme"
+msgstr ""
 
 #, fuzzy
 msgid "Problem aggregations"
@@ -35249,9 +35176,9 @@ msgstr "Numele Elementului"
 msgid "Processes"
 msgstr "Numele Elementului"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Processing first site %s"
-msgstr "Numele Elementului"
+msgstr ""
 
 msgid "Processing of Piggybacked Host Data"
 msgstr ""
@@ -35393,9 +35320,8 @@ msgstr ""
 msgid "Provide levels"
 msgstr "trei nivele"
 
-#, fuzzy
 msgid "Provide proxy settings"
-msgstr "%d setări de Filtrare"
+msgstr ""
 
 #, python-format
 msgid ""
@@ -35470,9 +35396,9 @@ msgstr ""
 msgid "Publish %s"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Publish %s to foreign contact groups"
-msgstr "<i>%d mai multe grupuri de contact</i><br>"
+msgstr ""
 
 msgid "Publish to all users"
 msgstr ""
@@ -35579,9 +35505,9 @@ msgstr ""
 msgid "Query"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Query %s resource"
-msgstr "Tagul Aplicatiei in syslog"
+msgstr ""
 
 msgid "Query Time Limit"
 msgstr ""
@@ -35787,9 +35713,8 @@ msgid ""
 "previous entry."
 msgstr ""
 
-#, fuzzy
 msgid "RRD consolidation"
-msgstr "%d condiții"
+msgstr ""
 
 #, fuzzy
 msgid "RRD data aggregated"
@@ -35855,29 +35780,24 @@ msgstr ""
 msgid "RX/TX"
 msgstr ""
 
-#, fuzzy
 msgid "RabbitMQ"
-msgstr " pentru elementul %s"
+msgstr ""
 
-#, fuzzy
 msgid "RabbitMQ cluster messages"
-msgstr " pentru elementul %s"
+msgstr ""
 
-#, fuzzy
 msgid "RabbitMQ cluster stats"
-msgstr " pentru elementul %s"
+msgstr ""
 
 #, fuzzy
 msgid "RabbitMQ instance to query"
 msgstr "Adaugă instanță pentru monitorizare"
 
-#, fuzzy
 msgid "RabbitMQ nodes"
-msgstr " pentru elementul %s"
+msgstr ""
 
-#, fuzzy
 msgid "RabbitMQ nodes GC"
-msgstr " pentru elementul %s"
+msgstr ""
 
 #, fuzzy
 msgid "RabbitMQ nodes filedescriptors"
@@ -35887,21 +35807,17 @@ msgstr "foloseste descrierea"
 msgid "RabbitMQ nodes processes"
 msgstr "sesiuni"
 
-#, fuzzy
 msgid "RabbitMQ nodes sockets"
-msgstr " pentru elementul %s"
+msgstr ""
 
-#, fuzzy
 msgid "RabbitMQ nodes uptime"
-msgstr " pentru elementul %s"
+msgstr ""
 
-#, fuzzy
 msgid "RabbitMQ queues"
-msgstr " pentru elementul %s"
+msgstr ""
 
-#, fuzzy
 msgid "RabbitMQ vhosts"
-msgstr " pentru elementul %s"
+msgstr ""
 
 #, fuzzy
 msgid "Radial layout"
@@ -36334,9 +36250,8 @@ msgid ""
 "by a few percent in situation with a high logging volume."
 msgstr ""
 
-#, fuzzy
 msgid "Regex for host alias"
-msgstr " pentru elementul %s"
+msgstr ""
 
 msgid "Regex for host name"
 msgstr ""
@@ -36679,9 +36594,9 @@ msgstr ""
 msgid "Removed auxiliary tag %s (%s)"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Removed disabled extension package %s"
-msgstr "Dezactiveaza Notificarile"
+msgstr ""
 
 msgid "Removed entries"
 msgstr ""
@@ -36705,9 +36620,9 @@ msgstr ""
 msgid "Removed tag group %s (%s)"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Removed the %s '%s'"
-msgstr " si %s 's'."
+msgstr ""
 
 #, python-format
 msgid "Removed unpackaged extension file %s: %s"
@@ -36729,9 +36644,8 @@ msgstr ""
 msgid "Rename host %s"
 msgstr " pentru elementul %s"
 
-#, fuzzy
 msgid "Rename multiple hosts"
-msgstr " pentru elementul %s"
+msgstr ""
 
 #, python-format
 msgid "Renamed %d hosts at the following places:<br><ul>%s</ul>"
@@ -36745,9 +36659,9 @@ msgstr ""
 msgid "Renamed host %s"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Renamed host condition from \"%s\" to \"%s\""
-msgstr " pentru elementul %s"
+msgstr ""
 
 #, python-format
 msgid "Renamed host from %s into %s."
@@ -37294,9 +37208,9 @@ msgstr ""
 msgid "Result"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Result of last %s process"
-msgstr "Optiuni tabel"
+msgstr ""
 
 msgid "Result of last synchronization process"
 msgstr ""
@@ -37478,9 +37392,8 @@ msgstr ""
 msgid "Rows"
 msgstr ""
 
-#, fuzzy
 msgid "Ruckus Spot"
-msgstr " pentru elementul %s"
+msgstr ""
 
 #, fuzzy
 msgid "Ruckus Spot Access Points"
@@ -37565,9 +37478,9 @@ msgstr ""
 msgid "Rule pack properties"
 msgstr "Proprietatile Folderului"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Rule package %s"
-msgstr "Reguli"
+msgstr ""
 
 #, fuzzy
 msgid "Rule packs"
@@ -38037,9 +37950,8 @@ msgid ""
 "management boards using SNMPv1."
 msgstr ""
 
-#, fuzzy
 msgid "SNMP rules"
-msgstr "%s regulă %s"
+msgstr ""
 
 msgid "SNMP trap processing"
 msgstr ""
@@ -38196,9 +38108,8 @@ msgstr "Numele Elementului"
 msgid "Sansymphony pool allocation"
 msgstr "trimite notificare"
 
-#, fuzzy
 msgid "Sansymphony unacknowlegded alerts"
-msgstr "Confirmată %s"
+msgstr ""
 
 msgid "Saturday"
 msgstr ""
@@ -38206,9 +38117,9 @@ msgstr ""
 msgid "Save"
 msgstr "Salveaza"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Save & go to %s"
-msgstr "Salveaza si mergi la"
+msgstr ""
 
 #, fuzzy
 msgid "Save & go to connection tests"
@@ -38238,9 +38149,9 @@ msgstr "Salveaza si Testeaza"
 msgid "Save filters & go to designer"
 msgstr "Salveaza si mergi la"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Save this %s and go to"
-msgstr "Salveaza si mergi la"
+msgstr ""
 
 #, fuzzy
 msgid "Save this host and go to"
@@ -38254,9 +38165,8 @@ msgstr ""
 msgid "Saved check configuration of host [%s] with %d services"
 msgstr ""
 
-#, fuzzy
 msgid "Saved read only settings"
-msgstr "%d setări de Filtrare"
+msgstr ""
 
 msgid "Scale to width of page"
 msgstr ""
@@ -38270,9 +38180,9 @@ msgstr ""
 msgid "Schedule"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Schedule downtime for %d %s"
-msgstr "Întreruperi adhoc"
+msgstr ""
 
 #, fuzzy
 msgid "Schedule downtime on host"
@@ -38374,9 +38284,9 @@ msgstr ""
 msgid "Search"
 msgstr "Cautare"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Search %s"
-msgstr "Cautare"
+msgstr ""
 
 msgid "Search all entries one level below the base DN"
 msgstr ""
@@ -38610,6 +38520,14 @@ msgstr ""
 #, fuzzy
 msgid "Section"
 msgstr "Acțiune"
+
+#, fuzzy
+msgid "Section Content"
+msgstr "Numele Aplicatiei"
+
+#, fuzzy
+msgid "Section Name"
+msgstr "Numele Aplicatiei"
 
 #, fuzzy
 msgid "Section name"
@@ -38937,6 +38855,10 @@ msgstr ""
 msgid "Sent"
 msgstr ""
 
+#, fuzzy, python-format
+msgid "Sent notification to: %s"
+msgstr "<p>Trimis notificare câtre: %s</p>"
+
 msgid "Sent vs Received Traffic Breakdown"
 msgstr ""
 
@@ -38990,9 +38912,9 @@ msgstr "Numele Elementului"
 msgid "Service"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Service %s"
-msgstr "serviciu"
+msgstr ""
 
 #, fuzzy
 msgid "Service Alert"
@@ -39094,6 +39016,10 @@ msgstr ""
 
 msgid "Service Speed-O-Meter"
 msgstr ""
+
+#, fuzzy
+msgid "Service State"
+msgstr "Statusul Serverului"
 
 #, fuzzy
 msgid "Service Status Grouping"
@@ -39377,9 +39303,8 @@ msgstr ""
 msgid "Service state percentage display options"
 msgstr ""
 
-#, fuzzy
 msgid "Service state translation"
-msgstr "%d traduceri"
+msgstr ""
 
 #, fuzzy
 msgid "Service statistics"
@@ -39601,9 +39526,8 @@ msgstr ""
 msgid "Set command timeout"
 msgstr "Conexiune Noua"
 
-#, fuzzy
 msgid "Set conditions"
-msgstr "%d condiții"
+msgstr ""
 
 #, fuzzy
 msgid "Set connection timeout"
@@ -40008,21 +39932,21 @@ msgstr "trimite notificare"
 msgid "Show \"Failed Actions\" and warn if any is present"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Show %s"
-msgstr "Arata in masa"
+msgstr ""
 
 #, fuzzy, python-format
 msgid "Show %ss for hosts"
 msgstr " pentru hostul %s"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Show %ss for hosts and services"
-msgstr "serviciu"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Show %ss for services"
-msgstr "serviciu"
+msgstr ""
 
 #, fuzzy
 msgid "Show / hide notification context"
@@ -40064,9 +39988,9 @@ msgstr ""
 msgid "Show all"
 msgstr "afiseaza toate"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Show all %s topics"
-msgstr "trimite notificare"
+msgstr ""
 
 #, fuzzy
 msgid "Show all hosts"
@@ -40159,9 +40083,8 @@ msgstr ""
 msgid "Show graph title on graph area"
 msgstr ""
 
-#, fuzzy
 msgid "Show graphs for the first"
-msgstr " pentru hostul %s"
+msgstr ""
 
 msgid "Show header with highlighted background"
 msgstr ""
@@ -40209,9 +40132,8 @@ msgstr "trimite notificare"
 msgid "Show just preliminary notifications"
 msgstr "(Nu primi notificări)"
 
-#, fuzzy
 msgid "Show last rename result"
-msgstr "Confirmă %s"
+msgstr ""
 
 msgid "Show legend"
 msgstr ""
@@ -40316,6 +40238,10 @@ msgstr ""
 
 msgid "Show stale hosts and services"
 msgstr ""
+
+#, fuzzy
+msgid "Show summary for not OK states"
+msgstr "(Nu primi notificări)"
 
 msgid ""
 "Show the dialog that can be used to update the dashboard context on initial "
@@ -40464,9 +40390,8 @@ msgstr "Adaugă element"
 msgid "Sidebar integration"
 msgstr ""
 
-#, fuzzy
 msgid "Sidebar position"
-msgstr "%d condiții"
+msgstr ""
 
 #, fuzzy
 msgid "Sidecar name"
@@ -40635,9 +40560,9 @@ msgstr ""
 msgid "Site"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Site %s"
-msgstr "Arata in masa"
+msgstr ""
 
 #, python-format
 msgid "Site %s is dead"
@@ -40919,9 +40844,8 @@ msgid ""
 "check interval for host checks</i> while the host is in soft non-UP state). "
 msgstr ""
 
-#, fuzzy
 msgid "Smarthosts"
-msgstr " pentru elementul %s"
+msgstr ""
 
 msgid "Smartping"
 msgstr ""
@@ -41390,9 +41314,8 @@ msgid ""
 "voltage levels are to apply. The list is sorted automatically when saving."
 msgstr ""
 
-#, fuzzy
 msgid "Specify input state evaluation"
-msgstr "%d traduceri"
+msgstr ""
 
 #, fuzzy
 msgid "Specify levels"
@@ -41453,9 +41376,8 @@ msgstr ""
 msgid "Specify mappings of remote IPs to cluster names"
 msgstr ""
 
-#, fuzzy
 msgid "Specify matching conditions"
-msgstr "%d condiții"
+msgstr ""
 
 msgid "Specify one, multiple or all sites this connection should run on."
 msgstr ""
@@ -41689,9 +41611,8 @@ msgstr ""
 msgid "Spot Instance Requests"
 msgstr ""
 
-#, fuzzy
 msgid "Spread over"
-msgstr " peste următoarele %d minute "
+msgstr ""
 
 msgid "Sproc Latency"
 msgstr ""
@@ -41715,9 +41636,8 @@ msgstr ""
 msgid "Stale"
 msgstr ""
 
-#, fuzzy
 msgid "Stale hosts"
-msgstr " pentru elementul %s"
+msgstr ""
 
 msgid "Stale services"
 msgstr ""
@@ -41841,9 +41761,9 @@ msgid ""
 "for further information."
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Starting site update: %s"
-msgstr "Setari"
+msgstr ""
 
 #, fuzzy
 msgid "Starting up"
@@ -42518,9 +42438,8 @@ msgstr "(Nu primi notificări)"
 msgid "Status of a single service, to be used for linking"
 msgstr ""
 
-#, fuzzy
 msgid "Status of host"
-msgstr " pentru elementul %s"
+msgstr ""
 
 #, python-format
 msgid "Status of last synchronization: <b>%s</b>"
@@ -42813,9 +42732,8 @@ msgstr ""
 msgid "Subject"
 msgstr ""
 
-#, fuzzy
 msgid "Subject for bulk notifications"
-msgstr "%d reguli de notificări globale"
+msgstr ""
 
 msgid "Subject for host notifications"
 msgstr ""
@@ -43569,9 +43487,8 @@ msgstr ""
 msgid "Tags can be used to classify hosts and services in a flexible way."
 msgstr ""
 
-#, fuzzy
 msgid "Tags of the Host"
-msgstr " pentru elementul %s"
+msgstr ""
 
 #, fuzzy
 msgid "Tags of the alert."
@@ -43739,9 +43656,9 @@ msgstr ""
 msgid "Template graphs"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Template: %s"
-msgstr "doua nivele"
+msgstr ""
 
 msgid "Temporarily disable <b>all</b> notifications!"
 msgstr "Dezactiveaza temporar <b>toate</b> notificarile!"
@@ -43772,9 +43689,8 @@ msgstr "Conexiune Noua"
 msgid "Test event generated and sent to Event Console."
 msgstr "(nu trimite notificări câtre Event Console)"
 
-#, fuzzy
 msgid "Test hostname before activation"
-msgstr "%d condiții"
+msgstr ""
 
 #, fuzzy
 msgid "Testing"
@@ -43790,9 +43706,8 @@ msgstr ""
 msgid "Text groups from regular expression match, separated by spaces"
 msgstr ""
 
-#, fuzzy
 msgid "Text logfiles (Linux, Solaris, Windows)"
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
 msgid "Text logfiles (Windows) - Deprecated (see help text)"
 msgstr ""
@@ -44699,9 +44614,8 @@ msgid ""
 "to ensure configuration integrity. Please try again."
 msgstr ""
 
-#, fuzzy
 msgid "The configured DN does not match the group base DN."
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
 #, fuzzy, python-format
 msgid "The configured SLA id '%s' no longer exists"
@@ -44717,13 +44631,11 @@ msgid ""
 "The configured User-ID attribute \"%s\" does not exist for the user \"%s\""
 msgstr ""
 
-#, fuzzy
 msgid "The configured custom graph does not exist."
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
-#, fuzzy
 msgid "The configured element does not exist."
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
 #, python-format
 msgid ""
@@ -44741,9 +44653,8 @@ msgid ""
 "permitted to use it. Please choose another one."
 msgstr ""
 
-#, fuzzy
 msgid "The configured site is not known to this site."
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
 msgid ""
 "The configured site is not known to this site. In case you are configuring "
@@ -44785,13 +44696,12 @@ msgid ""
 "The connect timeout in seconds when establishing a connection with the PLC."
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "The connection %r does not exist"
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
-#, fuzzy
 msgid "The connection to this site has been disabled."
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
 msgid ""
 "The contact information must not contain one of the characters <tt>;</tt> "
@@ -44859,9 +44769,8 @@ msgstr ""
 msgid "The customer ID %s does not exist."
 msgstr "Un utilizator cu id-ul \"%s\" nu există."
 
-#, fuzzy
 msgid "The dashboard element does not exist."
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
 msgid ""
 "The data for the background checks is recomputed at most in this interval."
@@ -44966,9 +44875,8 @@ msgstr ""
 msgid "The element can not be found on the dashboard."
 msgstr ""
 
-#, fuzzy
 msgid "The element does not exist."
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
 msgid ""
 "The email address and visible name used in the From header of notifications "
@@ -45444,20 +45352,17 @@ msgstr ""
 msgid "The last 25 hours"
 msgstr ""
 
-#, fuzzy
 msgid "The last 35 days"
-msgstr " în %d zile"
+msgstr ""
 
 msgid "The last 4 hours"
 msgstr ""
 
-#, fuzzy
 msgid "The last 400 days"
-msgstr " în %d zile"
+msgstr ""
 
-#, fuzzy
 msgid "The last 8 days"
-msgstr " în %d zile"
+msgstr ""
 
 #, python-format
 msgid "The last one was: <pre>%s</pre>"
@@ -45546,9 +45451,8 @@ msgstr ""
 msgid "The log level for user authentication related log entries."
 msgstr ""
 
-#, fuzzy
 msgid "The logfile does not exist on site."
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
 msgid "The login is currently locked"
 msgstr ""
@@ -45562,9 +45466,8 @@ msgstr ""
 msgid "The mail subject is used as syslog appliaction"
 msgstr ""
 
-#, fuzzy
 msgid "The mandatory group name is missing"
-msgstr " Parametrul este: %r"
+msgstr ""
 
 msgid "The match is performed case insensitive."
 msgstr ""
@@ -45843,8 +45746,9 @@ msgid ""
 "node."
 msgstr ""
 
-msgid "The notification has been sent via<br>"
-msgstr ""
+#, fuzzy
+msgid "The notification has been sent via"
+msgstr "Adaugă notificare"
 
 msgid "The notification is being processed"
 msgstr ""
@@ -45980,21 +45884,21 @@ msgstr ""
 msgid "The pager address is optional "
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "The parameter \"%s\" is missing."
-msgstr " Parametrul este: %r"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "The parameter \"%s\" is not a float."
-msgstr " Parametrul este: %r"
+msgstr ""
 
 #, python-format
 msgid "The parameter \"%s\" is not a valid URL."
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "The parameter \"%s\" is not an integer."
-msgstr " Parametrul este: %r"
+msgstr ""
 
 #, python-format
 msgid ""
@@ -46191,48 +46095,39 @@ msgstr ""
 msgid "The requested %s does not exist"
 msgstr "Un utilizator cu id-ul \"%s\" nu există."
 
-#, fuzzy
 msgid "The requested connection does not exist."
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
 msgid "The requested dashboard does not exist."
 msgstr ""
 
-#, fuzzy
 msgid "The requested element type does not exist."
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
-#, fuzzy
 msgid "The requested global setting does not exist."
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
-#, fuzzy
 msgid "The requested graph does not exist"
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
 #, fuzzy, python-format
 msgid "The requested item %s does not exist"
 msgstr "Un utilizator cu id-ul \"%s\" nu există."
 
-#, fuzzy
 msgid "The requested report does not exist."
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
-#, fuzzy
 msgid "The requested rule pack does not exist"
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
-#, fuzzy
 msgid "The requested rule pack does not exist."
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
-#, fuzzy
 msgid "The requested schedule does not exist."
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
-#, fuzzy
 msgid "The requested site does not exist"
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
 msgid "The requested user does not exist"
 msgstr ""
@@ -46280,9 +46175,8 @@ msgstr ""
 msgid "The rule conditions do not match."
 msgstr ""
 
-#, fuzzy
 msgid "The rule does not match"
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
 msgid ""
 "The rule gives the possibility to run any script using a given user account. "
@@ -46301,9 +46195,8 @@ msgstr ""
 msgid "The rule is only applied to hosts directly in or below this folder."
 msgstr ""
 
-#, fuzzy
 msgid "The rule pack you are trying to edit does not exist."
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
 msgid ""
 "The rule will only be applied to hosts fulfilling all of the host tag "
@@ -46314,9 +46207,8 @@ msgstr ""
 msgid "The rule would match, but matching is inverted."
 msgstr ""
 
-#, fuzzy
 msgid "The rule you are trying to edit does not exist."
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
 #, python-format
 msgid ""
@@ -46351,17 +46243,14 @@ msgstr ""
 msgid "The ruleset \"%s\" does not exist."
 msgstr "Un utilizator cu id-ul \"%s\" nu există."
 
-#, fuzzy
 msgid "The schedule you are trying to clone does not exist."
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
-#, fuzzy
 msgid "The schedule you are trying to delete does not exist."
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
-#, fuzzy
 msgid "The schedule you are trying to edit does not exist."
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
 msgid "The secret access key for your AWS account"
 msgstr ""
@@ -46385,9 +46274,8 @@ msgid ""
 "else."
 msgstr ""
 
-#, fuzzy
 msgid "The selected emblem does not exist."
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
 msgid "The selected file is empty. Please select a non-empty file."
 msgstr ""
@@ -46395,9 +46283,8 @@ msgstr ""
 msgid "The selected hosts have no explicit attributes"
 msgstr ""
 
-#, fuzzy
 msgid "The selected icon does not exist."
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
 msgid ""
 "The sensor description is a user defined text. If you use this option, you "
@@ -46564,9 +46451,8 @@ msgstr ""
 msgid "The status of this site has not yet been determined."
 msgstr ""
 
-#, fuzzy
 msgid "The stored report you are trying to delete does not exist."
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
 msgid ""
 "The stratum (\"distance\" to the reference clock) at which the check gets "
@@ -46627,9 +46513,9 @@ msgid ""
 "The tag '%s' is selected multiple times. A tag may be selected only once."
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "The tag ID \"%s\" does already exist in the list of auxiliary tags."
-msgstr "Un element cu acest nume există deja."
+msgstr ""
 
 #, python-format
 msgid "The tag ID \"%s\" is used twice."
@@ -46646,9 +46532,8 @@ msgstr ""
 msgid "The target has been deleted."
 msgstr ""
 
-#, fuzzy
 msgid "The target rule is no longer available"
-msgstr "%s by este element existent în aceasta selecție."
+msgstr ""
 
 msgid ""
 "The team secret of your SIGNL4 team. That is the last part of your webhook "
@@ -46759,16 +46644,14 @@ msgid ""
 "unspecified."
 msgstr ""
 
-#, fuzzy
 msgid "The top level rule does not exist."
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
 msgid "The total number of hosts and service with and without problems"
 msgstr ""
 
-#, fuzzy
 msgid "The total size of all indexes for the collection"
-msgstr "%s by este element existent în aceasta selecție."
+msgstr ""
 
 #, python-format
 msgid "The tuple must contain two elements, but you have %d"
@@ -46807,9 +46690,9 @@ msgid ""
 "levels below 100%."
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "The user %s used by the network scan of the folder %s does not exist."
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
 msgid "The user synchronization completed successfully."
 msgstr ""
@@ -46817,9 +46700,8 @@ msgstr ""
 msgid "The user synchronization failed."
 msgstr ""
 
-#, fuzzy
 msgid "The user you are trying to edit does not exist."
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
 msgid "The user you are trying to edit notification rules for does not exist."
 msgstr ""
@@ -46921,11 +46803,11 @@ msgid ""
 "datasource does not exist."
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "The view '%s' using the layout '%s' can not be rendered because the layout "
 "does not exist."
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
 msgid "The view is intended for NagStaMon as web service."
 msgstr ""
@@ -46955,17 +46837,14 @@ msgid ""
 "have changes, but may be offline or not logged in)."
 msgstr ""
 
-#, fuzzy
 msgid "There are no configured rules in this aggregation pack"
-msgstr "%s by este element existent în aceasta selecție."
+msgstr ""
 
-#, fuzzy
 msgid "There are no elements defined for this selection"
-msgstr "%s by este element existent în aceasta selecție."
+msgstr ""
 
-#, fuzzy
 msgid "There are no elements defined for this selection yet."
-msgstr "%s by este element existent în aceasta selecție."
+msgstr ""
 
 msgid "There are no elements for selection."
 msgstr ""
@@ -47046,9 +46925,8 @@ msgstr ""
 msgid "There job \"%s\" is not encrypted"
 msgstr ""
 
-#, fuzzy
 msgid "There was no change to activate"
-msgstr "%d schimbări"
+msgstr ""
 
 #, fuzzy
 msgid "Thermal information"
@@ -47280,25 +47158,21 @@ msgstr "Un utilizator cu id-ul \"%s\" nu există."
 msgid "This %s is one of your favorites"
 msgstr ""
 
-#, fuzzy
 msgid "This BI aggregation does not exist"
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
-#, fuzzy
 msgid "This BI pack does not exist."
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
 #, fuzzy, python-format
 msgid "This BI pack does not exist: %s"
 msgstr "Un utilizator cu id-ul \"%s\" nu există."
 
-#, fuzzy
 msgid "This BI rule does not exist"
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
-#, fuzzy
 msgid "This BI rule does not exist."
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
 msgid "This ID can not be used as custom attribute"
 msgstr ""
@@ -47365,9 +47239,8 @@ msgid ""
 "resource mib"
 msgstr ""
 
-#, fuzzy
 msgid "This aggregation does not exist."
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
 msgid "This aggregation is currently disabled."
 msgstr ""
@@ -47432,17 +47305,14 @@ msgid ""
 "system doesn't interfere with user activity."
 msgstr ""
 
-#, fuzzy
 msgid "This backup does not exist."
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
-#, fuzzy
 msgid "This backup job does not exist."
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
-#, fuzzy
 msgid "This backup target does not exist."
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
 msgid ""
 "This boolean variable allows you to bring check_mk into a dry run mode. No "
@@ -47645,9 +47515,8 @@ msgid ""
 "anymore until you assign it to an existing customer."
 msgstr ""
 
-#, fuzzy
 msgid "This customer does not exist."
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
 msgid ""
 "This dashboard gives you a general overview on the state of your monitored "
@@ -47746,13 +47615,11 @@ msgid ""
 "%s"
 msgstr ""
 
-#, fuzzy
 msgid "This group does not exist."
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
-#, fuzzy
 msgid "This host does not exist."
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
 #, python-format
 msgid "This host failed host tag condition '%s' (it has the tags %s)"
@@ -47836,9 +47703,8 @@ msgid ""
 "messages, not just the new ones. This leads to enormous amounts of data."
 msgstr ""
 
-#, fuzzy
 msgid "This is not a valid Checkmk version number"
-msgstr "%s nu este un număr întreg valid."
+msgstr ""
 
 msgid "This is not a valid Nagios timeperiod day specification."
 msgstr ""
@@ -48270,9 +48136,8 @@ msgstr ""
 msgid "This package cannot be installed: %s"
 msgstr ""
 
-#, fuzzy
 msgid "This package does not exist."
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
 msgid "This package does not yet contain any rules."
 msgstr ""
@@ -48284,9 +48149,8 @@ msgid ""
 "appointments are handled by this import."
 msgstr ""
 
-#, fuzzy
 msgid "This page does not provide an inline help."
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
 msgid "This page does not support cluster hosts."
 msgstr ""
@@ -48321,9 +48185,9 @@ msgstr ""
 msgid "This period has been reclassified as a scheduled downtime"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "This period has been reclassified in host state to state: %s"
-msgstr "Acces la modulul <i>Setări Globale</i>"
+msgstr ""
 
 #, python-format
 msgid "This period has been reclassified in service state to state: %s"
@@ -48543,13 +48407,11 @@ msgid ""
 "group. This is a prefix match regular expression."
 msgstr ""
 
-#, fuzzy
 msgid "This report does not exist."
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
-#, fuzzy
 msgid "This report element does not exist."
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
 msgid ""
 "This report shows the availability of BI aggregations in the time range "
@@ -48576,13 +48438,11 @@ msgid ""
 "number of pages."
 msgstr ""
 
-#, fuzzy
 msgid "This role does not exist."
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
-#, fuzzy
 msgid "This rule"
-msgstr "%s regulă %s"
+msgstr ""
 
 msgid ""
 "This rule activates an agent which connects to an ACME Session Border "
@@ -49497,9 +49357,8 @@ msgstr ""
 msgid "This sidebar element is only available on the manager's central site."
 msgstr ""
 
-#, fuzzy
 msgid "This site does not exist."
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
 #, python-format
 msgid "This site is %s"
@@ -49516,9 +49375,8 @@ msgstr "<b>șterge toți timpii morți programați</b> pentru "
 msgid "This site is not a distributed WATO site."
 msgstr ""
 
-#, fuzzy
 msgid "This site is not responding."
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
 msgid ""
 "This site is not the central site nor a replication remote site. You cannot "
@@ -49528,9 +49386,8 @@ msgstr ""
 msgid "This site is not update and needs a replication. Start it now."
 msgstr ""
 
-#, fuzzy
 msgid "This site is online."
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
 msgid "This site is up-to-date."
 msgstr ""
@@ -49561,9 +49418,8 @@ msgid ""
 "of Multisite."
 msgstr ""
 
-#, fuzzy
 msgid "This stored report does not exist."
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
 #, python-format
 msgid "This suffix is already used by connection %s.Please choose another one."
@@ -49595,9 +49451,8 @@ msgid ""
 "match."
 msgstr ""
 
-#, fuzzy
 msgid "This timeperiod does not exist."
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
 #, python-format
 msgid ""
@@ -49605,9 +49460,8 @@ msgid ""
 "a <tt>%s</tt> to insert the alias of your monitoring site to the title."
 msgstr ""
 
-#, fuzzy
 msgid "This user"
-msgstr "%s regulă %s"
+msgstr ""
 
 msgid "This user does not exist."
 msgstr ""
@@ -49681,16 +49535,14 @@ msgstr ""
 msgid "This view is intended for usage as web service for NagStaMon."
 msgstr ""
 
-#, fuzzy
 msgid "This virtual host tree does not exist."
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
 msgid "This week"
 msgstr ""
 
-#, fuzzy
 msgid "This werk does not exist."
-msgstr "Un utilizator cu id-ul \"%s\" nu există."
+msgstr ""
 
 msgid ""
 "This will automatically accept hitherto-unseen keysbut will refuse "
@@ -50128,6 +49980,10 @@ msgstr ""
 msgid "Timeline of"
 msgstr ""
 
+#, fuzzy, python-format
+msgid "Timeline of %s"
+msgstr "Portul TCP pentru conexiune"
+
 #, fuzzy
 msgid "Timemachine backup age"
 msgstr "Adaugă element"
@@ -50406,9 +50262,9 @@ msgstr "Adaugă filtre"
 msgid "Total"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Total %s vCPUs"
-msgstr "Numarul maxim de mesaje"
+msgstr ""
 
 #, fuzzy
 msgid "Total Active Sessions"
@@ -50889,9 +50745,8 @@ msgstr ""
 msgid "Transaction count"
 msgstr ""
 
-#, fuzzy
 msgid "Transactionlog"
-msgstr "%d traduceri"
+msgstr ""
 
 #, python-format
 msgid "Transfering: %d new, %d changed and %d vanished files"
@@ -51278,9 +51133,6 @@ msgstr ""
 msgid "URL to HiveManagerNG, e.g. https://cloud.aerohive.com"
 msgstr ""
 
-msgid "URL to InfluxDB, e.g. https://my_influxdb.com"
-msgstr ""
-
 msgid ""
 "URL to access the central site from the remote site, including the protocol "
 "(<tt>http://</tt> or <tt>https://</tt>) and </tt>/check_mk/</tt>. In case of "
@@ -51435,11 +51287,11 @@ msgid ""
 "Settings."
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "Unable to convert configuration into 2.0 format\n"
 "%s"
-msgstr "Adaugă configurație de ajustare"
+msgstr ""
 
 msgid "Unable to create parent folder(s)."
 msgstr ""
@@ -51582,13 +51434,11 @@ msgstr ""
 msgid "Unacknowledged incompatible Werks"
 msgstr "Confirmă Problemele"
 
-#, fuzzy
 msgid "Unacknowledged messages"
-msgstr "Confirmată %s"
+msgstr ""
 
-#, fuzzy
 msgid "Unacknowledged requests"
-msgstr "Confirmată %s"
+msgstr ""
 
 #, fuzzy
 msgid "Unallocated space"
@@ -51655,9 +51505,9 @@ msgstr ""
 msgid "Unhandled"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Unhandled exception: %s"
-msgstr "Adaugă Excepție"
+msgstr ""
 
 #, fuzzy
 msgid "Unhandled host problems"
@@ -51736,9 +51586,9 @@ msgstr ""
 msgid "Unknown match type: %s"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Unknown metric type %s"
-msgstr "% întrări libere"
+msgstr ""
 
 msgid "Unknown paths"
 msgstr ""
@@ -51755,21 +51605,21 @@ msgstr ""
 msgid "Unknown tag %s"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Unknown tag group \"%s\""
-msgstr "Eticheta de grup nou"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Unknown tag group %s"
-msgstr "Eticheta de grup nou"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Unknown tag: Host has <b>not</b> the tag <tt>%s</tt>"
-msgstr "<b>Nu ai definit nici un rol</b>"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Unknown tag: Host has the tag <tt>%s</tt>"
-msgstr "Eticheta de grup nou"
+msgstr ""
 
 #, fuzzy
 msgid "Unknown user"
@@ -51814,9 +51664,8 @@ msgstr ""
 msgid "Unregistered"
 msgstr ""
 
-#, fuzzy
 msgid "Unspecified."
-msgstr " Parametrul este: %r"
+msgstr ""
 
 #, python-format
 msgid "Unsupported image format of \"%s\" (invalid file extension)"
@@ -51837,9 +51686,8 @@ msgstr " pe siteul de monitorizare: "
 msgid "Until end of year"
 msgstr "licente nefolosite"
 
-#, fuzzy
 msgid "Untitled setting"
-msgstr "%d setări de Filtrare"
+msgstr ""
 
 #, fuzzy
 msgid "Unused BI Rules"
@@ -51944,9 +51792,8 @@ msgstr ""
 msgid "Updates will be <b>disabled</b> for this host: %s"
 msgstr ""
 
-#, fuzzy
 msgid "Updates will be enabled for this host."
-msgstr "%s acest site"
+msgstr ""
 
 msgid "Updating of search index started"
 msgstr ""
@@ -52421,9 +52268,9 @@ msgstr "Nivel-urile absolute de licențe neutilizate"
 msgid "Upper levels in percentage of limit"
 msgstr "Nivel-urile absolute de licențe neutilizate"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Upper levels on %s latency of successful %s requests"
-msgstr "Vechimea maxima a backup-urilor"
+msgstr ""
 
 #, fuzzy
 msgid "Upper levels on Point-to-site bandwidth in bytes per second"
@@ -52441,9 +52288,9 @@ msgstr "Nivelurile maxime pentru voltaj"
 msgid "Upper levels on number of Point-to-site connections"
 msgstr "Numarul maxim de conexiuni"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Upper levels on percentage of %s requests"
-msgstr "Nivel-urile exacte în bits sau bytes per secundă"
+msgstr ""
 
 #, fuzzy
 msgid "Upper levels on the oldest replication slot lag"
@@ -52474,9 +52321,9 @@ msgstr ""
 msgid "Upper percentual levels for HEAD requests"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Upper percentual levels for HTTP %s errors"
-msgstr "trei nivele"
+msgstr ""
 
 msgid "Upper percentual levels for LIST requests"
 msgstr ""
@@ -52749,9 +52596,8 @@ msgstr "Conexiune Noua"
 msgid "Use from environment"
 msgstr ""
 
-#, fuzzy
 msgid "Use global connection parameters"
-msgstr "%d reguli de notificări globale"
+msgstr ""
 
 msgid "Use global rule limit"
 msgstr ""
@@ -53350,9 +53196,8 @@ msgstr "Ascude regulile de utilizator"
 msgid "User interface"
 msgstr ""
 
-#, fuzzy
 msgid "User interface settings"
-msgstr "%d setări de Filtrare"
+msgstr ""
 
 msgid "User interface theme"
 msgstr ""
@@ -53542,9 +53387,9 @@ msgstr ""
 msgid "Utilization"
 msgstr "Dezactiveaza Notificarile"
 
-#, fuzzy, python-format
+#, python-format
 msgid "Utilization Core %d"
-msgstr "Dezactiveaza Notificarile"
+msgstr ""
 
 msgid "V"
 msgstr ""
@@ -53661,9 +53506,8 @@ msgstr ""
 msgid "Valid till"
 msgstr ""
 
-#, fuzzy
 msgid "Valid until Checkmk version"
-msgstr " Parametrul este: %r"
+msgstr ""
 
 msgid "Validity of missing data"
 msgstr ""
@@ -53701,6 +53545,9 @@ msgid "Values to fetch from this device"
 msgstr ""
 
 msgid "Vanished"
+msgstr ""
+
+msgid "Vanished (checked, but no longer exist)"
 msgstr ""
 
 msgid "Vanished clustered services (located on cluster host)"
@@ -53927,9 +53774,8 @@ msgstr ""
 msgid "View and edit the rules and aggregations in this BI pack"
 msgstr ""
 
-#, fuzzy
 msgid "View changes"
-msgstr "%d schimbări"
+msgstr ""
 
 #, fuzzy
 msgid "View layout"
@@ -55415,9 +55261,9 @@ msgstr ""
 msgid "Windows, Linux, Solaris, AIX"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "Windows, Linux, Solaris, AIX agents matching: %s"
-msgstr " pe siteul de monitorizare: "
+msgstr ""
 
 msgid ""
 "With the help of labels you can flexibly group your hosts in order to refer "
@@ -55833,9 +55679,9 @@ msgid ""
 "some rules."
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "You are not allowed to access the host %s."
-msgstr "Dezactiveaza Notificarile"
+msgstr ""
 
 #, python-format
 msgid "You are not allowed to access this page (%s)."
@@ -56440,6 +56286,11 @@ msgid ""
 "matching group."
 msgstr ""
 
+msgid ""
+"You can use this ruleset to exclude or include the metrics of specific "
+"services."
+msgstr ""
+
 #, python-format
 msgid ""
 "You can use, modify and distribute Check_MK under the terms of the <a href="
@@ -56800,9 +56651,8 @@ msgid ""
 "be used to create a piggyback host for the cluster related services."
 msgstr ""
 
-#, fuzzy
 msgid "You must specify at least one element."
-msgstr "%s nu este un număr întreg valid."
+msgstr ""
 
 msgid ""
 "You need specify another report here that will be used as base for rendering "
@@ -56904,9 +56754,8 @@ msgstr ""
 msgid "You need to set the \"%s\" parameter."
 msgstr ""
 
-#, fuzzy
 msgid "You need to specify a URL in the element properties"
-msgstr "%s nu este un număr întreg valid."
+msgstr ""
 
 msgid "You need to specify a backup job."
 msgstr ""
@@ -57095,25 +56944,25 @@ msgstr ""
 msgid "Zypper normal and security updates (Linux)"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "[%s] Exception: %s"
-msgstr "Adaugă Excepție"
+msgstr ""
 
 #, python-format
 msgid "[%s] Finished sync for connection"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "[%s] Finished sync for site"
-msgstr "Portul TCP pentru conexiune"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "[%s] Starting sync for connection"
-msgstr "Portul TCP pentru conexiune"
+msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "[%s] Starting sync for site"
-msgstr "Portul TCP pentru conexiune"
+msgstr ""
 
 msgid "_customer_switch has an invalid format"
 msgstr ""
@@ -57209,9 +57058,8 @@ msgstr ""
 msgid "allow users to deactivate this notification"
 msgstr ""
 
-#, fuzzy
 msgid "and"
-msgstr "%d schimbări"
+msgstr ""
 
 msgid "any"
 msgstr ""
@@ -57308,13 +57156,6 @@ msgid "cartridge specification"
 msgstr ""
 
 msgid "change the state"
-msgstr ""
-
-#, fuzzy
-msgid "changed"
-msgstr "%d schimbări"
-
-msgid "changed entries"
 msgstr ""
 
 msgid "check plugins"
@@ -57528,9 +57369,9 @@ msgstr ""
 msgid "display all important updates verbosely"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "do not activate this %s"
-msgstr " Activează această opțiune"
+msgstr ""
 
 msgid "do not apply this rule"
 msgstr ""
@@ -57610,13 +57451,11 @@ msgstr ""
 msgid "enable sounds"
 msgstr ""
 
-#, fuzzy
 msgid "enable this site"
-msgstr "%s acest site"
+msgstr ""
 
-#, fuzzy
 msgid "end"
-msgstr "%d schimbări"
+msgstr ""
 
 msgid "entries"
 msgstr ""
@@ -57843,9 +57682,8 @@ msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
 
-#, fuzzy
 msgid "host tags"
-msgstr " pentru elementul %s"
+msgstr ""
 
 msgid "hostname will be ignored when agent_hash is given."
 msgstr ""
@@ -58216,13 +58054,6 @@ msgstr ""
 msgid "negate"
 msgstr ""
 
-msgid "new"
-msgstr ""
-
-#, fuzzy
-msgid "new entries"
-msgstr "% întrări libere"
-
 #, fuzzy
 msgid "new host name"
 msgstr "foloseste numele portului"
@@ -58342,9 +58173,9 @@ msgstr ""
 msgid "of Service"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "of service %s"
-msgstr "servicii"
+msgstr ""
 
 #, fuzzy
 msgid "of unspecified service"
@@ -58405,16 +58236,14 @@ msgstr ""
 msgid "original"
 msgstr ""
 
-#, fuzzy
 msgid "other"
-msgstr "(altul: %s)"
+msgstr ""
 
 msgid "other CTIO errors"
 msgstr ""
 
-#, fuzzy
 msgid "other hosts"
-msgstr " pentru elementul %s"
+msgstr ""
 
 msgid ""
 "our socket has closed; we are in the process of tearing down the connection"
@@ -58461,9 +58290,9 @@ msgstr ""
 msgid "pending connections"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "per %s"
-msgstr " secunde "
+msgstr ""
 
 #, fuzzy
 msgid "per second"
@@ -58575,9 +58404,9 @@ msgstr ""
 msgid "remove"
 msgstr ""
 
-#, fuzzy, python-format
+#, python-format
 msgid "remove the following %d %s?"
-msgstr "Adaugă instanță NGINX"
+msgstr ""
 
 msgid "repeat every 20'th row"
 msgstr ""
@@ -58707,9 +58536,9 @@ msgstr[0] "serviciu"
 msgstr[1] "serviciu"
 msgstr[2] "serviciu"
 
-#, fuzzy, python-format
+#, python-format
 msgid "service in %s state"
-msgstr "Statusul Serverului"
+msgstr ""
 
 msgid "services"
 msgstr "servicii"
@@ -58823,9 +58652,8 @@ msgid ""
 "stack is not active yet. This state is only reported on Solaris."
 msgstr ""
 
-#, fuzzy
 msgid "this host"
-msgstr " pentru elementul %s"
+msgstr ""
 
 msgid "threads"
 msgstr "fire"
@@ -58853,6 +58681,10 @@ msgstr ""
 
 msgid "to"
 msgstr "catre"
+
+#, python-format
+msgid "to %d of %d recipients"
+msgstr ""
 
 msgid "to port:"
 msgstr "catre port:"
@@ -59072,6 +58904,10 @@ msgid "© 2020 tribe29 GmbH. All Rights Reserved."
 msgstr ""
 
 #, fuzzy
+#~ msgid "Port number for HTTPS connection to InfluxDB."
+#~ msgstr "TCP port pentru conexiunile la agentul Check_MK"
+
+#, fuzzy
 #~ msgid "Full service scan"
 #~ msgstr "servicii"
 
@@ -59082,10 +58918,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "Service description format"
 #~ msgstr "foloseste descrierea"
-
-#, fuzzy
-#~ msgid "Missing prediction information."
-#~ msgstr "Informații Adiționale"
 
 #, fuzzy
 #~ msgid "Hint a hostname"
@@ -59100,7 +58932,6 @@ msgstr ""
 #~ msgstr "serviciu"
 
 #, fuzzy
-#~| msgid "Host Name"
 #~ msgid "Hostname:"
 #~ msgstr "Numele Elementului"
 
@@ -59121,24 +58952,12 @@ msgstr ""
 #~ msgstr "Nume nou"
 
 #, fuzzy
-#~ msgid "The report you are trying to preview does not exist."
-#~ msgstr "Un utilizator cu id-ul \"%s\" nu există."
-
-#, fuzzy
-#~ msgid "The schedule you are trying to execute does not exist."
-#~ msgstr "Un utilizator cu id-ul \"%s\" nu există."
-
-#, fuzzy
 #~ msgid "The requested %s does not exist."
 #~ msgstr "Un utilizator cu id-ul \"%s\" nu există."
 
 #, fuzzy
 #~ msgid "Failover state"
 #~ msgstr "RAID: starea sistemului"
-
-#, fuzzy
-#~ msgid "Invalid time unit %s"
-#~ msgstr " Parametrul este: %r"
 
 #, fuzzy
 #~ msgid "Name - Use the containers' name"
@@ -59149,15 +58968,6 @@ msgstr ""
 #~ msgstr "(fără Nivel de serviciu)"
 
 #, fuzzy
-#~| msgid "Show Bulks"
-#~ msgid "Hide %s"
-#~ msgstr "Arata in masa"
-
-#, fuzzy
-#~ msgid "Hide check parameters"
-#~ msgstr " Parametrul este: %r"
-
-#, fuzzy
 #~ msgid "Hide checkboxes"
 #~ msgstr "Verificări active"
 
@@ -59166,7 +58976,6 @@ msgstr ""
 #~ msgstr "cu context"
 
 #, fuzzy
-#~| msgid "services"
 #~ msgid "Hide details"
 #~ msgstr "servicii"
 
@@ -59207,11 +59016,6 @@ msgstr ""
 #~ msgstr "Întreruperi adhoc"
 
 #, fuzzy
-#~ msgid "Could query available interfaces for host %s and user %s."
-#~ msgstr "Un titlu pentru view"
-
-#, fuzzy
-#~| msgid "Settings"
 #~ msgid "SNMP settings"
 #~ msgstr "Setari"
 
@@ -59230,10 +59034,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "Custom snapins"
 #~ msgstr "Atribute personalizate"
-
-#, fuzzy
-#~ msgid "Invalid snapin %s"
-#~ msgstr " Parametrul este: %r"
 
 #, fuzzy
 #~ msgid "New snapin"
@@ -59268,13 +59068,8 @@ msgstr ""
 #~ msgstr "Adaugă element"
 
 #, fuzzy
-#~| msgid "Notifications"
 #~ msgid "Notifications today"
 #~ msgstr "Notificari"
-
-#, fuzzy
-#~ msgid "Number of hosts (excluded)"
-#~ msgstr " pentru elementul %s"
 
 #, fuzzy
 #~ msgid "Number of services (excluded)"
@@ -59283,10 +59078,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "Timezone"
 #~ msgstr "Portul TCP pentru conexiune"
-
-#, fuzzy
-#~ msgid "Top alerters (last 7 days)"
-#~ msgstr " în %d zile"
 
 #, fuzzy
 #~ msgid "Total service history"
@@ -59305,10 +59096,6 @@ msgstr ""
 #~ msgstr "Agregare noua"
 
 #, fuzzy
-#~ msgid "Filter hosts"
-#~ msgstr " pentru elementul %s"
-
-#, fuzzy
 #~ msgid "Filter permissions"
 #~ msgstr "Optiuni tabel"
 
@@ -59317,14 +59104,8 @@ msgstr ""
 #~ msgstr "Reguli"
 
 #, fuzzy
-#~| msgid "Hide user rules"
 #~ msgid "Filter rules"
 #~ msgstr "Ascude regulile de utilizator"
-
-#, fuzzy
-#~| msgid "%d Filter settings"
-#~ msgid "Filter settings"
-#~ msgstr "%d setări de Filtrare"
 
 # georgem ##############
 #, fuzzy
@@ -59360,29 +59141,18 @@ msgstr ""
 #~ msgstr "Întreruperi adhoc"
 
 #, fuzzy
-#~ msgid "%d site is not connected"
-#~ msgid_plural "%d sites are not connected"
-#~ msgstr[0] "Conexiune Noua"
-#~ msgstr[1] "Conexiune Noua"
-#~ msgstr[2] "Conexiune Noua"
-
-#, fuzzy
-#~| msgid "use local configuration"
 #~ msgid "Node configuration"
 #~ msgstr "foloseste configuratia locala"
 
 #, fuzzy
-#~| msgid "Add new user configuration"
 #~ msgid "Nodes configuration"
 #~ msgstr "Adaugp o noua configurație de utilizator"
 
 #, fuzzy
-#~| msgid "without arguments"
 #~ msgid "Search node arguments"
 #~ msgstr "fara argumente"
 
 #, fuzzy
-#~| msgid "services"
 #~ msgid "Search services"
 #~ msgstr "servicii"
 
@@ -59399,7 +59169,6 @@ msgstr ""
 #~ msgstr "Adresă"
 
 #, fuzzy
-#~| msgid "Application Name"
 #~ msgid "Installation Name"
 #~ msgstr "Numele Aplicatiei"
 
@@ -59408,12 +59177,10 @@ msgstr ""
 #~ msgstr "Statusul Serverului"
 
 #, fuzzy
-#~| msgid "Message Text"
 #~ msgid "Max Message Size"
 #~ msgstr "Mesajul Text"
 
 #, fuzzy
-#~| msgid "Maximum number of messages"
 #~ msgid "Max Number Of Messages"
 #~ msgstr "Numarul maxim de mesaje"
 
@@ -59426,14 +59193,6 @@ msgstr ""
 #~ msgstr "Statusul Serverului"
 
 #, fuzzy
-#~ msgid "%s alerts"
-#~ msgstr "Dezactiveaza Notificarile"
-
-#, fuzzy
-#~ msgid "%s notifications"
-#~ msgstr "trimite notificare"
-
-#, fuzzy
 #~ msgid "Internal links"
 #~ msgstr "Nume nou"
 
@@ -59442,12 +59201,10 @@ msgstr ""
 #~ msgstr "Privire de ansamblu"
 
 #, fuzzy
-#~| msgid "to port:"
 #~ msgid "Don't fill area plot"
 #~ msgstr "catre port:"
 
 #, fuzzy
-#~| msgid "to port:"
 #~ msgid "Fill area plot"
 #~ msgstr "catre port:"
 
@@ -59458,10 +59215,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "Host Selection"
 #~ msgstr "de sus in jos"
-
-#, fuzzy
-#~ msgid "Exclude specific agent sections"
-#~ msgstr "%d setări de Filtrare"
 
 #, fuzzy
 #~ msgid "SNMP section name"
@@ -59475,10 +59228,6 @@ msgstr ""
 #~ msgstr "Numele elementului pentru eveniment"
 
 #, fuzzy
-#~ msgid "You need to select a metric"
-#~ msgstr "%s nu este un număr întreg valid."
-
-#, fuzzy
 #~ msgid "Absolute levels{abs_detail}"
 #~ msgstr "Liber Exact"
 
@@ -59487,7 +59236,6 @@ msgstr ""
 #~ msgstr "trei nivele"
 
 #, fuzzy
-#~| msgid "Download"
 #~ msgid "Download stats"
 #~ msgstr "Descarca"
 
@@ -59508,7 +59256,6 @@ msgstr ""
 #~ msgstr " pe siteul de monitorizare: "
 
 #, fuzzy
-#~| msgid "A comment or description of this host"
 #~ msgid "Ntop interface integration of this host"
 #~ msgstr "O descriere sau comentariu despre acest element"
 
@@ -59517,15 +59264,10 @@ msgstr ""
 #~ msgstr "Adresă"
 
 #, fuzzy
-#~ msgid "Absolute levels for %s error rates"
-#~ msgstr "Nivel-urile absolute de licențe neutilizate"
-
-#, fuzzy
 #~ msgid "Absolute levels for broadcast packets"
 #~ msgstr "Nivel-urile absolute de licențe neutilizate"
 
 #, fuzzy
-#~| msgid "Absolute levels for unused licenses"
 #~ msgid "Absolute levels for multicast packets"
 #~ msgstr "Nivel-urile absolute de licențe neutilizate"
 
@@ -59533,14 +59275,6 @@ msgstr ""
 #~ msgid "Assignment of host & services to host, service and contacts groups."
 #~ msgstr ""
 #~ "Arata doar elementele si serviciile pentru care utilizatorul este contact"
-
-#, fuzzy
-#~ msgid "Levels for %s error rates"
-#~ msgstr "Nivelurile maxime pentru voltaj"
-
-#, fuzzy
-#~ msgid "Percentual levels for %s error rates"
-#~ msgstr "trei nivele"
 
 #, fuzzy
 #~ msgid "Percentual levels for broadcast packets"
@@ -59559,12 +59293,10 @@ msgstr ""
 #~ msgstr "Optiuni tabel"
 
 #, fuzzy
-#~| msgid "Password"
 #~ msgid "Admin Password"
 #~ msgstr "Parola"
 
 #, fuzzy
-#~| msgid "New host"
 #~ msgid "Ntop: Flows"
 #~ msgstr "Element nou"
 
@@ -59717,16 +59449,8 @@ msgstr ""
 #~ msgstr "Numele Elementului"
 
 #, fuzzy
-#~ msgid "All Logfiles of Host"
-#~ msgstr " pentru hostul %s"
-
-#, fuzzy
 #~ msgid "All Packs"
 #~ msgstr "Reguli"
-
-#, fuzzy
-#~ msgid "All Roles"
-#~ msgstr " pentru hostul %s"
 
 #, fuzzy
 #~ msgid "All Rules"
@@ -59735,10 +59459,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "All Rulesets"
 #~ msgstr "Reguli"
-
-#, fuzzy
-#~ msgid "All Sites"
-#~ msgstr "%d condiții"
 
 #, fuzzy
 #~ msgid "All Timeperiods"
@@ -59751,10 +59471,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "All groups"
 #~ msgstr "Grupuri RAID"
-
-#, fuzzy
-#~ msgid "All hosts (tiled)"
-#~ msgstr " pentru hostul %s"
 
 #, fuzzy
 #~ msgid "Alternative display name of the service, regex match"
@@ -59817,10 +59533,6 @@ msgstr ""
 #~ msgstr "Adaugă element"
 
 #, fuzzy
-#~ msgid "Cannot reschedule check: %s"
-#~ msgstr "<b>reprogramează o verificare imediată"
-
-#, fuzzy
 #~ msgid "Change event state"
 #~ msgstr "Parola"
 
@@ -59843,14 +59555,6 @@ msgstr ""
 #~ msgstr ""
 #~ "Adaugă elemente pentru monitorizare și șterge elemente din monitorizare. "
 #~ "Adaugăși permisiunile <i>Modifică elemente existente</i>."
-
-#, fuzzy
-#~ msgid "Clone hosts"
-#~ msgstr " pentru elementul %s"
-
-#, fuzzy
-#~ msgid "Cloned rule in ruleset '%s'"
-#~ msgstr "%d reguli wato în set-ul de reguli"
 
 #, fuzzy
 #~ msgid "Collection count levels"
@@ -59911,36 +59615,16 @@ msgstr ""
 #~ msgstr "Conexiuni Active"
 
 #, fuzzy
-#~ msgid "Confirm deletion of %d aggregations"
-#~ msgstr "O agregare legată de un singur element"
-
-#, fuzzy
-#~ msgid "Confirm deletion of %s"
-#~ msgstr "Dezactiveaza Notificarile"
-
-#, fuzzy
 #~ msgid "Confirm deletion of LDAP connection"
 #~ msgstr "Portul TCP pentru conexiune"
-
-#, fuzzy
-#~ msgid "Confirm deletion of attribute \"%s\""
-#~ msgstr "Atribute personalizate"
 
 #, fuzzy
 #~ msgid "Confirm deletion of site %s"
 #~ msgstr " pentru hostul %s"
 
 #, fuzzy
-#~ msgid "Confirm deletion of time period %s"
-#~ msgstr "Perioada de timp Noua"
-
-#, fuzzy
 #~ msgid "Confirm deletion of unpackaged file"
 #~ msgstr "Sterge Elementul"
-
-#, fuzzy
-#~ msgid "Confirm deletion of user %s"
-#~ msgstr "Notificari"
 
 #, fuzzy
 #~ msgid "Confirm folder deletion"
@@ -59979,10 +59663,6 @@ msgstr ""
 #~ msgstr "Agregare noua"
 
 #, fuzzy
-#~ msgid "Create new BI rule %s"
-#~ msgstr "%s regulă %s"
-
-#, fuzzy
 #~ msgid "Create new LDAP Connection"
 #~ msgstr "Conexiune Noua"
 
@@ -59993,14 +59673,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "Create new contact group"
 #~ msgstr "Eticheta de grup nou"
-
-#, fuzzy
-#~ msgid "Create new host group"
-#~ msgstr " Se potriveste grupurilor: %s"
-
-#, fuzzy
-#~ msgid "Create new notification rule for user %s"
-#~ msgstr "%d reguli de notificări globale"
 
 #, fuzzy
 #~ msgid "Create new rule pack"
@@ -60036,10 +59708,6 @@ msgstr ""
 
 #, fuzzy
 #~ msgid "Delete permitted maps"
-#~ msgstr "Sterge Elementul"
-
-#, fuzzy
-#~ msgid "Deleted rule in ruleset '%s'"
 #~ msgstr "Sterge Elementul"
 
 #, fuzzy
@@ -60119,10 +59787,6 @@ msgstr ""
 #~ msgstr "Editeaza regulile de loguri"
 
 #, fuzzy
-#~ msgid "Edit user role %s"
-#~ msgstr "Editeaza regulile de loguri"
-
-#, fuzzy
 #~ msgid "Effective  State"
 #~ msgstr "Reguli neaplicate"
 
@@ -60163,10 +59827,6 @@ msgstr ""
 #~ msgstr "servicii"
 
 #, fuzzy
-#~ msgid "Favorite hosts"
-#~ msgstr " pentru elementul %s"
-
-#, fuzzy
 #~ msgid "Favorite services"
 #~ msgstr "Afectat de serviciu"
 
@@ -60177,10 +59837,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "Filesystem structure"
 #~ msgstr "Spațiu liber exact"
-
-#, fuzzy
-#~ msgid "Filter by source host"
-#~ msgstr " pentru elementul %s"
 
 #, fuzzy
 #~ msgid "Find usage"
@@ -60211,10 +59867,6 @@ msgstr ""
 #~ "contact"
 
 #, fuzzy
-#~ msgid "Hide Checkboxes and bulk actions"
-#~ msgstr "%d condiții"
-
-#, fuzzy
 #~ msgid "History action type"
 #~ msgstr "Conexiune Noua"
 
@@ -60231,14 +59883,6 @@ msgstr ""
 #~ msgstr "serviciu"
 
 #, fuzzy
-#~ msgid "Host Contact"
-#~ msgstr " Se potriveste grupurilor: %s"
-
-#, fuzzy
-#~ msgid "Host Contact Group"
-#~ msgstr " Se potriveste grupurilor: %s"
-
-#, fuzzy
 #~ msgid "Host Dt-History"
 #~ msgstr "Numele Elementului"
 
@@ -60249,10 +59893,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "Host Groups (Grid)"
 #~ msgstr "Grup nou"
-
-#, fuzzy
-#~ msgid "Host Groups (Summary)"
-#~ msgstr "Numele Elementului"
 
 #, fuzzy
 #~ msgid "Host Report"
@@ -60269,10 +59909,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "Host custom variables"
 #~ msgstr "Atribute personalizate"
-
-#, fuzzy
-#~ msgid "Host does not exist"
-#~ msgstr "Un utilizator cu id-ul \"%s\" nu există."
 
 #, fuzzy
 #~ msgid "Host downtimes"
@@ -60311,16 +59947,8 @@ msgstr ""
 #~ msgstr "actualizare"
 
 #, fuzzy
-#~ msgid "Host state type"
-#~ msgstr "%d traduceri"
-
-#, fuzzy
 #~ msgid "Host tag groups"
 #~ msgstr "Grup nou"
-
-#, fuzzy
-#~ msgid "Host tags (raw)"
-#~ msgstr " pentru elementul %s"
 
 #, fuzzy
 #~ msgid "Host+Svc notifications"
@@ -60384,10 +60012,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "Installed Packages"
 #~ msgstr "Acces la Agenți"
-
-#, fuzzy
-#~ msgid "Invalid parameters: %s"
-#~ msgstr " Parametrul este: %r"
 
 #, fuzzy
 #~ msgid "Last host check"
@@ -60482,10 +60106,6 @@ msgstr ""
 #~ msgstr "Adaugă Contoar"
 
 #, fuzzy
-#~ msgid "Manage host tags"
-#~ msgstr " pentru elementul %s"
-
-#, fuzzy
 #~ msgid "Manage services"
 #~ msgstr "servicii"
 
@@ -60500,10 +60120,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "Match interface description (regex)"
 #~ msgstr "foloseste descrierea"
-
-#, fuzzy
-#~ msgid "Match the following check types"
-#~ msgstr " Se potriveste grupurilor: %s"
 
 #~ msgid "Maximum number of matched tasks for OK state"
 #~ msgstr "Numarul maxim de task-uri cu statusul OK"
@@ -60529,10 +60145,6 @@ msgstr ""
 #~ msgstr "Numarul maxim de procese cu statusul ATENTIE "
 
 #, fuzzy
-#~ msgid "Missing %s context"
-#~ msgstr " pe siteul de monitorizare: "
-
-#, fuzzy
 #~ msgid "Missing authentication credentials"
 #~ msgstr "trimite notificare"
 
@@ -60547,10 +60159,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "Monitoring Configuration"
 #~ msgstr "Adaugă configurație de ajustare"
-
-#, fuzzy
-#~ msgid "Move %s to %s services"
-#~ msgstr "Afectat de serviciu"
 
 #, fuzzy
 #~ msgid "Move existing hosts"
@@ -60644,10 +60252,6 @@ msgstr ""
 #~ msgstr "Regula Noua"
 
 #, fuzzy
-#~ msgid "No changes"
-#~ msgstr "%d schimbări"
-
-#, fuzzy
 #~ msgid "Nonheap Memory Levels"
 #~ msgstr "Nivelurile maxime pentru voltaj"
 
@@ -60712,10 +60316,6 @@ msgstr ""
 #~ msgstr "Scanarea parintilor"
 
 #, fuzzy
-#~ msgid "Parents unchanged at %s"
-#~ msgstr "Activare schimbări"
-
-#, fuzzy
 #~ msgid "Parentscan"
 #~ msgstr "Scanarea parintilor"
 
@@ -60744,14 +60344,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "Please confirm the deletion of the tag group."
 #~ msgstr "O descriere sau comentariu despre acest element"
-
-#, fuzzy
-#~ msgid "Please specify a date and time."
-#~ msgstr "%s nu este un număr întreg valid."
-
-#, fuzzy
-#~ msgid "Please specify an alias name."
-#~ msgstr "%s nu este un număr întreg valid."
 
 #, fuzzy
 #~ msgid "Pod usage"
@@ -60786,10 +60378,6 @@ msgstr ""
 #~ msgstr "Cautare noua"
 
 #, fuzzy
-#~ msgid "Removed host tag group %s (%s)"
-#~ msgstr " si %s 's'."
-
-#, fuzzy
 #~ msgid "Removed parents"
 #~ msgstr "Adaugă comentarii"
 
@@ -60804,18 +60392,6 @@ msgstr ""
 #~ msgstr ""
 #~ "Adaugă elemente pentru monitorizare și șterge elemente din monitorizare. "
 #~ "Adaugăși permisiunile <i>Modifică elemente existente</i>."
-
-#, fuzzy
-#~ msgid "Rename host"
-#~ msgstr " pentru elementul %s"
-
-#, fuzzy
-#~ msgid "Rename host!"
-#~ msgstr " pentru elementul %s"
-
-#, fuzzy
-#~ msgid "Renamed BI rule from %s to %s"
-#~ msgstr " pentru elementul %s"
 
 #, fuzzy
 #~ msgid "Renaming WATO configuration..."
@@ -60850,10 +60426,6 @@ msgstr ""
 #~ msgstr "trimite notificare"
 
 #, fuzzy
-#~ msgid "Replication not enabled for this site"
-#~ msgstr "%s acest site"
-
-#, fuzzy
 #~ msgid "Reply-To: Address"
 #~ msgstr "Adresă"
 
@@ -60872,10 +60444,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "Resetting configuration variable"
 #~ msgstr "Notificari"
-
-#, fuzzy
-#~ msgid "Results for %s"
-#~ msgstr "Sterge Elementul"
 
 #, fuzzy
 #~ msgid "Routing Engine"
@@ -60963,10 +60531,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "Service Contact (Regex)"
 #~ msgstr "Numele Elementului"
-
-#, fuzzy
-#~ msgid "Service Contact Group"
-#~ msgstr " Se potriveste grupurilor: %s"
 
 # georgem ##############
 #, fuzzy
@@ -61084,20 +60648,12 @@ msgstr ""
 #~ msgstr "Grup nou"
 
 #, fuzzy
-#~ msgid "Show Checkboxes and bulk actions"
-#~ msgstr "%d condiții"
-
-#, fuzzy
 #~ msgid "Show all buttons"
 #~ msgstr "Scaneaza toate elementele"
 
 #, fuzzy
 #~ msgid "Show only most frequently used buttons"
 #~ msgstr "Arata regulile de utilizator"
-
-#, fuzzy
-#~ msgid "Show this %s in Nagios"
-#~ msgstr "Salveaza si mergi la"
 
 #, fuzzy
 #~ msgid "Sign all agents"
@@ -61132,20 +60688,8 @@ msgstr ""
 #~ msgstr "Nume tablespace"
 
 #, fuzzy
-#~ msgid "The %s \"%s\" does not match this rule."
-#~ msgstr "Un utilizator cu id-ul \"%s\" nu există."
-
-#, fuzzy
-#~ msgid "The ID of the dashlet is missing."
-#~ msgstr " Parametrul este: %r"
-
-#, fuzzy
 #~ msgid "The custom timerange"
 #~ msgstr "Atribute personalizate"
-
-#, fuzzy
-#~ msgid "The host has the tag %s"
-#~ msgstr "Numele elementului pentru eveniment"
 
 #, fuzzy
 #~ msgid "The members of certain contact groups"
@@ -61158,10 +60702,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "The text <b><tt>%s</tt></b> is not a valid integer number."
 #~ msgstr "%s nu este un număr întreg valid."
-
-#, fuzzy
-#~ msgid "This aggregation covers only data from a single host."
-#~ msgstr "Un utilizator cu id-ul \"%s\" nu există."
 
 #, fuzzy
 #~ msgid "This host has no such service"
@@ -61188,20 +60728,8 @@ msgstr ""
 #~ msgstr "Nivelurile maxime pentru voltaj"
 
 #, fuzzy
-#~ msgid "Total hosts"
-#~ msgstr " pentru elementul %s"
-
-#, fuzzy
 #~ msgid "URL to this page including sidebar"
 #~ msgstr "Adaugă un snapin pe sidebar"
-
-#, fuzzy
-#~ msgid "Unknown BI Aggregation %s"
-#~ msgstr "Agregare noua"
-
-#, fuzzy
-#~ msgid "Unknown host tag group %s"
-#~ msgstr "Eticheta de grup nou"
 
 #, fuzzy
 #~ msgid "Unknown tag group"
@@ -61238,10 +60766,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "User management"
 #~ msgstr "foloseste numele portului"
-
-#, fuzzy
-#~ msgid "View Extension Package Manager"
-#~ msgstr "%d schimbări"
 
 #, fuzzy
 #~ msgid "View all maps"
@@ -61298,14 +60822,6 @@ msgstr ""
 
 #~ msgid "this rule results in a negative outcome."
 #~ msgstr "aceasta regule duce la un rezultat negativ"
-
-#, fuzzy
-#~ msgid "tree or name parameter missing"
-#~ msgstr " Parametrul este: %r"
-
-#, fuzzy
-#~ msgid "with arguments: %s"
-#~ msgstr "Editeaza regulile de loguri"
 
 #~ msgid ""
 #~ "\n"
@@ -61396,14 +60912,6 @@ msgstr ""
 #~ msgid " (might be cached data)"
 #~ msgstr " (pot fi date din cache)"
 
-#, fuzzy
-#~ msgid " The parameter is: %r"
-#~ msgstr "(fără parametri)"
-
-#, fuzzy
-#~ msgid " The varname is: %s"
-#~ msgstr " Parametrul este: %r"
-
 #~ msgid " for user "
 #~ msgstr " pentru utilizatorul "
 
@@ -61421,9 +60929,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "%d BI rules and aggregations"
 #~ msgstr "%d reguli și agregări BI"
-
-#~ msgid "%d WATO rules in ruleset <i>%s</i>"
-#~ msgstr "%d reguli wato în set-ul de reguli"
 
 #, fuzzy
 #~ msgid "%d favorite entries of %d users"
@@ -61503,22 +61008,7 @@ msgstr ""
 #~ msgstr ""
 #~ "<b>programează o întrerupere imediată până la sfârșitul lui %d</b> pe"
 
-#, fuzzy
-#~ msgid "<b>schedule an immediate downtime until 24:00:00</b> on"
-#~ msgstr ""
-#~ "<b>programează o întrerupere imediată până la sfârșitul lui %d</b> pe"
-
 #~ msgid "<b>schedule an immediate downtime until end of %d</b> on"
-#~ msgstr ""
-#~ "<b>programează o întrerupere imediată până la sfârșitul lui %d</b> pe"
-
-#, fuzzy
-#~ msgid "<b>schedule an immediate downtime until end of month</b> on"
-#~ msgstr ""
-#~ "<b>programează o întrerupere imediată până la sfârșitul lui %d</b> pe"
-
-#, fuzzy
-#~ msgid "<b>schedule an immediate downtime until sunday night</b> on"
 #~ msgstr ""
 #~ "<b>programează o întrerupere imediată până la sfârșitul lui %d</b> pe"
 
@@ -61536,10 +61026,6 @@ msgstr ""
 #~ msgstr ""
 #~ "<br>Dacă sunt probleme cu permisiunile, asigurațivă că grupul este '%s' "
 #~ "și are drepturi de scriere."
-
-#, fuzzy
-#~ msgid "<h1>Cannot activate changes</h1>%s"
-#~ msgstr "Activare schimbări"
 
 #, fuzzy
 #~ msgid "<i>not a contact</i>"
@@ -61627,16 +61113,8 @@ msgstr ""
 #~ msgstr "Vizibilitatea Elementelor/Serviciilor"
 
 #, fuzzy
-#~ msgid "Available (missing) services"
-#~ msgstr "spatiu utilizat"
-
-#, fuzzy
 #~ msgid "Averate requests per connection"
 #~ msgstr "cereri/sec"
-
-#, fuzzy
-#~ msgid "BI - Create New Aggregation"
-#~ msgstr "%d reguli și agregări BI"
 
 #, fuzzy
 #~ msgid "BI - Edit Aggregation"
@@ -61670,34 +61148,6 @@ msgstr ""
 #~ msgid "Cached output of monitoring agents"
 #~ msgstr " pe siteul de monitorizare: "
 
-#, fuzzy
-#~ msgid "Cannot create rule: %s"
-#~ msgstr " și %s '%s'"
-
-#, fuzzy
-#~ msgid "Cannot render graph: %s"
-#~ msgstr " și %s '%s'"
-
-#, fuzzy
-#~ msgid "Changed configuration of %s to %s."
-#~ msgstr "Activare Configurare"
-
-#, fuzzy
-#~ msgid "Changed order of rules in ruleset %s"
-#~ msgstr "%d reguli wato în set-ul de reguli"
-
-#, fuzzy
-#~ msgid "Changed position of notification rule %d"
-#~ msgstr "trimite notificare"
-
-#, fuzzy
-#~ msgid "Changed title of %s attribute %s"
-#~ msgstr "Atribute personalizate"
-
-#, fuzzy
-#~ msgid "Check Origin and Parameters"
-#~ msgstr " Parametrul este: %r"
-
 # TODO
 #, fuzzy
 #~ msgid "Check_MK Multisite Login"
@@ -61714,10 +61164,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "Choose this icon"
 #~ msgstr " Ignoră această opțiune"
-
-#, fuzzy
-#~ msgid "Clone report schedule entry %d"
-#~ msgstr "<b>reprogramează o verificare imediată"
 
 #, fuzzy
 #~ msgid "Configuration of Event Console "
@@ -61754,10 +61200,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "Create snapshot"
 #~ msgstr "Verificări active"
-
-#, fuzzy
-#~ msgid "Created %d random hosts in %d folders"
-#~ msgstr "Adaugă sau șterge elemente"
 
 #, fuzzy
 #~ msgid "Created snapshot <tt>%s</tt>."
@@ -61812,24 +61254,8 @@ msgstr ""
 #~ msgstr "Sterge Elementul"
 
 #, fuzzy
-#~ msgid "Deleted BI rule with id %s"
-#~ msgstr "Sterge Elementul"
-
-#, fuzzy
-#~ msgid "Deleted empty folder %s"
-#~ msgstr "Sterge Elementul"
-
-#, fuzzy
 #~ msgid "Deleted notification rule %d"
 #~ msgstr "%d reguli de notificări globale"
-
-#, fuzzy
-#~ msgid "Detailed host infos"
-#~ msgstr " pentru elementul %s"
-
-#, fuzzy
-#~ msgid "Disabled services (configured away by admin)"
-#~ msgstr "foloseste configuratia locala"
 
 #, fuzzy
 #~ msgid "Disk I/O Operations"
@@ -61846,10 +61272,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "Documentation-URL"
 #~ msgstr "Acțiune"
-
-#, fuzzy
-#~ msgid "Doku Wiki Pages and Settings"
-#~ msgstr "%d setări de Filtrare"
 
 #, fuzzy
 #~ msgid "Don't use persistent LDAP connections."
@@ -61880,20 +61302,8 @@ msgstr ""
 #~ msgstr "Un titlu descriptiv despre această acțiune."
 
 #, fuzzy
-#~ msgid "Edit report schedule entry %d"
-#~ msgstr "<b>reprogramează o verificare imediată"
-
-#, fuzzy
-#~ msgid "Edit site-specific global settings of %s"
-#~ msgstr "%d setări de Filtrare"
-
-#, fuzzy
 #~ msgid "Edit the rules for the BI aggregations."
 #~ msgstr "Sterge Elementul"
-
-#, fuzzy
-#~ msgid "Edited properties of host via diagnose [%s]"
-#~ msgstr "Un titlu descriptiv despre această acțiune."
 
 #, fuzzy
 #~ msgid "Email body to use for host notifications"
@@ -61926,10 +61336,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "Enabled User Connectors"
 #~ msgstr "Numarul maxim de conexiuni"
-
-#, fuzzy
-#~ msgid "Error: %s"
-#~ msgstr "rapoarte"
 
 #, fuzzy
 #~ msgid "Established TCP/UDP connections (Linux, AIX)"
@@ -61985,10 +61391,6 @@ msgstr ""
 #~ msgstr "Reseteaza la setarile initiale"
 
 #, fuzzy
-#~ msgid "Fallback Contact Groups"
-#~ msgstr " Se potriveste grupurilor: %s"
-
-#, fuzzy
 #~ msgid "Fallback email address for rule based notifications"
 #~ msgstr "trimite notificare"
 
@@ -62001,10 +61403,6 @@ msgstr ""
 #~ msgstr "Adaungă un nou element"
 
 #, fuzzy
-#~ msgid "Format time ranges as"
-#~ msgstr "%d schimbări"
-
-#, fuzzy
 #~ msgid "Full Scan"
 #~ msgstr "servicii"
 
@@ -62013,18 +61411,10 @@ msgstr ""
 #~ msgstr "pornit"
 
 #, fuzzy
-#~ msgid "Graphs for host"
-#~ msgstr " pentru elementul %s"
-
-#, fuzzy
 #~ msgid "Group separately"
 #~ msgstr "Numele Elementului"
 
-#, fuzzy
-#~ msgid "HTTP Error - %s: %s"
-#~ msgstr "afiseaza erori"
-
-#  georgem ###
+# georgem ###
 #, fuzzy
 #~ msgid ""
 #~ "Here you can configure which messages should be discovered and reported "
@@ -62054,10 +61444,6 @@ msgstr ""
 #~ "<i>ToateEventlog-urile</i>."
 
 #, fuzzy
-#~ msgid "Hide Check Parameters"
-#~ msgstr " Parametrul este: %r"
-
-#, fuzzy
 #~ msgid "Host IP address"
 #~ msgstr "Adresă"
 
@@ -62074,10 +61460,6 @@ msgstr ""
 #~ msgstr "Numele Elementului"
 
 #, fuzzy
-#~ msgid "Hostname %s already exists"
-#~ msgstr "Un director cu acest nume deja există."
-
-#, fuzzy
 #~ msgid "Hostname %s does not exist"
 #~ msgstr "Un utilizator cu id-ul \"%s\" nu există."
 
@@ -62090,48 +61472,16 @@ msgstr ""
 #~ msgstr "Adresă"
 
 #, fuzzy
-#~ msgid "Ignore Acknowledged Events"
-#~ msgstr "Confirmată %s"
-
-#, fuzzy
-#~ msgid "Imported %d hosts."
-#~ msgstr " pentru elementul %s"
-
-#, fuzzy
 #~ msgid "Indexes"
 #~ msgstr "spatiu utilizat"
-
-#, fuzzy
-#~ msgid "Inserted new rule in ruleset %s"
-#~ msgstr "%d reguli wato în set-ul de reguli"
-
-#, fuzzy
-#~ msgid "Invalid IP address syntax"
-#~ msgstr " Parametrul este: %r"
 
 #, fuzzy
 #~ msgid "Invalid bookmark id."
 #~ msgstr "Adaugă bookmark"
 
 #, fuzzy
-#~ msgid "Invalid check parameter: %s!"
-#~ msgstr " Parametrul este: %r"
-
-#, fuzzy
-#~ msgid "Invalid dashlet id"
-#~ msgstr " Parametrul este: %r"
-
-#, fuzzy
 #~ msgid "Invalid hostname"
 #~ msgstr " pe siteul de monitorizare: "
-
-#, fuzzy
-#~ msgid "Invalid snapshot requested"
-#~ msgstr " Parametrul este: %r"
-
-#, fuzzy
-#~ msgid "Inventorized %s<br>\n"
-#~ msgstr "Activare schimbări"
 
 #, fuzzy
 #~ msgid "Item (Used in service description)"
@@ -62144,14 +61494,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "LDAP Connection Settings"
 #~ msgstr "Conexiuni Active"
-
-#, fuzzy
-#~ msgid "LDAP Connector: Created user %s"
-#~ msgstr "(Nu trimite site-ului de la distanță)"
-
-#, fuzzy
-#~ msgid "LDAP Connector: Removed user %s"
-#~ msgstr "(Nu trimite site-ului de la distanță)"
 
 #, fuzzy
 #~ msgid "LDAP Group Settings"
@@ -62198,10 +61540,6 @@ msgstr ""
 #~ msgstr " pentru hostul %s"
 
 #, fuzzy
-#~ msgid "Logged out of remote site '%s'"
-#~ msgstr "(Nu trimite site-ului de la distanță)"
-
-#, fuzzy
 #~ msgid "Max. Age"
 #~ msgstr "Vechimea Maxima"
 
@@ -62218,10 +61556,6 @@ msgstr ""
 #~ msgstr "Mesajul Text"
 
 #, fuzzy
-#~ msgid "Missing %s"
-#~ msgstr " pe siteul de monitorizare: "
-
-#, fuzzy
 #~ msgid "Missing site"
 #~ msgstr " pe siteul de monitorizare: "
 
@@ -62234,24 +61568,8 @@ msgstr ""
 #~ msgstr "Adaungă un nou element"
 
 #, fuzzy
-#~ msgid "Move this entry %s"
-#~ msgstr "Adaungă un nou element"
-
-#, fuzzy
 #~ msgid "Move this folder to another place"
 #~ msgstr "Sterge Elementul"
-
-#, fuzzy
-#~ msgid "Move this notification rule one position up"
-#~ msgstr "%d reguli de notificări globale"
-
-#, fuzzy
-#~ msgid "Move this notification rule to the bottom"
-#~ msgstr "%d reguli de notificări globale"
-
-#, fuzzy
-#~ msgid "Move this notification rule to the top"
-#~ msgstr "%d reguli de notificări globale"
 
 #, fuzzy
 #~ msgid "Move this rule to the top"
@@ -62300,10 +61618,6 @@ msgstr ""
 #~ msgstr "Utilizator nou"
 
 #, fuzzy
-#~ msgid "New entries"
-#~ msgstr "% întrări libere"
-
-#, fuzzy
 #~ msgid "No Changes"
 #~ msgstr "Nici o schimbare"
 
@@ -62326,22 +61640,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "Number of connections for a WiFi"
 #~ msgstr "Numarul maxim de conexiuni"
-
-#, fuzzy
-#~ msgid "Number of hosts in state DOWN"
-#~ msgstr " pentru elementul %s"
-
-#, fuzzy
-#~ msgid "Number of hosts in state PENDING"
-#~ msgstr " pentru elementul %s"
-
-#, fuzzy
-#~ msgid "Number of hosts in state UNREACH"
-#~ msgstr " pentru elementul %s"
-
-#, fuzzy
-#~ msgid "Number of hosts to handle at once:"
-#~ msgstr " pentru elementul %s"
 
 #, fuzzy
 #~ msgid "Number of running threads"
@@ -62396,28 +61694,8 @@ msgstr ""
 #~ msgstr "Setari"
 
 #, fuzzy
-#~ msgid "Please choose a PNG icon."
-#~ msgstr "%s nu este un număr întreg valid."
-
-#, fuzzy
-#~ msgid "Please choose a valid PNG icon."
-#~ msgstr "%s nu este un număr întreg valid."
-
-#, fuzzy
-#~ msgid "Please enter a tag ID"
-#~ msgstr "%s nu este un număr întreg valid."
-
-#, fuzzy
 #~ msgid "Please enter an alias name or description of this site."
 #~ msgstr "O descriere sau comentariu despre acest element"
-
-#, fuzzy
-#~ msgid "Please select the levels of aggregations."
-#~ msgstr "%s nu este un număr întreg valid."
-
-#, fuzzy
-#~ msgid "Please supply a title."
-#~ msgstr "%s nu este un număr întreg valid."
 
 #, fuzzy
 #~ msgid "Precompile aggregations on demand"
@@ -62470,14 +61748,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "Response time"
 #~ msgstr "Nume tablespace"
-
-#, fuzzy
-#~ msgid "Restored snapshot %s"
-#~ msgstr "urca snapshot-uri nesigure"
-
-#, fuzzy
-#~ msgid "Retry Failed Hosts"
-#~ msgstr " pentru elementul %s"
 
 #, fuzzy
 #~ msgid "Rotation of history log file"
@@ -62578,10 +61848,6 @@ msgstr ""
 #~ msgstr " pentru elementul %s"
 
 #, fuzzy
-#~ msgid "Snapshot details of %s"
-#~ msgstr "Arata in masa"
-
-#, fuzzy
 #~ msgid "Snapshots"
 #~ msgstr "urca snapshot-uri nesigure"
 
@@ -62599,22 +61865,6 @@ msgstr ""
 #~ msgstr "Un SNMP walk stocat"
 
 #, fuzzy
-#~ msgid "Successfully logged into remote site '%s'"
-#~ msgstr "(Nu trimite site-ului de la distanță)"
-
-#, fuzzy
-#~ msgid "Successfully logged into remote site '%s'!"
-#~ msgstr "(Nu trimite site-ului de la distanță)"
-
-#, fuzzy
-#~ msgid "Summary hosts"
-#~ msgstr " pentru elementul %s"
-
-#, fuzzy
-#~ msgid "Switch %s %s"
-#~ msgstr " si %s 's'."
-
-#, fuzzy
 #~ msgid "Sync Users"
 #~ msgstr "Parola"
 
@@ -62627,44 +61877,12 @@ msgstr ""
 #~ msgstr "Nume tablespace"
 
 #, fuzzy
-#~ msgid "Temporarily ignore this service"
-#~ msgstr "%s acest site"
-
-#, fuzzy
-#~ msgid "The %s %s does not match this rule."
-#~ msgstr "Un utilizator cu id-ul \"%s\" nu există."
-
-#, fuzzy
-#~ msgid "The last 31 days"
-#~ msgstr " în %d zile"
-
-#, fuzzy
-#~ msgid "The last 365 days"
-#~ msgstr " în %d zile"
-
-#, fuzzy
-#~ msgid "The requested dashboard can not be found."
-#~ msgstr "Un utilizator cu id-ul \"%s\" nu există."
-
-#, fuzzy
-#~ msgid "The requested snapshot does not exist"
-#~ msgstr "Un utilizator cu id-ul \"%s\" nu există."
-
-#, fuzzy
 #~ msgid "There are no ineffective rules."
 #~ msgstr "Reguli neaplicate"
 
 #, fuzzy
 #~ msgid "This aggregation is currently in a scheduled downtime"
 #~ msgstr "<b>șterge toți timpii morți programați</b> pentru "
-
-#, fuzzy
-#~ msgid "This host is not configured."
-#~ msgstr "Un utilizator cu id-ul \"%s\" nu există."
-
-#, fuzzy
-#~ msgid "This host is not possible."
-#~ msgstr "Un utilizator cu id-ul \"%s\" nu există."
 
 #, fuzzy
 #~ msgid "This is not a Check_MK snapshot!<br>%s"
@@ -62677,10 +61895,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "This snapshot is broken"
 #~ msgstr "Numele elementului pentru eveniment"
-
-#, fuzzy
-#~ msgid "Timeline of "
-#~ msgstr "Portul TCP pentru conexiune"
 
 #, fuzzy
 #~ msgid "Timeout between retries"
@@ -62705,10 +61919,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "Unallocated Space"
 #~ msgstr "spatiu utilizat"
-
-#, fuzzy
-#~ msgid "Undefined Perf-O-Meter type '%s'"
-#~ msgstr " Parametrul este: %r"
 
 #, fuzzy
 #~ msgid "Unique Rule ID"
@@ -62786,10 +61996,6 @@ msgstr ""
 #~ msgstr "(fără Nivel de serviciu)"
 
 #, fuzzy
-#~ msgid "Your roles are <b>%s</b>. "
-#~ msgstr "<b>Nu ai definit nici un rol</b>"
-
-#, fuzzy
 #~ msgid "activating..."
 #~ msgstr " Activează această opțiune"
 
@@ -62816,10 +62022,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "downtimes"
 #~ msgstr "Întreruperi adhoc"
-
-#, fuzzy
-#~ msgid "edited properties of host [%s]"
-#~ msgstr "Un titlu descriptiv despre această acțiune."
 
 #, fuzzy
 #~ msgid "enable profile mode"
@@ -62874,10 +62076,6 @@ msgstr ""
 #~ msgstr "cereri"
 
 #, fuzzy
-#~ msgid "Do automatic host label discovery"
-#~ msgstr " Se potriveste grupurilor: %s"
-
-#, fuzzy
 #~ msgid "Fully monitor docker containers"
 #~ msgstr "Numarul maxim de conexiuni"
 
@@ -62902,20 +62100,12 @@ msgstr ""
 #~ msgstr "cereri"
 
 #, fuzzy
-#~ msgid "Predef. conditions"
-#~ msgstr "%d condiții"
-
-#, fuzzy
 #~ msgid "SELECT Requests"
 #~ msgstr "cereri"
 
 #, fuzzy
 #~ msgid "Skipping execution of check_mk agent"
 #~ msgstr "Verificări active"
-
-#, fuzzy
-#~ msgid "This aggregation works with data of multiple hosts."
-#~ msgstr "Un utilizator cu id-ul \"%s\" nu există."
 
 #, fuzzy
 #~ msgid "Write access to all predefined conditions"

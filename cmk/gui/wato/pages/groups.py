@@ -58,7 +58,8 @@ from cmk.gui.plugins.wato import (
 
 
 class ModeGroups(WatoMode, metaclass=abc.ABCMeta):
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def type_name(self) -> GroupType:
         raise NotImplementedError()
 
@@ -133,8 +134,8 @@ class ModeGroups(WatoMode, metaclass=abc.ABCMeta):
         if not transactions.check_transaction():
             return redirect(mode_url("%s_groups" % self.type_name))
 
-        if html.request.var('_delete'):
-            delname = html.request.get_ascii_input_mandatory("_delete")
+        if request.var('_delete'):
+            delname = request.get_ascii_input_mandatory("_delete")
             usages = watolib.find_usages_of_group(delname, self.type_name)
 
             if usages:
@@ -187,7 +188,8 @@ class ModeGroups(WatoMode, metaclass=abc.ABCMeta):
 
 
 class ABCModeEditGroup(WatoMode, metaclass=abc.ABCMeta):
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def type_name(self) -> GroupType:
         raise NotImplementedError()
 
@@ -204,11 +206,11 @@ class ABCModeEditGroup(WatoMode, metaclass=abc.ABCMeta):
         super().__init__()
 
     def _from_vars(self) -> None:
-        self._name = html.request.get_ascii_input("edit")  # missing -> new group
+        self._name = request.get_ascii_input("edit")  # missing -> new group
         self._new = self._name is None
 
         if self._new:
-            clone_group = html.request.get_ascii_input("clone")
+            clone_group = request.get_ascii_input("clone")
             if clone_group:
                 self._name = clone_group
 
@@ -233,13 +235,13 @@ class ABCModeEditGroup(WatoMode, metaclass=abc.ABCMeta):
         if not transactions.check_transaction():
             return redirect(mode_url("%s_groups" % self.type_name))
 
-        alias = html.request.get_unicode_input_mandatory("alias").strip()
+        alias = request.get_unicode_input_mandatory("alias").strip()
         self.group = {"alias": alias}
 
         self._determine_additional_group_data()
 
         if self._new:
-            self._name = html.request.get_ascii_input_mandatory("name").strip()
+            self._name = request.get_ascii_input_mandatory("name").strip()
             watolib.add_group(self._name, self.type_name, self.group)
         else:
             watolib.edit_group(self._name, self.type_name, self.group)

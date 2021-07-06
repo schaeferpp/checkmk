@@ -15,7 +15,7 @@ import cmk.gui.config as config
 from cmk.gui.table import table_element
 import cmk.gui.watolib as watolib
 from cmk.gui.htmllib import HTML
-from cmk.gui import escaping
+from cmk.gui.utils import escaping
 from cmk.gui.watolib.changes import AuditLogStore, ObjectRefType
 from cmk.gui.userdb import UserSelection
 from cmk.gui.valuespec import (
@@ -74,7 +74,7 @@ class ModeAuditLog(WatoMode):
         self._options = {key: vs.default_value() for key, vs in self._audit_log_options()}
         super(ModeAuditLog, self).__init__()
         self._store = AuditLogStore(AuditLogStore.make_path())
-        self._show_details = html.request.get_integer_input_mandatory("show_details", 1) == 1
+        self._show_details = request.get_integer_input_mandatory("show_details", 1) == 1
 
     def title(self):
         return _("Audit log")
@@ -203,16 +203,16 @@ class ModeAuditLog(WatoMode):
                 ],
             ))
 
-    def _render_filter_form(self) -> str:
+    def _render_filter_form(self) -> HTML:
         with output_funnel.plugged():
             self._display_audit_log_options()
-            return output_funnel.drain()
+            return HTML(output_funnel.drain())
 
     def _log_exists(self):
         return self._store.exists()
 
     def action(self) -> ActionResult:
-        if html.request.var("_action") == "clear":
+        if request.var("_action") == "clear":
             config.user.need_permission("wato.auditlog")
             config.user.need_permission("wato.clear_auditlog")
             config.user.need_permission("wato.edit")
@@ -224,7 +224,7 @@ class ModeAuditLog(WatoMode):
 
         audit = self._parse_audit_log()
 
-        if html.request.var("_action") == "csv":
+        if request.var("_action") == "csv":
             config.user.need_permission("wato.auditlog")
             return self._export_audit_log(audit)
 
@@ -240,7 +240,7 @@ class ModeAuditLog(WatoMode):
     def _get_audit_log_options_from_request(self):
         options = {}
         for name, vs in self._audit_log_options():
-            if not list(html.request.itervars("options_" + name)):
+            if not list(request.itervars("options_" + name)):
                 continue
 
             try:
@@ -514,7 +514,9 @@ class ModeAuditLog(WatoMode):
         if self._show_details:
             titles.append(_('Details'))
 
-        html.write(','.join(titles) + '\n')
+        resp = []
+
+        resp.append(','.join(titles) + '\n')
         for entry in audit:
             columns = [
                 render.date(int(entry.time)),
@@ -529,7 +531,10 @@ class ModeAuditLog(WatoMode):
             if self._show_details:
                 columns.append('"' + escaping.strip_tags(entry.diff_text).replace('"', "'") + '"')
 
-            html.write(','.join(columns) + '\n')
+            resp.append(','.join(columns) + '\n')
+
+        response.set_data("".join(resp))
+
         return FinalizeRequest(code=200)
 
     def _parse_audit_log(self) -> List[AuditLogStore.Entry]:
@@ -554,8 +559,8 @@ class ModeAuditLog(WatoMode):
                 return False
 
         if self._options["filter_regex"]:
-            for val in [entry.user_id, entry.action, entry.text]:
-                if not re.search(self._options["filter_regex"], val):
-                    return False
+            return any(
+                re.search(self._options["filter_regex"], val)
+                for val in [entry.user_id, entry.action, entry.text])
 
         return True

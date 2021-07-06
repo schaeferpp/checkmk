@@ -7,28 +7,31 @@
 import traceback
 from logging import Logger
 from pathlib import Path
-from typing import Callable, List, Optional, Tuple
+from typing import Callable, Iterable, List, Optional, Tuple
 
-# Needed for receiving traps
+import pyasn1.error  # type: ignore[import]
+from pyasn1.type.base import SimpleAsn1Type  # type: ignore[import]
 import pysnmp.debug  # type: ignore[import]
 import pysnmp.entity.config  # type: ignore[import]
 import pysnmp.entity.engine  # type: ignore[import]
 import pysnmp.entity.rfc3413.ntfrcv  # type: ignore[import]
 import pysnmp.proto.api  # type: ignore[import]
 import pysnmp.proto.errind  # type: ignore[import]
-
-# Needed for trap translation
+import pysnmp.proto.rfc1155  # type: ignore[import]
+import pysnmp.proto.rfc1902  # type: ignore[import]
 import pysnmp.smi.builder  # type: ignore[import]
-import pysnmp.smi.view  # type: ignore[import]
-import pysnmp.smi.rfc1902  # type: ignore[import]
 import pysnmp.smi.error  # type: ignore[import]
-import pyasn1.error  # type: ignore[import]
+import pysnmp.smi.rfc1902  # type: ignore[import]
+import pysnmp.smi.view  # type: ignore[import]
 
 from cmk.utils.log import VERBOSE
-import cmk.utils.render
+from cmk.utils.render import Age
 
 from .config import AuthenticationProtocol, Config, PrivacyProtocol
 from .settings import Settings
+
+VarBind = Tuple[pysnmp.proto.rfc1902.ObjectName, SimpleAsn1Type]
+VarBinds = Iterable[VarBind]
 
 
 class SNMPTrapEngine:
@@ -38,7 +41,7 @@ class SNMPTrapEngine:
         pduTypes = (pysnmp.proto.api.v1.TrapPDU.tagSet, pysnmp.proto.api.v2c.SNMPv2TrapPDU.tagSet)
 
     def __init__(self, settings: Settings, config: Config, logger: Logger,
-                 callback: Callable) -> None:
+                 callback: Callable[[Iterable[Tuple[str, str]], str], None]) -> None:
         super().__init__()
         self._logger = logger
         if settings.options.snmptrap_udp is None:
@@ -152,13 +155,15 @@ class SNMPTrapEngine:
                                                      wholeMsg=message)
 
     def _handle_snmptrap(self, snmp_engine, state_reference, context_engine_id, context_name,
-                         var_binds, cb_ctx) -> None:
-        ipaddress = self.snmp_engine.getUserContext("sender_address")[0]
+                         var_binds: VarBinds, cb_ctx) -> None:
+        # sender_address contains a (host: str, port: int) tuple
+        ipaddress: str = self.snmp_engine.getUserContext("sender_address")[0]
         self._log_snmptrap_details(context_engine_id, context_name, var_binds, ipaddress)
         trap = self._snmp_trap_translator.translate(ipaddress, var_binds)
         self._callback(trap, ipaddress)
 
-    def _log_snmptrap_details(self, context_engine_id, context_name, var_binds, ipaddress) -> None:
+    def _log_snmptrap_details(self, context_engine_id, context_name, var_binds: VarBinds,
+                              ipaddress: str) -> None:
         if self._logger.isEnabledFor(VERBOSE):
             self._logger.log(VERBOSE,
                              'Trap accepted from %s (ContextEngineId "%s", SNMPContextName "%s")',
@@ -229,55 +234,31 @@ class SNMPTrapTranslator:
             logger.exception("Exception: %s" % e)
             return None
 
-    # Convert pysnmp datatypes to simply handable ones
-    def _translate_simple(self, ipaddress, var_bind_list) -> List[Tuple[str, str]]:
-        var_binds: List[Tuple[str, str]] = []
-        for oid, value in var_bind_list:
+    def _translate_simple(self, ipaddress: str, var_bind_list: VarBinds) -> List[Tuple[str, str]]:
+        return [self._translate_binding_simple(oid, value) for oid, value in var_bind_list]
+
+    def _translate_binding_simple(self, oid: pysnmp.proto.rfc1902.ObjectName,
+                                  value: SimpleAsn1Type) -> Tuple[str, str]:
+        if oid.asTuple() == (1, 3, 6, 1, 2, 1, 1, 3, 0):
+            key = 'Uptime'
+        else:
             key = str(oid)
+        # We could use Asn1Type.isSuperTypeOf() instead of isinstance() below.
+        if isinstance(value, (pysnmp.proto.rfc1155.TimeTicks, pysnmp.proto.rfc1902.TimeTicks)):
+            val = str(Age(float(value) / 100))
+        else:
+            val = value.prettyPrint()
+        return key, val
 
-            if value.__class__.__name__ in ['ObjectIdentifier', 'IpAddress']:
-                val = value.prettyPrint()
-            elif value.__class__.__name__ == 'TimeTicks':
-                val = str(cmk.utils.render.Age(float(value._value) / 100))
-            else:
-                val = value._value
-
-            # Translate some standard SNMPv2 oids
-            if key == '1.3.6.1.2.1.1.3.0':
-                key = 'Uptime'
-
-            var_binds.append((key, val))
-        return var_binds
-
-    # Convert pysnmp datatypes to simply handable ones
-    def _translate_via_mibs(self, ipaddress, var_bind_list) -> List[Tuple[str, str]]:
-        var_binds: List[Tuple[str, str]] = []
+    def _translate_via_mibs(self, ipaddress: str, var_bind_list: VarBinds) -> List[Tuple[str, str]]:
         if self._mib_resolver is None:
             self._logger.warning('Failed to translate OIDs, no modules loaded (see above)')
-            # TODO: Fall back to _translate_simple?
-            return [(str(oid), str(value)) for oid, value in var_bind_list]
+            return self._translate_simple(ipaddress, var_bind_list)
 
-        def do_translate(oid, value):
-            # Disable mib_var[0] type detection
-
-            mib_var = pysnmp.smi.rfc1902.ObjectType(pysnmp.smi.rfc1902.ObjectIdentity(oid),
-                                                    value).resolveWithMib(self._mib_resolver)
-
-            node = mib_var[0].getMibNode()
-            translated_oid = mib_var[0].prettyPrint().replace("\"", "")
-            translated_value = mib_var[1].prettyPrint()
-
-            return node, translated_oid, translated_value
-
+        var_binds: List[Tuple[str, str]] = []
         for oid, value in var_bind_list:
             try:
-                node, translated_oid, translated_value = do_translate(oid, value)
-                units = node.getUnits() if hasattr(node, "getUnits") else ""
-                if units:
-                    translated_value += ' %s' % units
-                description = node.getDescription() if hasattr(node, "getDescription") else ""
-                if description:
-                    translated_value += "(%s)" % description
+                translated_oid, translated_value = self._translate_binding_via_mibs(oid, value)
             except (pysnmp.smi.error.SmiError, pyasn1.error.ValueConstraintError) as e:
                 self._logger.warning('Failed to translate OID %s (in trap from %s): %s '
                                      '(enable debug logging for details)' %
@@ -288,5 +269,18 @@ class SNMPTrapTranslator:
                 translated_oid = str(oid)
                 translated_value = str(value)
             var_binds.append((translated_oid, translated_value))
-
         return var_binds
+
+    def _translate_binding_via_mibs(self, oid: pysnmp.proto.rfc1902.ObjectName,
+                                    value: SimpleAsn1Type) -> Tuple[str, str]:
+        # Disable mib_var[0] type detection
+        mib_var = pysnmp.smi.rfc1902.ObjectType(pysnmp.smi.rfc1902.ObjectIdentity(oid),
+                                                value).resolveWithMib(self._mib_resolver)
+        node = mib_var[0].getMibNode()
+        translated_oid = mib_var[0].prettyPrint().replace("\"", "")
+        translated_value = mib_var[1].prettyPrint()
+        if units := getattr(node, 'getUnits', ''):
+            translated_value += ' %s' % units
+        if description := getattr(node, 'getDescription', ''):
+            translated_value += "(%s)" % description
+        return translated_oid, translated_value

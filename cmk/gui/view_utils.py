@@ -13,7 +13,7 @@ from livestatus import SiteId
 from cmk.utils.type_defs import Labels, LabelSources, TagID, TaggroupID, TaggroupIDToTagID
 from cmk.gui.type_defs import HTTPVariables
 
-import cmk.gui.escaping as escaping
+import cmk.gui.utils.escaping as escaping
 from cmk.gui.i18n import _
 from cmk.gui.globals import html, request, theme
 from cmk.gui.utils.html import HTML
@@ -96,8 +96,8 @@ def get_host_list_links(site: SiteId, hosts: List[Union[str]]) -> List[str]:
             ("host", host),
         ]
 
-        if html.request.var("display_options"):
-            args.append(("display_options", html.request.var("display_options")))
+        if request.var("display_options"):
+            args.append(("display_options", request.var("display_options")))
 
         url = makeuri_contextless(request, args, filename="view.py")
         link = str(html.render_a(host, href=url))
@@ -113,19 +113,19 @@ def query_limit_exceeded_warn(limit: Optional[int], user_config: 'LoggedInUser')
     """Compare query reply against limits, warn in the GUI about incompleteness"""
     text = HTML(_("Your query produced more than %d results. ") % limit)
 
-    if html.request.get_ascii_input(
-            "limit", "soft") == "soft" and user_config.may("general.ignore_soft_limit"):
+    if request.get_ascii_input("limit",
+                               "soft") == "soft" and user_config.may("general.ignore_soft_limit"):
         text += html.render_a(_('Repeat query and allow more results.'),
                               target="_self",
                               href=makeuri(request, [("limit", "hard")]))
-    elif html.request.get_ascii_input("limit") == "hard" and user_config.may(
+    elif request.get_ascii_input("limit") == "hard" and user_config.may(
             "general.ignore_hard_limit"):
         text += html.render_a(_('Repeat query without limit.'),
                               target="_self",
                               href=makeuri(request, [("limit", "none")]))
 
-    text += " " + _(
-        "<b>Note:</b> the shown results are incomplete and do not reflect the sort order.")
+    text += escaping.escape_html_permissive(
+        " " + _("<b>Note:</b> the shown results are incomplete and do not reflect the sort order."))
     html.show_warning(text)
 
 

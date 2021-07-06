@@ -34,8 +34,10 @@ from cmk.utils.type_defs import (
     Item,
     ServicegroupName,
     ServiceName,
-    ConfigSerial,
 )
+
+import cmk.core_helpers.config_path
+from cmk.core_helpers.config_path import VersionedConfigPath
 
 import cmk.base.api.agent_based.register as agent_based_register
 import cmk.base.utils
@@ -66,9 +68,9 @@ class NagiosCore(core_config.MonitoringCore):
     def name(cls) -> str:
         return "nagios"
 
-    def create_config(self, serial: ConfigSerial) -> None:
+    def create_config(self, config_path: VersionedConfigPath) -> None:
         self._create_core_config()
-        self._precompile_hostchecks(serial)
+        self._precompile_hostchecks(config_path)
 
     def _create_core_config(self) -> None:
         """Tries to create a new Checkmk object configuration file for the Nagios core
@@ -84,9 +86,9 @@ class NagiosCore(core_config.MonitoringCore):
 
         store.save_text_to_file(cmk.utils.paths.nagios_objects_file, config_buffer.getvalue())
 
-    def _precompile_hostchecks(self, serial: ConfigSerial) -> None:
+    def _precompile_hostchecks(self, config_path: VersionedConfigPath) -> None:
         out.output("Precompiling host checks...")
-        _precompile_hostchecks(serial)
+        _precompile_hostchecks(config_path)
         out.output(tty.ok + "\n")
 
 
@@ -940,18 +942,18 @@ def _find_check_plugins(checktype: CheckPluginNameStr) -> List[str]:
 class HostCheckStore:
     """Caring about persistence of the precompiled host check files"""
     @staticmethod
-    def host_check_file_path(serial: ConfigSerial, hostname: HostName) -> Path:
-        return cmk.utils.paths.make_helper_config_path(serial) / "host_checks" / hostname
+    def host_check_file_path(config_path: VersionedConfigPath, hostname: HostName) -> Path:
+        return Path(config_path) / "host_checks" / hostname
 
     @staticmethod
-    def host_check_source_file_path(serial: ConfigSerial, hostname: HostName) -> Path:
+    def host_check_source_file_path(config_path: VersionedConfigPath, hostname: HostName) -> Path:
         # TODO: Use append_suffix(".py") once we are on Python 3.10
-        path = HostCheckStore.host_check_file_path(serial, hostname)
+        path = HostCheckStore.host_check_file_path(config_path, hostname)
         return path.with_suffix(path.suffix + ".py")
 
-    def write(self, serial: ConfigSerial, hostname: HostName, host_check: str) -> None:
-        compiled_filename = self.host_check_file_path(serial, hostname)
-        source_filename = self.host_check_source_file_path(serial, hostname)
+    def write(self, config_path: VersionedConfigPath, hostname: HostName, host_check: str) -> None:
+        compiled_filename = self.host_check_file_path(config_path, hostname)
+        source_filename = self.host_check_source_file_path(config_path, hostname)
 
         store.makedirs(compiled_filename.parent)
 
@@ -970,29 +972,35 @@ class HostCheckStore:
         console.verbose(" ==> %s.\n", compiled_filename, stream=sys.stderr)
 
 
-def _precompile_hostchecks(serial: ConfigSerial) -> None:
+def _precompile_hostchecks(config_path: VersionedConfigPath) -> None:
     console.verbose("Creating precompiled host check config...\n")
     config_cache = config.get_config_cache()
 
-    config.save_packed_config(serial, config_cache)
+    config.save_packed_config(config_path, config_cache)
 
     console.verbose("Precompiling host checks...\n")
 
     host_check_store = HostCheckStore()
     for hostname in config_cache.all_active_hosts():
         try:
-            console.verbose("%s%s%-16s%s:",
-                            tty.bold,
-                            tty.blue,
-                            hostname,
-                            tty.normal,
-                            stream=sys.stderr)
-            host_check = _dump_precompiled_hostcheck(config_cache, serial, hostname)
+            console.verbose(
+                "%s%s%-16s%s:",
+                tty.bold,
+                tty.blue,
+                hostname,
+                tty.normal,
+                stream=sys.stderr,
+            )
+            host_check = _dump_precompiled_hostcheck(
+                config_cache,
+                config_path,
+                hostname,
+            )
             if host_check is None:
                 console.verbose("(no Checkmk checks)\n")
                 continue
 
-            host_check_store.write(serial, hostname, host_check)
+            host_check_store.write(config_path, hostname, host_check)
         except Exception as e:
             if cmk.utils.debug.enabled():
                 raise
@@ -1000,11 +1008,13 @@ def _precompile_hostchecks(serial: ConfigSerial) -> None:
             sys.exit(5)
 
 
-def _dump_precompiled_hostcheck(config_cache: ConfigCache,
-                                serial: ConfigSerial,
-                                hostname: HostName,
-                                *,
-                                verify_site_python=True) -> Optional[str]:
+def _dump_precompiled_hostcheck(
+    config_cache: ConfigCache,
+    config_path: VersionedConfigPath,
+    hostname: HostName,
+    *,
+    verify_site_python=True,
+) -> Optional[str]:
     host_config = config_cache.get_host_config(hostname)
 
     (needed_legacy_check_plugin_names, needed_agent_based_check_plugin_names,
@@ -1063,8 +1073,8 @@ if os.path.islink(%(dst)r):
     os.chmod(%(dst)r, 0o755)
 
 """ % {
-                "src": str(HostCheckStore.host_check_source_file_path(serial, hostname)),
-                "dst": str(HostCheckStore.host_check_file_path(serial, hostname)),
+                "src": str(HostCheckStore.host_check_source_file_path(config_path, hostname)),
+                "dst": str(HostCheckStore.host_check_file_path(config_path, hostname)),
             })
 
     # Remove precompiled directory from sys.path. Leaving it in the path
@@ -1075,7 +1085,7 @@ if os.path.islink(%(dst)r):
     output.write("import cmk.utils.log\n")
     output.write("import cmk.utils.debug\n")
     output.write("from cmk.utils.exceptions import MKTerminate\n")
-    output.write("from cmk.utils.type_defs import LATEST_SERIAL\n")
+    output.write("from cmk.core_helpers.config_path import LATEST_CONFIG\n")
     output.write("\n")
     output.write("import cmk.base.utils\n")
     output.write("import cmk.base.config as config\n")
@@ -1120,7 +1130,7 @@ if '-d' in sys.argv:
     for check_plugin_name in sorted(needed_legacy_check_plugin_names):
         console.verbose(" %s%s%s", tty.green, check_plugin_name, tty.normal, stream=sys.stderr)
 
-    output.write("config.load_packed_config(serial=LATEST_SERIAL)\n")
+    output.write("config.load_packed_config(LATEST_CONFIG)\n")
 
     # IP addresses
     needed_ipaddresses, needed_ipv6addresses, = {}, {}
@@ -1165,7 +1175,7 @@ if '-d' in sys.argv:
 
     # perform actual check with a general exception handler
     output.write("try:\n")
-    output.write("    sys.exit(checking.do_check(%r, None))\n" % hostname)
+    output.write("    sys.exit(checking.active_check_checking(%r, None))\n" % hostname)
     output.write("except MKTerminate:\n")
     output.write("    out.output('<Interrupted>\\n', stream=sys.stderr)\n")
     output.write("    sys.exit(1)\n")

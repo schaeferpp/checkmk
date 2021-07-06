@@ -18,7 +18,7 @@ from cmk.utils.macros import MacroMapping, replace_macros_in_str
 from cmk.utils.type_defs import UserId
 
 import cmk.gui.config as config
-import cmk.gui.escaping as escaping
+import cmk.gui.utils.escaping as escaping
 import cmk.gui.sites as sites
 import cmk.gui.visuals as visuals
 from cmk.gui.breadcrumb import Breadcrumb, BreadcrumbItem, make_topic_breadcrumb
@@ -33,8 +33,9 @@ from cmk.gui.pagetypes import PagetypeTopics
 from cmk.gui.plugins.metrics.rrd_fetch import merge_multicol
 from cmk.gui.plugins.metrics.valuespecs import transform_graph_render_options
 from cmk.gui.plugins.views.utils import get_all_views, get_permitted_views, transform_painter_spec
+from cmk.gui.plugins.views.painters import service_state_short
 from cmk.gui.sites import get_alias_of_host
-from cmk.gui.type_defs import HTTPVariables, SingleInfos, VisualContext
+from cmk.gui.type_defs import HTTPVariables, SingleInfos, VisualContext, Row
 from cmk.gui.utils.html import HTML
 from cmk.gui.utils.rendering import text_with_links_to_user_translated_html
 from cmk.gui.utils.urls import makeuri, makeuri_contextless, urlencode_vars
@@ -587,7 +588,7 @@ dashlet_registry = DashletRegistry()
 @page_registry.register_page("ajax_figure_dashlet_data")
 class FigureDashletPage(AjaxPage):
     def page(self):
-        settings = json.loads(html.request.get_str_input_mandatory("settings"))
+        settings = json.loads(request.get_str_input_mandatory("settings"))
 
         try:
             dashlet_type = cast(Type[ABCFigureDashlet], dashlet_registry[settings.get("type")])
@@ -597,9 +598,9 @@ class FigureDashletPage(AjaxPage):
         settings = dashlet_vs_general_settings(
             dashlet_type, dashlet_type.single_infos()).value_from_json(settings)
 
-        raw_properties = html.request.get_str_input_mandatory("properties")
+        raw_properties = request.get_str_input_mandatory("properties")
         properties = dashlet_type.vs_parameters().value_from_json(json.loads(raw_properties))
-        context = json.loads(html.request.get_str_input_mandatory("context", "{}"))
+        context = json.loads(request.get_str_input_mandatory("context", "{}"))
         # Inject the infos because the datagenerator is a separate instance to dashlet
         settings["infos"] = dashlet_type.infos()
         response_data = dashlet_type.generate_response_data(properties, context, settings)
@@ -744,7 +745,7 @@ def save_all_dashboards() -> None:
     visuals.save('dashboards', get_all_dashboards())
 
 
-def get_all_dashboards() -> Dict[Tuple[Optional[UserId], DashboardName], DashboardConfig]:
+def get_all_dashboards() -> Dict[Tuple[UserId, DashboardName], DashboardConfig]:
     return DashboardStore.get_instance().all
 
 
@@ -1081,3 +1082,13 @@ def purge_metric_for_js(metric):
 
 def make_mk_missing_data_error() -> MKMissingDataError:
     return MKMissingDataError(_("No data was found with the current parameters of this dashlet."))
+
+
+def svc_map(
+    conf: Optional[Tuple[str, str]],
+    row: Row,
+    message_template: str = "{}",
+) -> Dict[str, str]:
+    style = dict(zip(("paint", "status"), conf)) if isinstance(conf, tuple) else {}
+    state, status_name = service_state_short(row)
+    return {"css": "svcstate state%s" % state, "msg": message_template.format(status_name), **style}

@@ -13,7 +13,9 @@ from typing import (
     Container,
     DefaultDict,
     Dict,
+    Iterable,
     List,
+    MutableMapping,
     Optional,
     Sequence,
     Set,
@@ -24,13 +26,12 @@ from six import ensure_str
 
 import cmk.utils.debug
 import cmk.utils.version as cmk_version
-from cmk.utils.check_utils import worst_service_state
+from cmk.utils.check_utils import ActiveCheckResult
 from cmk.utils.cpu_tracking import CPUTracker, Snapshot
 from cmk.utils.exceptions import MKTimeout, OnError
 from cmk.utils.log import console
 from cmk.utils.regex import regex
 from cmk.utils.type_defs import (
-    ActiveCheckResult,
     CheckPluginName,
     EVERYTHING,
     ExitSpec,
@@ -38,11 +39,8 @@ from cmk.utils.type_defs import (
     HostName,
     HostKey,
     MetricTuple,
-    ServiceAdditionalDetails,
     ServiceCheckResult,
-    ServiceDetails,
     ServiceName,
-    ServiceState,
     SourceType,
     state_markers,
 )
@@ -61,6 +59,12 @@ import cmk.base.license_usage as license_usage
 import cmk.base.plugin_contexts as plugin_contexts
 import cmk.base.utils
 from cmk.base.agent_based.data_provider import make_broker, ParsedSectionsBroker
+from cmk.base.agent_based.utils import (
+    check_sources,
+    get_section_kwargs,
+    get_section_cluster_kwargs,
+    check_parsing_errors,
+)
 from cmk.base.api.agent_based import checking_classes
 from cmk.base.api.agent_based.register.check_plugins_legacy import wrap_parameters
 from cmk.base.api.agent_based import value_store
@@ -89,20 +93,64 @@ from .utils import (
 
 
 @cmk.base.agent_based.decorator.handle_check_mk_check_result("mk", "Check_MK")
-def do_check(
+def active_check_checking(
     hostname: HostName,
     ipaddress: Optional[HostAddress],
     *,
     # The following arguments *must* remain optional for Nagios and the `DiscoCheckExecutor`.
-    #   See Also: `cmk.base.discovery.check_discovery()`
+    #   See Also: `cmk.base.discovery.active_check_discovery()`
+    # TODO: can we drop them now that we slit up 'commandline_checking'?
     fetcher_messages: Sequence[FetcherMessage] = (),
     run_plugin_names: Container[CheckPluginName] = EVERYTHING,
     selected_sections: SectionNameCollection = NO_SELECTION,
     dry_run: bool = False,
     show_perfdata: bool = False,
 ) -> ActiveCheckResult:
+    return _execute_checkmk_checks(
+        hostname=hostname,
+        ipaddress=ipaddress,
+        fetcher_messages=fetcher_messages,
+        run_plugin_names=run_plugin_names,
+        selected_sections=selected_sections,
+        dry_run=dry_run,
+        show_perfdata=show_perfdata,
+    )
+
+
+# TODO: see if we can/should drop the decorator. If so, make hostname a kwarg-only
+@cmk.base.agent_based.decorator.handle_check_mk_check_result("mk", "Check_MK")
+def commandline_checking(
+    host_name: HostName,
+    ipaddress: Optional[HostAddress],
+    *,
+    run_plugin_names: Container[CheckPluginName],
+    selected_sections: SectionNameCollection,
+    dry_run: bool,
+    show_perfdata: bool,
+) -> ActiveCheckResult:
     console.vverbose("Checkmk version %s\n", cmk_version.__version__)
 
+    return _execute_checkmk_checks(
+        hostname=host_name,
+        ipaddress=ipaddress,
+        fetcher_messages=(),
+        run_plugin_names=run_plugin_names,
+        selected_sections=selected_sections,
+        dry_run=dry_run,
+        show_perfdata=show_perfdata,
+    )
+
+
+def _execute_checkmk_checks(
+    *,
+    hostname: HostName,
+    ipaddress: Optional[HostAddress],
+    fetcher_messages: Sequence[FetcherMessage] = (),
+    run_plugin_names: Container[CheckPluginName],
+    selected_sections: SectionNameCollection,
+    dry_run: bool,
+    show_perfdata: bool,
+) -> ActiveCheckResult:
     config_cache = config.get_config_cache()
     host_config = config_cache.get_host_config(hostname)
 
@@ -110,10 +158,6 @@ def do_check(
 
     mode = Mode.CHECKING if selected_sections is NO_SELECTION else Mode.FORCE_SECTIONS
 
-    status: ServiceState = 0
-    infotexts: List[ServiceDetails] = []
-    long_infotexts: List[ServiceAdditionalDetails] = []
-    perfdata: List[str] = []
     try:
         license_usage.try_history_update()
 
@@ -145,7 +189,7 @@ def do_check(
                 on_scan_error=OnError.RAISE,
             )
 
-            num_success, plugins_missing_data = do_all_checks_on_host(
+            num_success, plugins_missing_data = check_host_services(
                 config_cache=config_cache,
                 host_config=host_config,
                 ipaddress=ipaddress,
@@ -164,65 +208,80 @@ def do_check(
                     parsed_sections_broker=broker,
                 )
 
-            for source, host_sections in source_results:
-                source_state, source_output = source.summarize(host_sections, mode=mode)
-                if source_output != "":
-                    status = worst_service_state(status, source_state, default=3)
-                    infotexts.append("[%s] %s" % (source.id, source_output))
-
-            if plugins_missing_data:
-                missing_data_status, missing_data_infotext = _check_plugins_missing_data(
+            timed_results = ActiveCheckResult.from_subresults(
+                *check_sources(
+                    source_results=source_results,
+                    mode=mode,
+                    include_ok_results=True,
+                ),
+                check_parsing_errors(errors=broker.parsing_errors(),),
+                *_check_plugins_missing_data(
                     plugins_missing_data,
                     exit_spec,
                     bool(num_success),
-                )
-                status = max(status, missing_data_status)
-                infotexts.append(missing_data_infotext)
+                ),
+            )
 
-        total_times = tracker.duration
-        for msg in fetcher_messages:
-            total_times += msg.stats.duration
+        return ActiveCheckResult.from_subresults(
+            timed_results,
+            _timing_results(tracker, fetcher_messages),
+        )
 
-        infotexts.append("execution time %.1f sec" % total_times.process.elapsed)
-        if config.check_mk_perfdata_with_times:
-            perfdata += [
-                "execution_time=%.3f" % total_times.process.elapsed,
-                "user_time=%.3f" % total_times.process.user,
-                "system_time=%.3f" % total_times.process.system,
-                "children_user_time=%.3f" % total_times.process.children_user,
-                "children_system_time=%.3f" % total_times.process.children_system,
-            ]
-            summary: DefaultDict[str, Snapshot] = defaultdict(Snapshot.null)
-            for msg in fetcher_messages if fetcher_messages else ():
-                if msg.fetcher_type in (
-                        FetcherType.PIGGYBACK,
-                        FetcherType.PROGRAM,
-                        FetcherType.SNMP,
-                        FetcherType.TCP,
-                ):
-                    summary[{
-                        FetcherType.PIGGYBACK: "agent",
-                        FetcherType.PROGRAM: "ds",
-                        FetcherType.SNMP: "snmp",
-                        FetcherType.TCP: "agent",
-                    }[msg.fetcher_type]] += msg.stats.duration
-            for phase, duration in summary.items():
-                perfdata.append("cmk_time_%s=%.3f" % (phase, duration.idle))
-        else:
-            perfdata.append("execution_time=%.3f" % total_times.process.elapsed)
-
-        return status, infotexts, long_infotexts, perfdata
     finally:
         _submit_to_core.finalize()
+
+
+def _timing_results(tracker: CPUTracker,
+                    fetcher_messages: Sequence[FetcherMessage]) -> ActiveCheckResult:
+    total_times = tracker.duration
+    for msg in fetcher_messages:
+        total_times += msg.stats.duration
+
+    infotexts = ("execution time %.1f sec" % total_times.process.elapsed,)
+
+    if not config.check_mk_perfdata_with_times:
+        return ActiveCheckResult(0, infotexts, (),
+                                 ("execution_time=%.3f" % total_times.process.elapsed,))
+
+    perfdata = [
+        "execution_time=%.3f" % total_times.process.elapsed,
+        "user_time=%.3f" % total_times.process.user,
+        "system_time=%.3f" % total_times.process.system,
+        "children_user_time=%.3f" % total_times.process.children_user,
+        "children_system_time=%.3f" % total_times.process.children_system,
+    ]
+    summary: DefaultDict[str, Snapshot] = defaultdict(Snapshot.null)
+    for msg in fetcher_messages:
+        if msg.fetcher_type in (
+                FetcherType.PIGGYBACK,
+                FetcherType.PROGRAM,
+                FetcherType.SNMP,
+                FetcherType.TCP,
+        ):
+            summary[{
+                FetcherType.PIGGYBACK: "agent",
+                FetcherType.PROGRAM: "ds",
+                FetcherType.SNMP: "snmp",
+                FetcherType.TCP: "agent",
+            }[msg.fetcher_type]] += msg.stats.duration
+    for phase, duration in summary.items():
+        perfdata.append("cmk_time_%s=%.3f" % (phase, duration.idle))
+
+    return ActiveCheckResult(0, infotexts, (), perfdata)
 
 
 def _check_plugins_missing_data(
     plugins_missing_data: List[CheckPluginName],
     exit_spec: ExitSpec,
     some_success: bool,
-) -> Tuple[ServiceState, ServiceDetails]:
+) -> Iterable[ActiveCheckResult]:
+    if not plugins_missing_data:
+        return
+
     if not some_success:
-        return exit_spec.get("empty_output", 2), "Got no information from host"
+        yield ActiveCheckResult(exit_spec.get("empty_output", 2), ("Got no information from host",),
+                                (), ())
+        return
 
     # key is a legacy name, kept for compatibility.
     specific_plugins_missing_data_spec = exit_spec.get("specific_missing_sections", [])
@@ -238,24 +297,20 @@ def _check_plugins_missing_data(
             generic_plugins.add(str(check_plugin_name))
 
     # key is a legacy name, kept for compatibility.
-    generic_plugins_status = exit_spec.get("missing_sections", 1)
-    infotexts = [
-        "Missing monitoring data for check plugins: %s%s" % (
-            ", ".join(sorted(generic_plugins)),
-            state_markers[generic_plugins_status],
-        ),
-    ]
+    missing_status = exit_spec.get("missing_sections", 1)
+    plugin_list = ", ".join(sorted(generic_plugins))
+    yield ActiveCheckResult(
+        missing_status,
+        (f"Missing monitoring data for plugins: {plugin_list}{state_markers[missing_status]}",),
+        (),
+        (),
+    )
 
-    for plugin, status in sorted(specific_plugins):
-        infotexts.append("%s%s" % (plugin, state_markers[status]))
-        generic_plugins_status = max(generic_plugins_status, status)
-
-    return generic_plugins_status, ", ".join(infotexts)
+    yield from (ActiveCheckResult(status, f"{plugin}{state_markers[status]}", (), ())
+                for plugin, status in sorted(specific_plugins))
 
 
-# Loops over all checks for ANY host (cluster, real host), gets the data, calls the check
-# function that examines that data and sends the result to the Core.
-def do_all_checks_on_host(
+def check_host_services(
     *,
     config_cache: config.ConfigCache,
     host_config: config.HostConfig,
@@ -266,6 +321,12 @@ def do_all_checks_on_host(
     dry_run: bool,
     show_perfdata: bool,
 ) -> Tuple[int, List[CheckPluginName]]:
+    """Compute service state results for all given services on node or cluster
+
+     * Loops over all services,
+     * calls the check
+     * examines the result and sends it to the core (unless `dry_run` is True).
+    """
     num_success = 0
     plugins_missing_data: Set[CheckPluginName] = set()
 
@@ -415,16 +476,18 @@ def get_aggregated_result(
 
     config_cache = config.get_config_cache()
 
-    kwargs = {}
+    kwargs: MutableMapping[str, Any] = {}
     try:
-        kwargs = parsed_sections_broker.get_section_cluster_kwargs(
+        kwargs = get_section_cluster_kwargs(
+            parsed_sections_broker,
             config_cache.get_clustered_service_node_keys(
                 host_config.hostname,
                 source_type,
                 service.description,
             ) or [],
             plugin.sections,
-        ) if host_config.is_cluster else parsed_sections_broker.get_section_kwargs(
+        ) if host_config.is_cluster else get_section_kwargs(
+            parsed_sections_broker,
             HostKey(host_config.hostname, ipaddress, source_type),
             plugin.sections,
         )
@@ -433,14 +496,16 @@ def get_aggregated_result(
             # in 1.6 some plugins where discovered for management boards, but with
             # the regular host plugins name. In this case retry with the source type
             # forced to MANAGEMENT:
-            kwargs = parsed_sections_broker.get_section_cluster_kwargs(
+            kwargs = get_section_cluster_kwargs(
+                parsed_sections_broker,
                 config_cache.get_clustered_service_node_keys(
                     host_config.hostname,
                     SourceType.MANAGEMENT,
                     service.description,
                 ) or [],
                 plugin.sections,
-            ) if host_config.is_cluster else parsed_sections_broker.get_section_kwargs(
+            ) if host_config.is_cluster else get_section_kwargs(
+                parsed_sections_broker,
                 HostKey(host_config.hostname, ipaddress, SourceType.MANAGEMENT),
                 plugin.sections,
             )

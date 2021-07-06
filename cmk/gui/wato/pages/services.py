@@ -17,7 +17,8 @@ import cmk.utils.render
 from cmk.utils.defines import short_service_state_name
 from cmk.utils.python_printer import PythonPrinter
 
-from cmk.gui.htmllib import HTML
+from cmk.gui.utils.escaping import escape_html
+from cmk.gui.htmllib import HTML, foldable_container
 import cmk.gui.config as config
 import cmk.gui.watolib as watolib
 from cmk.gui.table import table_element
@@ -25,7 +26,7 @@ from cmk.gui.background_job import JobStatusStates
 from cmk.gui.view_utils import render_labels, format_plugin_output
 
 from cmk.gui.pages import page_registry, AjaxPage
-from cmk.gui.globals import html, transactions, request as global_request, output_funnel
+from cmk.gui.globals import html, transactions, request, output_funnel
 from cmk.gui.i18n import _, ungettext
 from cmk.gui.exceptions import MKUserError, MKGeneralException
 from cmk.gui.breadcrumb import Breadcrumb, make_main_menu_breadcrumb
@@ -97,7 +98,7 @@ class ModeDiscovery(WatoMode):
         return ModeEditHost
 
     def _from_vars(self):
-        self._host = watolib.Folder.current().host(html.request.get_ascii_input_mandatory("host"))
+        self._host = watolib.Folder.current().host(request.get_ascii_input_mandatory("host"))
         if not self._host:
             raise MKUserError("host", _("You called this page with an invalid host name."))
 
@@ -106,7 +107,7 @@ class ModeDiscovery(WatoMode):
         action = DiscoveryAction.NONE
         if config.user.may("wato.services"):
             show_checkboxes = config.user.discovery_checkboxes
-            if html.request.var("_scan") == "1":
+            if request.var("_scan") == "1":
                 action = DiscoveryAction.REFRESH
         else:
             show_checkboxes = False
@@ -168,7 +169,7 @@ class AutomationServiceDiscoveryJob(AutomationCommand):
     def get_request(self) -> StartDiscoveryRequest:
         config.user.need_permission("wato.hosts")
 
-        host_name = html.request.get_ascii_input("host_name")
+        host_name = request.get_ascii_input("host_name")
         if host_name is None:
             raise MKGeneralException(_("Host is missing"))
         host = watolib.Host.host(host_name)
@@ -180,7 +181,7 @@ class AutomationServiceDiscoveryJob(AutomationCommand):
                   "for further information.") % (host_name, config.omd_site()))
         host.need_permission("read")
 
-        ascii_input = html.request.get_ascii_input("options")
+        ascii_input = request.get_ascii_input("options")
         if ascii_input is not None:
             options = json.loads(ascii_input)
         else:
@@ -189,12 +190,12 @@ class AutomationServiceDiscoveryJob(AutomationCommand):
                                      folder=host.folder(),
                                      options=DiscoveryOptions(**options))
 
-    def execute(self, request: StartDiscoveryRequest) -> str:
+    def execute(self, api_request: StartDiscoveryRequest) -> str:
         # Be compatible with pre-2.0.0p1 central sites. The version was not sent before this
         # version. We need to skip the new_labels, vanished_labels and replaced_labels.
-        version = html.request.headers.get("x-checkmk-version")
+        version = request.headers.get("x-checkmk-version")
         if not version or version.startswith("1.6.0"):
-            data = execute_discovery_job(request)
+            data = execute_discovery_job(api_request)
             # Shorten check_table entries, alienate paramstring to store additional info
             # The paramstring is not evaluated in 1.6, but it will be returned in set-autochecks
             # set-autochecks in 2.0 requires params, found_on_nodes, description
@@ -210,7 +211,7 @@ class AutomationServiceDiscoveryJob(AutomationCommand):
                 new_check_table.append(tuple(tmp_entry))
             fixed_data = tuple([data[0], data[1], new_check_table, data[3]])
             return PythonPrinter().pformat(fixed_data)
-        return repr(execute_discovery_job(request)._asdict())
+        return repr(execute_discovery_job(api_request)._asdict())
 
 
 @page_registry.register_page("ajax_service_discovery")
@@ -220,28 +221,28 @@ class ModeAjaxServiceDiscovery(AjaxPage):
 
         config.user.need_permission("wato.hosts")
 
-        request: AjaxDiscoveryRequest = self.webapi_request()
+        api_request: AjaxDiscoveryRequest = self.webapi_request()
         html.request.del_var("request")  # Do not add this to URLs constructed later
-        request.setdefault("update_target", None)
-        request.setdefault("update_source", None)
-        request.setdefault("update_services", [])
+        api_request.setdefault("update_target", None)
+        api_request.setdefault("update_source", None)
+        api_request.setdefault("update_services", [])
 
         # Make Folder() be able to detect the current folder correctly
-        html.request.set_var("folder", request["folder_path"])
+        html.request.set_var("folder", api_request["folder_path"])
 
-        folder = watolib.Folder.folder(request["folder_path"])
-        self._host = folder.host(request["host_name"])
+        folder = watolib.Folder.folder(api_request["folder_path"])
+        self._host = folder.host(api_request["host_name"])
         if not self._host:
             raise MKUserError("host", _("You called this page with an invalid host name."))
         self._host.need_permission("read")
 
-        self._options = self._get_discovery_options(request)
+        self._options = self._get_discovery_options(api_request)
 
         # Reuse the discovery result already known to the GUI or fetch a new one?
-        previous_discovery_result = DiscoveryResult(*ast.literal_eval(request["discovery_result"])) \
-            if request.get("discovery_result") else None
+        previous_discovery_result = DiscoveryResult(*ast.literal_eval(api_request["discovery_result"])) \
+            if api_request.get("discovery_result") else None
 
-        if self._use_previous_discovery_result(request, previous_discovery_result):
+        if self._use_previous_discovery_result(api_request, previous_discovery_result):
             assert previous_discovery_result is not None
             discovery_result = previous_discovery_result
         else:
@@ -256,7 +257,7 @@ class ModeAjaxServiceDiscovery(AjaxPage):
 
         if self._options.action not in job_actions \
            and transactions.check_transaction():
-            discovery_result = self._handle_action(discovery_result, request)
+            discovery_result = self._handle_action(discovery_result, api_request)
 
         if not discovery_result.check_table_created and previous_discovery_result:
             discovery_result = DiscoveryResult(
@@ -275,7 +276,7 @@ class ModeAjaxServiceDiscovery(AjaxPage):
             self._host,
             self._options,
         )
-        page_code = renderer.render(discovery_result, request)
+        page_code = renderer.render(discovery_result, api_request)
         fix_all_code = renderer.render_fix_all(discovery_result)
 
         # Clean the requested action after performing it
@@ -310,8 +311,8 @@ class ModeAjaxServiceDiscovery(AjaxPage):
             return output_funnel.drain()
 
     def _get_discovery_breadcrumb(self) -> Breadcrumb:
-        with global_request.stashed_vars():
-            global_request.set_var("host", self._host.name())
+        with request.stashed_vars():
+            request.set_var("host", self._host.name())
             mode = ModeDiscovery()
             return make_main_menu_breadcrumb(mode.main_menu()) + mode.breadcrumb()
 
@@ -361,16 +362,19 @@ class ModeAjaxServiceDiscovery(AjaxPage):
         else:
             messages.append(_("Found no services yet. To retry please execute a full scan."))
 
+        progress_update_log = discovery_result.job_status["loginfo"]["JobProgressUpdate"]
+        warnings = [f"<br>{line}" for line in progress_update_log if line.startswith("WARNING")]
+        messages.extend(warnings)
+
         with output_funnel.plugged():
-            html.begin_foldable_container(treename="service_discovery",
-                                          id_="options",
-                                          isopen=False,
-                                          title=_("Job details"),
-                                          indent=False)
-            html.open_div(class_="log_output", style="height: 400px;", id_="progress_log")
-            html.pre("\n".join(discovery_result.job_status["loginfo"]["JobProgressUpdate"]))
-            html.close_div()
-            html.end_foldable_container()
+            with foldable_container(treename="service_discovery",
+                                    id_="options",
+                                    isopen=bool(warnings),
+                                    title=_("Job details"),
+                                    indent=False):
+                html.open_div(class_="log_output", style="height: 400px;", id_="progress_log")
+                html.pre("\n".join(progress_update_log))
+                html.close_div()
             messages.append(output_funnel.drain())
 
         if messages:
@@ -378,9 +382,9 @@ class ModeAjaxServiceDiscovery(AjaxPage):
 
         return None
 
-    def _get_discovery_options(self, request: dict) -> DiscoveryOptions:
+    def _get_discovery_options(self, api_request: dict) -> DiscoveryOptions:
 
-        options = DiscoveryOptions(**request["discovery_options"])
+        options = DiscoveryOptions(**api_request["discovery_options"])
 
         # Refuse action requests in case the user is not permitted
         if options.action != DiscoveryAction.NONE and not config.user.may("wato.services"):
@@ -395,7 +399,7 @@ class ModeAjaxServiceDiscovery(AjaxPage):
 
         return options
 
-    def _use_previous_discovery_result(self, request, previous_discovery_result):
+    def _use_previous_discovery_result(self, api_request, previous_discovery_result):
         if not previous_discovery_result:
             return False
 
@@ -433,7 +437,8 @@ class ModeAjaxServiceDiscovery(AjaxPage):
         if show_plugin_names != self._options.show_plugin_names:
             config.user.discovery_show_plugin_names = self._options.show_plugin_names
 
-    def _handle_action(self, discovery_result: DiscoveryResult, request: dict) -> DiscoveryResult:
+    def _handle_action(self, discovery_result: DiscoveryResult,
+                       api_request: dict) -> DiscoveryResult:
         config.user.need_permission("wato.services")
 
         if self._options.action in [
@@ -448,7 +453,7 @@ class ModeAjaxServiceDiscovery(AjaxPage):
                 DiscoveryAction.FIX_ALL,
                 DiscoveryAction.UPDATE_SERVICES,
         ]:
-            discovery = Discovery(self._host, self._options, request)
+            discovery = Discovery(self._host, self._options, api_request)
             discovery.do_discovery(discovery_result)
 
         if self._options.action in [
@@ -480,13 +485,13 @@ class DiscoveryPageRenderer:
         self._host = host
         self._options = options
 
-    def render(self, discovery_result: DiscoveryResult, request: dict) -> str:
+    def render(self, discovery_result: DiscoveryResult, api_request: dict) -> str:
         with output_funnel.plugged():
             html.div("", id_="row_info")
             self._toggle_action_page_menu_entries(discovery_result)
             enable_page_menu_entry("inline_help")
             host_labels_row_count = self._show_discovered_host_labels(discovery_result)
-            details_row_count = self._show_discovery_details(discovery_result, request)
+            details_row_count = self._show_discovery_details(discovery_result, api_request)
             self._update_row_info(host_labels_row_count + details_row_count)
             return output_funnel.drain()
 
@@ -593,7 +598,7 @@ class DiscoveryPageRenderer:
 
             manpage_url = watolib.folder_preserving_link([("mode", "check_manpage"),
                                                           ("check_type", ctype)])
-            plugin_names += html.render_a(content=ctype, href=manpage_url) + "<br>"
+            plugin_names += html.render_a(content=ctype, href=manpage_url) + html.render_br()
             labels_html += render_labels(
                 label_data,
                 "host",
@@ -605,7 +610,7 @@ class DiscoveryPageRenderer:
         table.cell(_("Check Plugin"), plugin_names, css="plugins")
         return 1
 
-    def _show_discovery_details(self, discovery_result: DiscoveryResult, request: dict) -> int:
+    def _show_discovery_details(self, discovery_result: DiscoveryResult, api_request: dict) -> int:
         detail_row_count = 0
         if not discovery_result.check_table and self._is_active(discovery_result):
             html.br()
@@ -628,7 +633,7 @@ class DiscoveryPageRenderer:
 
         # We currently don't get correct information from cmk.base (the data sources). Better
         # don't display this until we have the information.
-        #html.write("Using discovery information from %s" % cmk.utils.render.date_and_time(
+        #html.write_text("Using discovery information from %s" % cmk.utils.render.date_and_time(
         #    discovery_result.check_table_created))
 
         by_group = self._group_check_table_by_state(discovery_result.check_table)
@@ -647,7 +652,7 @@ class DiscoveryPageRenderer:
                                omit_update_header=True) as table:
                 detail_row_count += len(checks)
                 for check in sorted(checks, key=lambda c: c[6].lower()):
-                    self._show_check_row(table, discovery_result, request, check,
+                    self._show_check_row(table, discovery_result, api_request, check,
                                          entry.show_bulk_actions)
 
             if entry.show_bulk_actions:
@@ -668,8 +673,9 @@ class DiscoveryPageRenderer:
 
         group_header = HTML("")
         if entry.table_group in map_icons:
-            group_header += html.render_icon("%s_service" % map_icons[entry.table_group]) + " "
-        group_header += entry.title
+            group_header += html.render_icon("%s_service" % map_icons[entry.table_group])
+            group_header += HTML(" ")
+        group_header += escape_html(entry.title)
 
         return group_header + html.render_help(entry.help_text)
 
@@ -813,7 +819,7 @@ class DiscoveryPageRenderer:
     def _enable_bulk_button(self, source, target):
         enable_page_menu_entry("bulk_%s_%s" % (source, target))
 
-    def _show_check_row(self, table, discovery_result, request, check, show_bulk_actions):
+    def _show_check_row(self, table, discovery_result, api_request, check, show_bulk_actions):
         (table_source, check_type, checkgroup, item, _discovered_params, check_params, descr, state,
          output, _perfdata, service_labels, _found_on_nodes) = check
 
@@ -827,11 +833,13 @@ class DiscoveryPageRenderer:
 
         table.row(css="data", state=state)
 
-        self._show_bulk_checkbox(table, discovery_result, request, check_type, item,
+        self._show_bulk_checkbox(table, discovery_result, api_request, check_type, item,
                                  show_bulk_actions)
         self._show_actions(table, discovery_result, check)
 
-        table.cell(_("State"), html.render_span(statename), css=stateclass)
+        table.cell(_("State"),
+                   html.render_span(statename, class_=["state_rounded_fill"]),
+                   css=stateclass)
         table.cell(_("Service"), descr, css="service")
         table.cell(_("Status detail"), css="expanding")
         self._show_status_detail(table_source, check_type, item, descr, output)
@@ -917,9 +925,9 @@ class DiscoveryPageRenderer:
                                    "service",
                                    with_links=False,
                                    label_sources={k: "discovered" for k in service_labels.keys()})
-        html.write(label_code)
+        html.write_html(label_code)
 
-    def _show_bulk_checkbox(self, table, discovery_result, request, check_type, item,
+    def _show_bulk_checkbox(self, table, discovery_result, api_request, check_type, item,
                             show_bulk_actions):
         if not self._options.show_checkboxes or not config.user.may("wato.services"):
             return
@@ -941,7 +949,7 @@ class DiscoveryPageRenderer:
                    css="checkbox")
         name = checkbox_id(check_type, item)
         checked = self._options.action == DiscoveryAction.BULK_UPDATE \
-            and name in request["update_services"]
+            and name in api_request["update_services"]
         html.checkbox(varname=name, deflt=checked, class_=css_classes)
 
     def _show_actions(self, table, discovery_result, check):
@@ -1256,20 +1264,20 @@ class DiscoveryPageRenderer:
 @page_registry.register_page("wato_ajax_execute_check")
 class ModeAjaxExecuteCheck(AjaxPage):
     def _from_vars(self):
-        self._site = html.request.get_ascii_input_mandatory("site")
+        self._site = request.get_ascii_input_mandatory("site")
         if self._site not in config.sitenames():
             raise MKUserError("site", _("You called this page with an invalid site."))
 
-        self._host_name = html.request.get_ascii_input_mandatory("host")
+        self._host_name = request.get_ascii_input_mandatory("host")
         self._host = watolib.Folder.current().host(self._host_name)
         if not self._host:
             raise MKUserError("host", _("You called this page with an invalid host name."))
         self._host.need_permission("read")
 
         # TODO: Validate
-        self._check_type = html.request.get_ascii_input_mandatory("checktype")
+        self._check_type = request.get_ascii_input_mandatory("checktype")
         # TODO: Validate
-        self._item = html.request.get_unicode_input_mandatory("item")
+        self._item = request.get_unicode_input_mandatory("item")
 
     def page(self):
         watolib.init_wato_datastructures(with_wato_lock=True)

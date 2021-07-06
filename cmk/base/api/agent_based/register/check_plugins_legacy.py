@@ -23,7 +23,7 @@ from cmk.base.api.agent_based.checking_classes import (
 )
 from cmk.base.api.agent_based.register.check_plugins import create_check_plugin
 from cmk.base.api.agent_based.checking_classes import CheckPlugin
-from cmk.base.api.agent_based.type_defs import Parameters
+from cmk.base.api.agent_based.type_defs import Parameters, ParametersTypeAlias
 
 # There are so many check_info keys, make sure we didn't miss one.
 CONSIDERED_KEYS = {
@@ -49,7 +49,7 @@ def _get_default_parameters(
     check_legacy_info: Dict[str, Any],
     factory_settings: Dict[str, Dict[str, Any]],
     check_context: Dict[str, Any],
-) -> Optional[Dict[str, Any]]:
+) -> Optional[ParametersTypeAlias]:
     """compute default parameters"""
     params_variable_name = check_legacy_info.get("default_levels_variable")
     if not params_variable_name:
@@ -269,7 +269,7 @@ def _create_wrapped_parameters(
     check_info_dict: Dict[str, Any],
     factory_settings: Dict[str, Dict],
     get_check_context: Callable,
-) -> Dict[str, Any]:
+) -> ParametersTypeAlias:
     """compute default parameters and wrap them in a dictionary"""
     default_parameters = _get_default_parameters(
         check_info_dict,

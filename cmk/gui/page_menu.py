@@ -23,10 +23,10 @@ from cmk.gui.globals import html, request, output_funnel
 from cmk.gui.breadcrumb import Breadcrumb
 from cmk.gui.utils.html import HTML
 from cmk.gui.utils.popups import MethodInline
-from cmk.gui.type_defs import CSSSpec, Icon
+from cmk.gui.type_defs import Icon
 from cmk.gui.utils.urls import makeuri, makeuri_contextless, requested_file_with_query
 from cmk.gui.config import user
-import cmk.gui.escaping as escaping
+import cmk.gui.utils.escaping as escaping
 
 
 def enable_page_menu_entry(name: str):
@@ -108,15 +108,15 @@ def make_confirmed_form_submit_link(*, form_name: str, button_name: str,
 @dataclass
 class PageMenuPopup(ABCPageMenuItem):
     """A link opening a pre-rendered hidden area (not necessarily a popup window)"""
-    content: str
-    css_classes: CSSSpec = None
+    content: HTML
+    css_classes: List[Optional[str]] = field(default_factory=list)
 
 
 @dataclass
 class PageMenuSidePopup(PageMenuPopup):
     """A link opening a pre-rendered popup on the right of the page"""
-    content: str
-    css_classes: CSSSpec = None
+    content: HTML
+    css_classes: List[Optional[str]] = field(default_factory=list)
 
 
 @dataclass
@@ -140,7 +140,7 @@ class PageMenuEntry:
     is_shortcut: bool = False
     is_suggested: bool = True
     shortcut_title: Optional[str] = None
-    css_classes: CSSSpec = None
+    css_classes: List[Optional[str]] = field(default_factory=list)
     disabled_tooltip: Optional[str] = None
     sort_index: int = 1
 
@@ -377,7 +377,7 @@ def make_checkbox_selection_json_text() -> Tuple[str, str]:
 
 
 def make_checkbox_selection_topic(selection_key: str, is_enabled: bool = True) -> PageMenuTopic:
-    is_selected = user.get_rowselection(html.request.var("selection") or "", selection_key)
+    is_selected = user.get_rowselection(request.var("selection") or "", selection_key)
     name_selected, name_deselected = make_checkbox_selection_json_text()
     return PageMenuTopic(
         title=_("Selection"),
@@ -550,9 +550,8 @@ class PageMenuRenderer:
         html.close_div()
 
     def _show_entry(self, entry: PageMenuEntry) -> None:
-        classes = [
-            "entry",
-        ] + self._get_entry_css_classes(entry)
+        classes: List[Optional[str]] = ["entry"]
+        classes += self._get_entry_css_classes(entry)
 
         html.open_div(
             class_=classes,
@@ -578,17 +577,21 @@ class PageMenuRenderer:
         html.open_tr(id_="suggestions")
         html.open_td(colspan=3)
         for entry in entries:
-            html.open_div(class_=["suggestion"] + self._get_entry_css_classes(entry))
+            classes: List[Optional[str]] = ["suggestion"]
+            classes += self._get_entry_css_classes(entry)
+            html.open_div(class_=classes)
             SuggestedEntryRenderer().show(entry)
             html.close_div()
         html.close_td()
         html.close_tr()
 
-    def _get_entry_css_classes(self, entry: PageMenuEntry) -> List[str]:
-        return [
+    def _get_entry_css_classes(self, entry: PageMenuEntry) -> List[Optional[str]]:
+        classes: List[Optional[str]] = [
             ("enabled" if entry.is_enabled else "disabled"),
             ("show_more_mode" if entry.is_show_more else "basic"),
-        ] + html.normalize_css_spec(entry.css_classes)
+        ]
+        classes += entry.css_classes
+        return classes
 
     def _show_inpage_search_field(self, item: PageMenuSearch) -> None:
         html.open_td(class_="inpage_search")
@@ -730,7 +733,7 @@ def search_form(title: Optional[str] = None,
 def inpage_search_form(mode: Optional[str] = None, default_value: str = "") -> None:
     form_name = "inpage_search_form"
     reset_button_id = "%s_reset" % form_name
-    was_submitted = html.request.get_ascii_input("filled_in") == form_name
+    was_submitted = request.get_ascii_input("filled_in") == form_name
     html.begin_form(form_name, add_transid=False)
     html.text_input("search",
                     size=32,
@@ -741,8 +744,7 @@ def inpage_search_form(mode: Optional[str] = None, default_value: str = "") -> N
     html.hidden_fields()
     if mode:
         html.hidden_field("mode", mode, add_var=True)
-    reset_url = html.request.get_ascii_input_mandatory("reset_url",
-                                                       requested_file_with_query(request))
+    reset_url = request.get_ascii_input_mandatory("reset_url", requested_file_with_query(request))
     html.hidden_field("reset_url", reset_url, add_var=True)
     html.button("submit", "", cssclass="submit", help_=_("Apply"))
     html.buttonlink(reset_url, "", obj_id=reset_button_id, title=_("Reset"))
@@ -765,7 +767,8 @@ class PageMenuPopupsRenderer:
         if entry.name is None:
             raise ValueError("Missing \"name\" attribute on entry \"%s\"" % entry.title)
 
-        classes = ["page_menu_popup"] + html.normalize_css_spec(entry.item.css_classes)
+        classes: List[Optional[str]] = ["page_menu_popup"]
+        classes += entry.item.css_classes
         if isinstance(entry.item, PageMenuSidePopup):
             classes.append("side_popup")
 
@@ -786,7 +789,7 @@ class PageMenuPopupsRenderer:
                 "Add a div container with the class \"side_popup_content\" to the popup content")
 
         html.open_div(class_="content")
-        html.write(HTML(entry.item.content))
+        html.write_html(entry.item.content)
         html.close_div()
         html.close_div()
 

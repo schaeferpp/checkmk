@@ -39,7 +39,7 @@ from cmk.utils.type_defs import (
 )
 
 import cmk.gui.config as config
-import cmk.gui.escaping as escaping
+import cmk.gui.utils.escaping as escaping
 import cmk.gui.sites as sites
 import cmk.gui.visuals as visuals
 import cmk.gui.forms as forms
@@ -92,6 +92,7 @@ if TYPE_CHECKING:
     from cmk.gui.views import View
     from cmk.gui.plugins.visuals.utils import Filter
 
+ExportCellContent = Union[str, Dict[str, Any]]
 PDFCellContent = Union[str, HTML, Tuple[str, str]]
 PDFCellSpec = Union[CellSpec, Tuple[CSSClass, PDFCellContent]]
 CommandSpecWithoutSite = str
@@ -99,6 +100,7 @@ CommandSpecWithSite = Tuple[Optional[str], CommandSpecWithoutSite]
 CommandSpec = Union[CommandSpecWithoutSite, CommandSpecWithSite]
 CommandActionResult = Optional[Tuple[Union[CommandSpecWithoutSite, Sequence[CommandSpec]], str]]
 CommandExecutor = Callable[[CommandSpec, Optional[SiteId]], None]
+InventoryHintSpec = Dict[str, Any]
 
 
 # TODO: Better name it PainterOptions or DisplayOptions? There are options which only affect
@@ -180,11 +182,11 @@ class PainterOptions:
         if not self.painter_option_form_enabled():
             return
 
-        if html.request.has_var("_reset_painter_options"):
+        if request.has_var("_reset_painter_options"):
             self._clear_painter_options(view.name)
             return
 
-        if html.request.has_var("_update_painter_options"):
+        if request.has_var("_update_painter_options"):
             self._set_from_submitted_form(view.name)
 
     def _set_from_submitted_form(self, view_name: str) -> None:
@@ -221,8 +223,8 @@ class PainterOptions:
         # Also remove the options from current html vars. Otherwise the
         # painter option form will display the just removed options as
         # defaults of the painter option form.
-        for varname, _value in list(html.request.itervars(prefix="po_")):
-            html.request.del_var(varname)
+        for varname, _value in list(request.itervars(prefix="po_")):
+            request.del_var(varname)
 
     def get_valuespec_of(self, name: str) -> ValueSpec:
         return painter_option_registry[name]().valuespec
@@ -303,7 +305,7 @@ def group_value(row: Row, group_cells: 'List[Cell]') -> Hashable:
     for cell in group_cells:
         painter = cell.painter()
 
-        group_by_val = painter.group_by(row)
+        group_by_val = painter.group_by(row, cell)
         if group_by_val is not None:
             group.append(group_by_val)
 
@@ -324,12 +326,14 @@ def _create_dict_key(value: Any) -> Hashable:
 
 
 class PainterOption(metaclass=abc.ABCMeta):
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def ident(self) -> str:
         """The identity of a painter option. One word, may contain alpha numeric characters"""
         raise NotImplementedError()
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def valuespec(self) -> ValueSpec:
         raise NotImplementedError()
 
@@ -372,12 +376,14 @@ class PainterOptionNumColumns(PainterOption):
 
 
 class Layout(metaclass=abc.ABCMeta):
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def ident(self) -> str:
         """The identity of a layout. One word, may contain alpha numeric characters"""
         raise NotImplementedError()
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def title(self) -> str:
         """Short human readable title of the layout"""
         raise NotImplementedError()
@@ -388,7 +394,8 @@ class Layout(metaclass=abc.ABCMeta):
         """Render the given data in this layout"""
         raise NotImplementedError()
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def can_display_checkboxes(self) -> bool:
         """Whether this layout can display checkboxes for selecting rows"""
         raise NotImplementedError()
@@ -438,16 +445,19 @@ exporter_registry = ViewExporterRegistry()
 
 
 class CommandGroup(metaclass=abc.ABCMeta):
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def ident(self) -> str:
         """The identity of a command group. One word, may contain alpha numeric characters"""
         raise NotImplementedError()
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def title(self) -> str:
         raise NotImplementedError()
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def sort_index(self) -> int:
         raise NotImplementedError()
 
@@ -475,20 +485,24 @@ def register_command_group(ident: str, title: str, sort_index: int) -> None:
 
 
 class Command(metaclass=abc.ABCMeta):
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def ident(self) -> str:
         """The identity of a command. One word, may contain alpha numeric characters"""
         raise NotImplementedError()
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def title(self) -> str:
         raise NotImplementedError()
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def permission(self) -> Permission:
         raise NotImplementedError()
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def tables(self) -> List[str]:
         """List of livestatus table identities the action may be used with"""
         raise NotImplementedError()
@@ -585,23 +599,27 @@ def register_legacy_command(spec: Dict[str, Any]) -> None:
 
 class ABCDataSource(metaclass=abc.ABCMeta):
     """Provider of rows for the views (basically tables of data) in the GUI"""
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def ident(self) -> str:
         """The identity of a data source. One word, may contain alpha numeric characters"""
         raise NotImplementedError()
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def title(self) -> str:
         """Used as display-string for the datasource in the GUI (e.g. view editor)"""
         raise NotImplementedError()
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def table(self) -> 'RowTable':
         """Returns a table object that can provide a list of rows for the provided
         query using the query() method."""
         raise NotImplementedError()
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def infos(self) -> List[str]:
         """Infos that are available with this data sources
 
@@ -632,7 +650,8 @@ class ABCDataSource(metaclass=abc.ABCMeta):
         """additional livestatus headers to add to each call"""
         return ""
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def keys(self) -> List[ColumnName]:
         """columns which must be fetched in order to execute commands on
         the items (= in order to identify the items and gather all information
@@ -640,7 +659,8 @@ class ABCDataSource(metaclass=abc.ABCMeta):
         those columns are always fetched from the datasource for each item"""
         raise NotImplementedError()
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def id_keys(self) -> List[ColumnName]:
         """These are used to generate a key which is unique for each data row
         is used to identify an item between http requests"""
@@ -849,7 +869,8 @@ class Painter(metaclass=abc.ABCMeta):
     make use of more than one data columns. One example is the current
     service state. It uses the columns "service_state" and "has_been_checked".
     """
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def ident(self) -> str:
         """The identity of a painter. One word, may contain alpha numeric characters"""
         raise NotImplementedError()
@@ -863,7 +884,8 @@ class Painter(metaclass=abc.ABCMeta):
         """Additional css classes used to render the title"""
         return []
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def columns(self) -> List[ColumnName]:
         """Livestatus columns needed for this painter"""
         raise NotImplementedError()
@@ -922,7 +944,11 @@ class Painter(metaclass=abc.ABCMeta):
         Falls back to the full title if no short title is given"""
         return self.title(cell)
 
-    def group_by(self, row: Row) -> Union[None, str, Tuple]:
+    def group_by(
+        self,
+        row: Row,
+        cell: 'Cell',
+    ) -> Union[None, str, Tuple[str, ...], Tuple[Tuple[str, str], ...]]:
         """When a value is returned, this is used instead of the value produced by self.paint()"""
         return None
 
@@ -982,7 +1008,7 @@ def register_painter(ident: str, spec: Dict[str, Any]) -> None:
             "short_title": lambda s, cell: s._spec.get("short", s.title),
             "columns": property(lambda s: s._spec["columns"]),
             "render": lambda self, row, cell: spec["paint"](row),
-            "group_by": lambda self, row: self._spec.get("groupby"),
+            "group_by": lambda self, row, cell: self._spec.get("groupby"),
             "parameters": property(lambda s: s._spec.get("params")),
             "painter_options": property(lambda s: s._spec.get("options", [])),
             "printable": property(lambda s: s._spec.get("printable", True)),
@@ -995,17 +1021,20 @@ def register_painter(ident: str, spec: Dict[str, Any]) -> None:
 class Sorter(metaclass=abc.ABCMeta):
     """A sorter is used for allowing the user to sort the queried data
     according to a certain logic."""
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def ident(self) -> str:
         """The identity of a sorter. One word, may contain alpha numeric characters"""
         raise NotImplementedError()
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def title(self) -> str:
         """Used as display string for the sorter in the GUI (e.g. view editor)"""
         raise NotImplementedError()
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def columns(self) -> List[str]:
         """Livestatus columns needed for this sorter"""
         raise NotImplementedError()
@@ -1038,9 +1067,46 @@ class Sorter(metaclass=abc.ABCMeta):
 
 
 class DerivedColumnsSorter(Sorter):
+    """
+    Can be used to transfer an additional parameter to the Sorter instance.
+
+    To transport the additional parameter through the url and other places the
+    parameter is added to the sorter name seperated by a colon.
+
+    This mechanism is used by the Columns "Service: Metric History", "Service:
+    Metric Forecast": Those columns can be sorted by "Sorting"-section in
+    the "Edit View" only after you added the column to the columns list and
+    saved the view, or by clicking on the column header in the view.
+
+    It's also used by host custom attributes: Those can be sorted by the
+    "Sorting"-section in the "Edit View" options independent of the column
+    section.
+    """
+    # TODO: should somehow be harmonized. this is probably not possible as the
+    # metric sorting options can not be serialized into a short/simple string,
+    # this is why the uuid option was introduced. Now there are basically three
+    # different ways to subselect sorting options:
+    # * don't use subselect at all (see Inventory): simply put all the posible
+    #   values with a prefix into the sorting list (drawback: long list)
+    # * don't use explicit options for sorting (see Metrics): link between
+    #   columns and sorting via uuid (drawback: have to display column to
+    #   activate sorting)
+    # * use explicit options for sorting (see Custom Attributes): Encode the
+    #   choosen value in the name (possible because it's only a simple string
+    #   instead of complex options as with the metrics) and append it to the
+    #   name of the column (drawback: it's the third hack)
+
     @abc.abstractmethod
-    def derived_columns(self, view: 'View', uuid: Optional[str]) -> List[str]:
+    def derived_columns(self, view: 'View', uuid: Optional[str]) -> None:
+        # TODO: rename uuid, as this is no longer restricted to uuids
         raise NotImplementedError()
+
+    def get_parameters(self) -> Optional[ValueSpec]:
+        """
+        If not None, this ValueSpec will be visible after selecting this Sorter
+        in the section "Sorting" in the "Edit View" form
+        """
+        return None
 
 
 class SorterRegistry(cmk.utils.plugin_registry.Registry[Type[Sorter]]):
@@ -1070,7 +1136,7 @@ def register_sorter(ident: str, spec: Dict[str, Any]) -> None:
 # TODO: Refactor to plugin_registries
 multisite_builtin_views: Dict = {}
 view_hooks: Dict = {}
-inventory_displayhints: Dict = {}
+inventory_displayhints: Dict[str, InventoryHintSpec] = {}
 # For each view a function can be registered that has to return either True
 # or False to show a view as context link
 view_is_enabled: Dict = {}
@@ -1251,8 +1317,8 @@ def get_linked_visual_request_vars(visual: Visual,
                                                   single_info_keys=visual["single_infos"],
                                                   filter_names=list(dict(vars_values).keys()))
 
-        if add_site_hint and html.request.var('site'):
-            vars_values.append(('site', html.request.get_ascii_input_mandatory('site')))
+        if add_site_hint and request.var('site'):
+            vars_values.append(('site', request.get_ascii_input_mandatory('site')))
 
     return vars_values
 
@@ -1292,7 +1358,7 @@ def paint_age(timestamp: Timestamp,
 
     painter_options = PainterOptions.get_instance()
     if mode is None:
-        mode = html.request.var("po_ts_format", painter_options.get("ts_format"))
+        mode = request.var("po_ts_format", painter_options.get("ts_format"))
 
     if mode == "epoch":
         return "", str(int(timestamp))
@@ -1304,7 +1370,7 @@ def paint_age(timestamp: Timestamp,
 
     age = time.time() - timestamp
     if mode == "abs" or (mode == "mixed" and abs(age) >= 48 * 3600):
-        dateformat = html.request.var("po_ts_date", painter_options.get("ts_date"))
+        dateformat = request.var("po_ts_date", painter_options.get("ts_date"))
         assert dateformat is not None
         return "age", time.strftime(dateformat + " %H:%M:%S", time.localtime(timestamp))
 
@@ -1504,7 +1570,7 @@ def join_row(row: Row, cell: 'Cell') -> Row:
 
 def get_view_infos(view: ViewSpec) -> List[str]:
     """Return list of available datasources (used to render filters)"""
-    ds_name = view.get('datasource', html.request.var('datasource'))
+    ds_name = view.get('datasource', request.var('datasource'))
     return data_source_registry[ds_name]().infos
 
 
@@ -1953,6 +2019,8 @@ class Cell:
             uuid = ':%s' % self.painter_parameters()['uuid']
             assert sorter_name is not None
             sorter_name += uuid
+        elif painter_name in {'host_custom_variable'}:
+            sorter_name = f'{sorter_name}:{self.painter_parameters()["ident"]}'
 
         this_asc_sorter = SorterSpec(sorter_name, False, self.join_service())
         this_desc_sorter = SorterSpec(sorter_name, True, self.join_service())
@@ -2040,7 +2108,8 @@ class Cell:
             # images, but all that we need for showing simple icons.
             # Current limitation: *one* image
             assert not isinstance(txt, tuple)
-            if txt.lower().startswith("<img"):
+            if ((isinstance(txt, str) and txt.lower().startswith("<img")) or
+                (isinstance(txt, HTML) and txt.lower().startswith(HTML("<img")))):
                 img_filename = re.sub('.*src=["\']([^\'"]*)["\'].*', "\\1", str(txt))
                 img_path = find_htdocs_image_path(img_filename)
                 if img_path:
@@ -2049,7 +2118,7 @@ class Cell:
                     txt = img_filename
 
             if isinstance(txt, HTML):
-                txt = escaping.strip_tags("%s" % txt)
+                txt = escaping.strip_tags(str(txt))
 
             elif not isinstance(txt, tuple):
                 txt = escaping.unescape_attributes(txt)
@@ -2062,7 +2131,7 @@ class Cell:
 
     # TODO: We really should have some intermediate "data" layer that would make it possible to
     # extract the data for the export in a cleaner way.
-    def render_for_export(self, row):
+    def render_for_export(self, row: Row) -> ExportCellContent:
         rendered_txt = self.render_content(row)[1]
         if rendered_txt is None:
             return ""
@@ -2074,12 +2143,11 @@ class Cell:
         if isinstance(rendered_txt, dict):
             return rendered_txt
 
-        txt: str = rendered_txt.strip()
+        txt: str = str(rendered_txt).strip()
 
         # Similar to the PDF rendering hack above, but this time we extract the title from our icons
         # and add them to the CSV export instead of stripping the whole HTML tag.
         # Current limitation: *one* image
-        assert not isinstance(txt, tuple)
         if txt.lower().startswith("<img"):
             txt = re.sub('.*title=["\']([^\'"]*)["\'].*', "\\1", str(txt))
         return txt
@@ -2106,7 +2174,12 @@ SorterSpec = NamedTuple(
     [
         # some Sorter need an additional parameter e.g. svc_metrics_hist, svc_metrics_forecast
         # The parameter is then encoded in the sorter name. "[sorter]:[param]"
-        ("sorter", SorterName),
+        # other Sorter (custom host metric) do the same when the information is
+        # coming from the url, but use a CascadingDropdown to let the user
+        # input the information. This results in a Tuple as a result variable.
+        # TODO: perhaps it could be possible to use the ValueSpec to
+        #       transparently transform the tuple into a single string?!
+        ("sorter", Union[SorterName, Tuple[SorterName, Dict[str, str]]]),
         ("negate", bool),
         ("join_key", Optional[str]),
     ])
@@ -2121,11 +2194,22 @@ SorterEntry = NamedTuple("SorterEntry", [
 # Is used to add default arguments to the named tuple. Would be nice to have a cleaner solution
 SorterEntry.__new__.__defaults__ = (None,) * len(SorterEntry._fields)  # type: ignore[attr-defined]
 
+SorterListEntry = Union[Tuple[Union[str, Tuple[str, Dict[str, str]]], bool],
+                        Tuple[Union[str, Tuple[str, Dict[str, str]]], bool, Optional[str]]]
+
 
 def _encode_sorter_url(sorters: List[SorterSpec]) -> str:
-    p = []
+    p: List[str] = []
     for s in sorters:
-        url = (u'-' if s.negate else u'') + s.sorter
+        sorter_name = s.sorter
+        if not isinstance(sorter_name, str):
+            # sorter_name is a tuple
+            if sorter_name[0] in {'host_custom_variable'}:
+                sorter_name, params = sorter_name
+                sorter_name = "{}:{}".format(sorter_name, params['ident'])
+            else:
+                raise MKGeneralException(f"Can not handle sorter {sorter_name}")
+        url = ('-' if s.negate else '') + sorter_name
         if s.join_key:
             url += '~' + s.join_key
         p.append(url)
@@ -2285,7 +2369,18 @@ def make_host_breadcrumb(host_name: HostName) -> Breadcrumb:
             ),
         ))
 
-    # 2. level: host home page
+    # 2. Level: hostname (url to status of host)
+    breadcrumb.append(
+        BreadcrumbItem(
+            title=host_name,
+            url=makeuri_contextless(
+                request,
+                [("view_name", "hoststatus"), ("host", host_name)],
+                filename="view.py",
+            ),
+        ))
+
+    # 3. level: host home page
     host_view_spec = permitted_views["host"]
     breadcrumb.append(
         BreadcrumbItem(

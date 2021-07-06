@@ -43,7 +43,6 @@ import cmk.gui.config as config
 import cmk.gui.watolib as watolib
 import cmk.gui.forms as forms
 import cmk.gui.log as log
-from cmk.gui.utils.html import HTML
 from cmk.gui.table import table_element
 from cmk.gui.valuespec import (
     Dictionary,
@@ -123,8 +122,8 @@ class ModeEditSite(WatoMode):
         super().__init__()
         self._site_mgmt = watolib.SiteManagementFactory().factory()
 
-        self._site_id = html.request.get_ascii_input("site")
-        self._clone_id = html.request.get_ascii_input("clone")
+        self._site_id = request.get_ascii_input("site")
+        self._clone_id = request.get_ascii_input("clone")
         self._new = self._site_id is None
 
         if cmk_version.is_expired_trial() and (self._new or self._site_id != config.omd_site()):
@@ -516,15 +515,15 @@ class ModeDistributedMonitoring(WatoMode):
         )
 
     def action(self) -> ActionResult:
-        delete_id = html.request.get_ascii_input("_delete")
+        delete_id = request.get_ascii_input("_delete")
         if delete_id and transactions.check_transaction():
             self._action_delete(delete_id)
 
-        logout_id = html.request.get_ascii_input("_logout")
+        logout_id = request.get_ascii_input("_logout")
         if logout_id:
             return self._action_logout(logout_id)
 
-        login_id = html.request.get_ascii_input("_login")
+        login_id = request.get_ascii_input("_login")
         if login_id:
             return self._action_login(login_id)
         return None
@@ -579,7 +578,7 @@ class ModeDistributedMonitoring(WatoMode):
 
     def _action_login(self, login_id: str) -> ActionResult:
         configured_sites = self._site_mgmt.load_sites()
-        if html.request.get_ascii_input("_abort"):
+        if request.get_ascii_input("_abort"):
             return redirect(mode_url("sites"))
 
         if not transactions.check_transaction():
@@ -588,9 +587,9 @@ class ModeDistributedMonitoring(WatoMode):
         site = configured_sites[login_id]
         error = None
         # Fetch name/password of admin account
-        if html.request.has_var("_name"):
-            name = html.request.get_unicode_input_mandatory("_name", "").strip()
-            passwd = html.request.get_ascii_input_mandatory("_passwd", "").strip()
+        if request.has_var("_name"):
+            name = request.get_unicode_input_mandatory("_name", "").strip()
+            passwd = request.get_ascii_input_mandatory("_passwd", "").strip()
             try:
                 if not html.get_checkbox("_confirm"):
                     raise MKUserError(
@@ -725,7 +724,7 @@ class ModeDistributedMonitoring(WatoMode):
     def _show_status_connection_config(self, table, site_id, site):
         table.cell(_("Status connection"))
         vs_connection = self._site_mgmt.connection_method_valuespec()
-        html.write(vs_connection.value_to_text(site["socket"]))
+        html.write_text(vs_connection.value_to_text(site["socket"]))
 
     def _show_status_connection_status(self, table, site_id, site):
         table.cell("")
@@ -961,7 +960,7 @@ class ModeEditSiteGlobals(ABCGlobalSettingsMode):
 
     def __init__(self):
         super().__init__()
-        self._site_id = html.request.get_ascii_input_mandatory("site")
+        self._site_id = request.get_ascii_input_mandatory("site")
         self._site_mgmt = watolib.SiteManagementFactory().factory()
         self._configured_sites = self._site_mgmt.load_sites()
         try:
@@ -996,8 +995,8 @@ class ModeEditSiteGlobals(ABCGlobalSettingsMode):
 
     # TODO: Consolidate with ModeEditGlobals.action()
     def action(self) -> ActionResult:
-        varname = html.request.get_ascii_input("_varname")
-        action = html.request.get_ascii_input("_action")
+        varname = request.get_ascii_input("_varname")
+        action = request.get_ascii_input("_action")
         if not varname:
             return None
 
@@ -1074,7 +1073,7 @@ class ModeEditSiteGlobalSetting(ABCEditGlobalSettingMode):
 
     def _from_vars(self):
         super()._from_vars()
-        self._site_id = html.request.get_ascii_input_mandatory("site")
+        self._site_id = request.get_ascii_input_mandatory("site")
         if self._site_id:
             self._configured_sites = watolib.SiteManagementFactory().factory().load_sites()
             try:
@@ -1098,7 +1097,7 @@ class ModeEditSiteGlobalSetting(ABCEditGlobalSettingMode):
 
     def _show_global_setting(self):
         forms.section(_("Global setting"))
-        html.write_html(HTML(self._valuespec.value_to_text(self._global_settings[self._varname])))
+        html.write_text(self._valuespec.value_to_text(self._global_settings[self._varname]))
 
     def _back_url(self) -> str:
         return ModeEditSiteGlobals.mode_url(site=self._site_id)
@@ -1141,7 +1140,7 @@ class ModeSiteLivestatusEncryption(WatoMode):
 
     def __init__(self):
         super().__init__()
-        self._site_id = html.request.get_ascii_input_mandatory("site")
+        self._site_id = request.get_ascii_input_mandatory("site")
         self._site_mgmt = watolib.SiteManagementFactory().factory()
         self._configured_sites = self._site_mgmt.load_sites()
         try:
@@ -1164,11 +1163,11 @@ class ModeSiteLivestatusEncryption(WatoMode):
         if not transactions.check_transaction():
             return None
 
-        action = html.request.get_ascii_input_mandatory("_action")
+        action = request.get_ascii_input_mandatory("_action")
         if action != "trust":
             return None
 
-        digest_sha256 = html.request.get_ascii_input("_digest")
+        digest_sha256 = request.get_ascii_input("_digest")
 
         try:
             cert_details = self._fetch_certificate_details()

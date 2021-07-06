@@ -10,7 +10,7 @@
 import itertools
 from typing import List, Optional
 #
-import pytest  # type: ignore[import]
+import pytest
 #
 # from cmk.utils.type_defs import CheckPluginName
 #
@@ -21,7 +21,7 @@ from cmk.base.plugins.agent_based.utils import ps
 #
 # from checktestlib import CheckResult, assertCheckResultsEqual
 #
-# from testlib import on_time  # type: ignore[import]
+# from testlib import on_time
 
 pytestmark = pytest.mark.checks
 

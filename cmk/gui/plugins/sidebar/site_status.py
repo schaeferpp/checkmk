@@ -11,6 +11,7 @@ from cmk.gui.globals import html, request, transactions, response
 from cmk.gui.utils.urls import makeactionuri_contextless
 import cmk.gui.sites as sites
 import cmk.gui.config as config
+from cmk.gui.utils.escaping import escape_html_permissive
 
 from cmk.gui.plugins.sidebar import (
     SidebarSnapin,
@@ -51,21 +52,19 @@ class SiteStatus(SidebarSnapin):
             if state is None:
                 state = "missing"
                 switch = "missing"
-                text = sitename
+                text = escape_html_permissive(sitename)
 
             else:
                 if state == "disabled":
                     switch = "on"
-                    text = site["alias"]
+                    text = escape_html_permissive(site["alias"])
                 else:
                     switch = "off"
                     text = render_link(site["alias"],
                                        "view.py?view_name=sitehosts&site=%s" % sitename)
 
             html.open_tr()
-            html.open_td(class_="left")
-            html.write(text)
-            html.close_td()
+            html.td(text, class_="left")
             html.open_td(class_="state")
             if switch == "missing":
                 html.status_label(content=state, status=state, title=_("Site is missing"))
@@ -101,7 +100,7 @@ class SiteStatus(SidebarSnapin):
         if not transactions.check_transaction():
             return
 
-        switch_var = html.request.var("_site_switch")
+        switch_var = request.var("_site_switch")
         if switch_var:
             for info in switch_var.split(","):
                 sitename, onoff = info.split(":")

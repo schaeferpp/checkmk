@@ -12,7 +12,17 @@ import abc
 import json
 import re
 import subprocess
-from typing import Callable, List, Mapping, Type, Optional as _Optional, Tuple as _Tuple, Dict, Any
+from contextlib import nullcontext
+from typing import (
+    Callable,
+    ContextManager,
+    Dict,
+    List,
+    Mapping,
+    Optional as _Optional,
+    Tuple as _Tuple,
+    Type,
+)
 
 from six import ensure_str
 
@@ -28,10 +38,11 @@ import cmk.gui.hooks as hooks
 import cmk.gui.weblib as weblib
 from cmk.gui.pages import page_registry
 from cmk.gui.i18n import _u, _
-from cmk.gui.globals import html, g, transactions
-from cmk.gui.utils.html import HTML
+from cmk.gui.globals import html, g, transactions, request
+from cmk.gui.htmllib import foldable_container, HTML
 from cmk.gui.type_defs import Choices
 from cmk.gui.exceptions import MKUserError, MKGeneralException
+from cmk.gui.utils.escaping import escape_html
 from cmk.gui.utils.urls import make_confirm_link  # noqa: F401 # pylint: disable=unused-import
 from cmk.gui.utils.flashed_messages import flash  # noqa: F401 # pylint: disable=unused-import
 from cmk.gui.valuespec import (  # noqa: F401 # pylint: disable=unused-import
@@ -263,7 +274,7 @@ def _snmpv3_no_auth_no_priv_credentials_element() -> ValueSpec:
                     title=_("Security Level"),
                     totext=_("No authentication, no privacy"),
                 ),
-                TextInput(title=_("Security name"), attrencode=True, allow_empty=False),
+                TextInput(title=_("Security name"), allow_empty=False),
             ],
         ),
         forth=lambda x: x if (x and len(x) == 2) else ("noAuthNoPriv", ""),
@@ -334,10 +345,7 @@ def _snmpv3_auth_protocol_elements():
             ],
             title=_("Authentication protocol"),
         ),
-        TextInput(
-            title=_("Security name"),
-            attrencode=True,
-        ),
+        TextInput(title=_("Security name"),),
         Password(
             title=_("Authentication password"),
             minlen=8,
@@ -457,13 +465,11 @@ def _translation_elements(what):
                          title=_("Original %s") % singular,
                          size=30,
                          allow_empty=False,
-                         attrencode=True,
                      ),
                      TextInput(
                          title=_("Translated %s") % singular,
                          size=30,
                          allow_empty=False,
-                         attrencode=True,
                      ),
                  ],
              ),
@@ -1370,16 +1376,16 @@ class ABCEventsMode(WatoMode, metaclass=abc.ABCMeta):
         raise NotImplementedError()
 
     def _generic_rule_list_actions(self, rules, what, what_title, save_rules) -> None:
-        if html.request.has_var("_delete"):
-            nr = html.request.get_integer_input_mandatory("_delete")
+        if request.has_var("_delete"):
+            nr = request.get_integer_input_mandatory("_delete")
             self._add_change(what + "-delete-rule", _("Deleted %s %d") % (what_title, nr))
             del rules[nr]
             save_rules(rules)
 
-        elif html.request.has_var("_move"):
+        elif request.has_var("_move"):
             if transactions.check_transaction():
-                from_pos = html.request.get_integer_input_mandatory("_move")
-                to_pos = html.request.get_integer_input_mandatory("_index")
+                from_pos = request.get_integer_input_mandatory("_move")
+                to_pos = request.get_integer_input_mandatory("_index")
                 rule = rules[from_pos]
                 del rules[from_pos]  # make to_pos now match!
                 rules[to_pos:to_pos] = [rule]
@@ -1512,7 +1518,7 @@ def configure_attributes(new,
             # Collect information about attribute values inherited from folder.
             # This information is just needed for informational display to the user.
             # This does not apply in "host_search" mode.
-            inherited_from = None
+            inherited_from: _Optional[HTML] = None
             inherited_value = None
             has_inherited = False
             container = None
@@ -1525,8 +1531,8 @@ def configure_attributes(new,
                 while container:
                     if attrname in container.attributes():
                         url = container.edit_url()
-                        inherited_from = _("Inherited from ") + str(
-                            html.render_a(container.title(), href=url))
+                        inherited_from = escape_html(_("Inherited from ")) + html.render_a(
+                            container.title(), href=url)
 
                         inherited_value = container.attributes()[attrname]
                         has_inherited = True
@@ -1537,7 +1543,7 @@ def configure_attributes(new,
                     container = container.parent()
 
             if not container:  # We are the root folder - we inherit the default values
-                inherited_from = _("Default value")
+                inherited_from = escape_html(_("Default value"))
                 inherited_value = attr.default_value()
                 # Also add the default values to the inherited values dict
                 if attr.is_tag_attribute:
@@ -1653,13 +1659,14 @@ def configure_attributes(new,
             #
 
             # in bulk mode we show inheritance only if *all* hosts inherit
-            explanation = u""
+            explanation: HTML = HTML("")
             if for_what == "bulk":
                 if num_haveit == 0:
-                    explanation = u" (%s)" % inherited_from
+                    assert inherited_from is not None
+                    explanation = HTML(" (") + inherited_from + HTML(")")
                     value = inherited_value
                 elif not unique:
-                    explanation = _("This value differs between the selected hosts.")
+                    explanation = escape_html(_("This value differs between the selected hosts."))
                 else:
                     value = values[0]
 
@@ -1751,11 +1758,13 @@ def register_hook(name, func):
 
 
 class NotificationParameter(metaclass=abc.ABCMeta):
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def ident(self) -> str:
         raise NotImplementedError()
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def spec(self) -> Dictionary:
         raise NotImplementedError()
 
@@ -1990,9 +1999,9 @@ class HostTagCondition(ValueSpec):
             if tag_group.is_checkbox_tag_group:
                 tagvalue = tag_group.default_value
             else:
-                tagvalue = html.request.var(varprefix + "tagvalue_" + tag_group.id)
+                tagvalue = request.var(varprefix + "tagvalue_" + tag_group.id)
 
-            mode = html.request.var(varprefix + "tag_" + tag_group.id)
+            mode = request.var(varprefix + "tag_" + tag_group.id)
             if mode == "is":
                 tag_list.append(tagvalue)
             elif mode == "isnot":
@@ -2000,7 +2009,7 @@ class HostTagCondition(ValueSpec):
 
         # Auxiliary tags
         for aux_tag in config.tags.aux_tag_list.get_tags():
-            mode = html.request.var(varprefix + "auxtag_" + aux_tag.id)
+            mode = request.var(varprefix + "auxtag_" + aux_tag.id)
             if mode == "is":
                 tag_list.append(aux_tag.id)
             elif mode == "isnot":
@@ -2011,7 +2020,7 @@ class HostTagCondition(ValueSpec):
     def canonical_value(self):
         return []
 
-    def value_to_text(self, value):
+    def value_to_text(self, value) -> str:
         return "|".join(value)
 
     def validate_datatype(self, value, varprefix):
@@ -2032,7 +2041,8 @@ class HostTagCondition(ValueSpec):
             varprefix += "_"
 
         if not config.tags.get_tag_ids():
-            html.write(_("You have not configured any <a href=\"wato.py?mode=tags\">tags</a>."))
+            html.write_text(
+                _("You have not configured any <a href=\"wato.py?mode=tags\">tags</a>."))
             return
 
         tag_groups_by_topic = dict(config.tags.get_tag_groups_by_topic())
@@ -2042,43 +2052,45 @@ class HostTagCondition(ValueSpec):
         make_foldable = len(all_topics) > 1
 
         for topic_id, topic_title in all_topics:
-            if make_foldable:
-                html.begin_foldable_container("topic", varprefix + topic_title, True,
-                                              _u(topic_title))
-            html.open_table(class_=["hosttags"])
+            container: ContextManager[bool] = foldable_container(
+                treename="topic",
+                id_=varprefix + topic_title,
+                isopen=True,
+                title=_u(topic_title),
+            ) if make_foldable else nullcontext(False)
+            with container:
+                html.open_table(class_=["hosttags"])
 
-            for tag_group in tag_groups_by_topic.get(topic_id, []):
-                html.open_tr()
-                html.td("%s: &nbsp;" % _u(tag_group.title), class_="title")
+                for tag_group in tag_groups_by_topic.get(topic_id, []):
+                    html.open_tr()
+                    html.td("%s: &nbsp;" % _u(tag_group.title), class_="title")
 
-                choices = tag_group.get_tag_choices()
-                default_tag, deflt = self._current_tag_setting(choices, tag_specs)
-                self._tag_condition_dropdown(varprefix, "tag", deflt, tag_group.id)
-                if tag_group.is_checkbox_tag_group:
+                    choices = tag_group.get_tag_choices()
+                    default_tag, deflt = self._current_tag_setting(choices, tag_specs)
+                    self._tag_condition_dropdown(varprefix, "tag", deflt, tag_group.id)
+                    if tag_group.is_checkbox_tag_group:
+                        html.write_text(" " + _("set"))
+                    else:
+                        html.dropdown(varprefix + "tagvalue_" + tag_group.id,
+                                      [(t[0], _u(t[1])) for t in choices if t[0] is not None],
+                                      deflt=default_tag)
+
+                    html.close_div()
+                    html.close_td()
+                    html.close_tr()
+
+                for aux_tag in aux_tags_by_topic.get(topic_id, []):
+                    html.open_tr()
+                    html.td("%s: &nbsp;" % _u(aux_tag.title), class_="title")
+                    default_tag, deflt = self._current_tag_setting(
+                        [(aux_tag.id, _u(aux_tag.title))], tag_specs)
+                    self._tag_condition_dropdown(varprefix, "auxtag", deflt, aux_tag.id)
                     html.write_text(" " + _("set"))
-                else:
-                    html.dropdown(varprefix + "tagvalue_" + tag_group.id,
-                                  [(t[0], _u(t[1])) for t in choices if t[0] is not None],
-                                  deflt=default_tag)
+                    html.close_div()
+                    html.close_td()
+                    html.close_tr()
 
-                html.close_div()
-                html.close_td()
-                html.close_tr()
-
-            for aux_tag in aux_tags_by_topic.get(topic_id, []):
-                html.open_tr()
-                html.td("%s: &nbsp;" % _u(aux_tag.title), class_="title")
-                default_tag, deflt = self._current_tag_setting([(aux_tag.id, _u(aux_tag.title))],
-                                                               tag_specs)
-                self._tag_condition_dropdown(varprefix, "auxtag", deflt, aux_tag.id)
-                html.write_text(" " + _("set"))
-                html.close_div()
-                html.close_td()
-                html.close_tr()
-
-            html.close_table()
-            if make_foldable:
-                html.end_foldable_container()
+                html.close_table()
 
     def _current_tag_setting(self, choices, tag_specs):
         """Determine current (default) setting of tag by looking into tag_specs (e.g. [ "snmp", "!tcp", "test" ] )"""
@@ -2117,7 +2129,7 @@ class HostTagCondition(ValueSpec):
 
         html.open_td(class_="tag_sel")
         if html.form_submitted():
-            div_is_open = html.request.var(dropdown_id, "ignore") != "ignore"
+            div_is_open = request.var(dropdown_id, "ignore") != "ignore"
         else:
             div_is_open = deflt != "ignore"
         html.open_div(id_="%stag_sel_%s" % (varprefix, id_),
@@ -2182,7 +2194,7 @@ class LabelCondition(Transform):
 
 @page_registry.register_page("ajax_dict_host_tag_condition_get_choice")
 class PageAjaxDictHostTagConditionGetChoice(ABCPageListOfMultipleGetChoice):
-    def _get_choices(self, request):
+    def _get_choices(self, api_request):
         condition = DictHostTagCondition("Dummy title", "Dummy help")
         return condition._get_tag_group_choices()
 
@@ -2279,7 +2291,7 @@ def _single_folder_rule_match_condition():
 
 
 def get_search_expression():
-    search = html.request.get_unicode_input("search")
+    search = request.get_unicode_input("search")
     if search is not None:
         search = search.strip().lower()
     return search
@@ -2291,15 +2303,34 @@ def get_hostnames_from_checkboxes(filterfunc: _Optional[Callable] = None,
     This is needed for bulk operations."""
     selected = config.user.get_rowselection(weblib.selection_id(),
                                             'wato-folder-/' + watolib.Folder.current().path())
-    search_text = html.request.var("search")
+    search_text = request.var("search")
 
-    selected_host_names = []
+    selected_host_names: List[str] = []
     for host_name, host in sorted(watolib.Folder.current().hosts().items()):
-        if ((not search_text or (search_text.lower() in host_name.lower())) and
+        if ((not search_text or _search_text_matches(host, search_text)) and
             ('_c_' + host_name) in selected):
             if filterfunc is None or filterfunc(host):
                 selected_host_names.append(host_name)
     return selected_host_names
+
+
+def _search_text_matches(
+    host: watolib.CREHost,
+    search_text: str,
+) -> bool:
+
+    match_regex = re.compile(search_text, re.IGNORECASE)
+    for pattern in [
+            host.name(),
+            host.effective_attributes().get("ipaddress"),
+            host.site_id(),
+            config.site(host.site_id())["alias"],
+            str(host.tag_groups()),
+            str(host.labels()),
+    ]:
+        if match_regex.search(pattern):
+            return True
+    return False
 
 
 def get_hosts_from_checkboxes(filterfunc=None):

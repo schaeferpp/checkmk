@@ -54,6 +54,7 @@ from cmk.gui.page_menu import (
     make_display_options_dropdown,
 )
 from cmk.gui.page_state import PageState
+from cmk.gui.utils.escaping import escape_html, escape_html_permissive
 from cmk.gui.utils.urls import makeuri, makeuri_contextless, make_confirm_link, makeactionuri
 
 acknowledgement_path = cmk.utils.paths.var_dir + "/acknowledged_werks.mk"
@@ -79,7 +80,7 @@ class ModeReleaseNotesPage(cmk.gui.pages.Page):
         return _("Welcome to Checkmk %s" % __version__)
 
     def page(self) -> cmk.gui.pages.PageResult:
-        if html.request.get_integer_input_mandatory("major", 0):
+        if request.get_integer_input_mandatory("major", 0):
             self._major_page()
         else:
             self._patch_page()
@@ -90,7 +91,7 @@ class ModeReleaseNotesPage(cmk.gui.pages.Page):
                     page_state=_release_switch(major=True))
 
         html.open_div(id_="release_title")
-        html.h1(_("Everything") + html.render_br() + _("monitored"))
+        html.h1(escape_html(_("Everything")) + html.render_br() + escape_html(_("monitored")))
         html.img(theme.url("images/tribe29.svg"))
         html.close_div()
 
@@ -142,8 +143,8 @@ def handle_acknowledgement():
     if not transactions.check_transaction():
         return
 
-    if html.request.var("_werk_ack"):
-        werk_id = html.request.get_integer_input_mandatory("_werk_ack")
+    if request.var("_werk_ack"):
+        werk_id = request.get_integer_input_mandatory("_werk_ack")
         if werk_id not in g_werks:
             raise MKUserError("werk", _("This werk does not exist."))
         werk = g_werks[werk_id]
@@ -156,7 +157,7 @@ def handle_acknowledgement():
             load_werks()  # reload ack states after modification
             render_unacknowleged_werks()
 
-    elif html.request.var("_ack_all"):
+    elif request.var("_ack_all"):
         num = len(unacknowledged_incompatible_werks())
         acknowledge_all_werks()
         flash(_("%d incompatible Werks have been acknowledged.") % num)
@@ -237,7 +238,7 @@ def _extend_display_dropdown(menu, werk_table_options: Dict[str, Any]) -> None:
         ))
 
 
-def _render_werk_options_form(werk_table_options: Dict[str, Any]) -> str:
+def _render_werk_options_form(werk_table_options: Dict[str, Any]) -> HTML:
     with output_funnel.plugged():
         html.begin_form("werks")
         html.hidden_field("wo_set", "set")
@@ -252,7 +253,7 @@ def _render_werk_options_form(werk_table_options: Dict[str, Any]) -> str:
         html.hidden_fields()
         html.end_form()
 
-        return output_funnel.drain()
+        return HTML(output_funnel.drain())
 
 
 def _show_werk_options_controls() -> None:
@@ -269,7 +270,7 @@ def _show_werk_options_controls() -> None:
 @cmk.gui.pages.register("werk")
 def page_werk():
     load_werks()
-    werk_id = html.request.get_integer_input_mandatory("werk")
+    werk_id = request.get_integer_input_mandatory("werk")
     if werk_id not in g_werks:
         raise MKUserError("werk", _("This werk does not exist."))
     werk = g_werks[werk_id]
@@ -285,9 +286,7 @@ def page_werk():
     def werk_table_row(caption, content, css=None):
         html.open_tr()
         html.th(caption)
-        html.open_td(class_=css)
-        html.write(content)
-        html.close_td()
+        html.td(content, class_=css)
         html.close_tr()
 
     translator = cmk.utils.werks.WerkTranslator()
@@ -486,7 +485,7 @@ def _werk_table_option_entries():
 
 def render_unacknowleged_werks():
     werks = unacknowledged_incompatible_werks()
-    if werks and not html.request.has_var("show_unack"):
+    if werks and not request.has_var("show_unack"):
         html.open_div(class_=["warning"])
         html.write_text(
             _("<b>Warning:</b> There are %d unacknowledged incompatible werks:") % len(werks))
@@ -599,20 +598,20 @@ def _default_werk_table_options():
         name: default_value  #
         for name, _height, _vs, default_value in _werk_table_option_entries()
     }
-    werk_table_options["date_range"] = (1, time.time())
+    werk_table_options["date_range"] = (1, int(time.time()))
     werk_table_options["compatibility"] = ["incomp_unack"]
     return werk_table_options
 
 
 def _werk_table_options_from_request() -> Dict[str, Any]:
-    if html.request.var("show_unack") and not html.request.has_var("wo_set"):
+    if request.var("show_unack") and not request.has_var("wo_set"):
         return _default_werk_table_options()
 
     werk_table_options: Dict[str, Any] = {}
     for name, _height, vs, default_value in _werk_table_option_entries():
         value = default_value
         try:
-            if html.request.has_var("wo_set"):
+            if request.has_var("wo_set"):
                 value = vs.from_html_vars("wo_" + name)
                 vs.validate_value(value, "wo_" + name)
         except MKUserError as e:
@@ -620,7 +619,7 @@ def _werk_table_options_from_request() -> Dict[str, Any]:
 
         werk_table_options.setdefault(name, value)
 
-    from_date, until_date = Timerange().compute_range(werk_table_options["date"])[0]
+    from_date, until_date = Timerange.compute_range(werk_table_options["date"]).range
     werk_table_options["date_range"] = from_date, until_date
 
     return werk_table_options
@@ -637,14 +636,14 @@ def render_werk_date(werk):
     return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(werk["date"]))
 
 
-def render_werk_title(werk) -> Union[HTML, str]:
+def render_werk_title(werk) -> HTML:
     title = werk["title"]
     # if the title begins with the name or names of check plugins, then
     # we link to the man pages of those checks
     if ":" in title:
         parts = title.split(":", 1)
-        title = insert_manpage_links(parts[0]) + ":" + parts[1]
-    return title
+        return insert_manpage_links(parts[0]) + escape_html_permissive(":" + parts[1])
+    return escape_html_permissive(title)
 
 
 def render_werk_description(werk) -> HTML:
@@ -697,7 +696,7 @@ def render_werk_description(werk) -> HTML:
 
 def insert_manpage_links(text: str) -> HTML:
     parts = text.replace(",", " ").split()
-    new_parts: List[Union[str, HTML]] = []
+    new_parts: List[HTML] = []
     check_regex = re.compile(r"[-_\.a-z0-9]")
     for part in parts:
         if (check_regex.match(part) and
@@ -712,5 +711,5 @@ def insert_manpage_links(text: str) -> HTML:
             )
             new_parts.append(html.render_a(content=part, href=url))
         else:
-            new_parts.append(part)
+            new_parts.append(escape_html(part))
     return HTML(" ").join(new_parts)

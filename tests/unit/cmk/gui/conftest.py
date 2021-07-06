@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Any, NamedTuple, Literal, Optional, Dict
 from functools import lru_cache
 
-import pytest  # type: ignore[import]
+import pytest
 import webtest  # type: ignore[import]
 from mock import MagicMock
 
@@ -80,6 +80,7 @@ def load_plugins(register_builtin_html, monkeypatch, tmp_path):
     config_dir = tmp_path / "var/check_mk/web"
     config_dir.mkdir(parents=True)
     monkeypatch.setattr(config, "config_dir", "%s" % config_dir)
+    monkeypatch.setattr(config, "roles", {'user': {}, 'admin': {}, 'guest': {}})
     modules.load_all_plugins()
 
 

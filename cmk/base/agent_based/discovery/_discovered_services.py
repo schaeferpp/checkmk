@@ -39,6 +39,7 @@ import cmk.base.config as config
 import cmk.base.plugin_contexts as plugin_contexts
 import cmk.base.section as section
 from cmk.base.agent_based.data_provider import ParsedSectionsBroker
+from cmk.base.agent_based.utils import get_section_kwargs
 from cmk.base.api.agent_based import checking_classes
 from cmk.base.check_utils import CheckTable, Service
 from cmk.base.discovered_labels import (
@@ -224,12 +225,10 @@ def _find_host_candidates(
     parsed_sections_of_interest: Set[ParsedSectionName],
 ) -> Set[CheckPluginName]:
 
-    available_parsed_sections = {
-        s.parsed_section_name for s in broker.determine_applicable_sections(
-            parsed_sections_of_interest,
-            SourceType.HOST,
-        )
-    }
+    available_parsed_sections = broker.filter_available(
+        parsed_sections_of_interest,
+        SourceType.HOST,
+    )
 
     return {
         plugin.name
@@ -246,12 +245,10 @@ def _find_mgmt_candidates(
     parsed_sections_of_interest: Set[ParsedSectionName],
 ) -> Set[CheckPluginName]:
 
-    available_parsed_sections = {
-        s.parsed_section_name for s in broker.determine_applicable_sections(
-            parsed_sections_of_interest,
-            SourceType.MANAGEMENT,
-        )
-    }
+    available_parsed_sections = broker.filter_available(
+        parsed_sections_of_interest,
+        SourceType.MANAGEMENT,
+    )
 
     return {
         # *create* all management only names of the plugins
@@ -286,7 +283,7 @@ def _discover_plugins_services(
     )
 
     try:
-        kwargs = parsed_sections_broker.get_section_kwargs(host_key, check_plugin.sections)
+        kwargs = get_section_kwargs(parsed_sections_broker, host_key, check_plugin.sections)
     except Exception as exc:
         if cmk.utils.debug.enabled() or on_error is OnError.RAISE:
             raise

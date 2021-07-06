@@ -45,7 +45,7 @@ from cmk.utils.werks import parse_check_mk_version
 
 from ._base import Fetcher, Parser, Summarizer
 from ._markers import PiggybackMarker, SectionMarker
-from .cache import FileCache, FileCacheFactory, SectionStore
+from .cache import FileCache, FileCacheFactory, MaxAge, SectionStore
 from .host_sections import HostSections
 from .type_defs import AgentRawDataSection, Mode, NO_SELECTION, SectionNameCollection
 
@@ -75,7 +75,7 @@ class NoCache(AgentFileCache):
         hostname: HostName,
         *,
         base_path: Union[str, Path],
-        max_age: int,
+        max_age: MaxAge,
         disabled: bool,
         use_outdated: bool,
         simulation: bool,
@@ -110,7 +110,7 @@ class DefaultAgentFileCacheFactory(FileCacheFactory[AgentRawData]):
         return DefaultAgentFileCache(
             self.hostname,
             base_path=self.base_path,
-            max_age=0 if force_cache_refresh else self.max_age,
+            max_age=MaxAge.none() if force_cache_refresh else self.max_age,
             disabled=self.disabled | self.agent_disabled,
             use_outdated=False if force_cache_refresh else self.use_outdated,
             simulation=self.simulation,
@@ -124,7 +124,7 @@ class NoCacheFactory(FileCacheFactory[AgentRawData]):
         return NoCache(
             self.hostname,
             base_path=self.base_path,
-            max_age=0 if force_cache_refresh else self.max_age,
+            max_age=MaxAge.none() if force_cache_refresh else self.max_age,
             disabled=self.disabled | self.agent_disabled,
             use_outdated=False if force_cache_refresh else self.use_outdated,
             simulation=self.simulation,
@@ -510,7 +510,8 @@ class AgentParser(Parser[AgentRawData, AgentHostSections]):
     ) -> None:
         super().__init__()
         self.hostname: Final = hostname
-        self.check_interval: Final = check_interval
+        # Transform to seconds and give the piggybacked host a little bit more time
+        self.cache_piggybacked_data_for: Final = int(1.5 * 60 * check_interval)
         self.section_store: Final = section_store
         self.keep_outdated: Final = keep_outdated
         self.translation: Final = translation
@@ -528,8 +529,6 @@ class AgentParser(Parser[AgentRawData, AgentHostSections]):
             raw_data = agent_simulator.process(raw_data)
 
         now = int(time.time())
-        # Transform to seconds and give the piggybacked host a little bit more time
-        cache_age = int(1.5 * 60 * self.check_interval)
 
         sections, piggyback_sections = self._parse_host_section(raw_data)
         section_info = {
@@ -549,7 +548,7 @@ class AgentParser(Parser[AgentRawData, AgentHostSections]):
             sections: ImmutableSection,
             *,
             cached_at: int,
-            cache_age: int,
+            cache_for: int,
             selection: SectionNameCollection,
         ) -> Iterator[bytes]:
             for header, content in sections.items():
@@ -563,7 +562,7 @@ class AgentParser(Parser[AgentRawData, AgentHostSections]):
                     yield str(
                         SectionMarker(
                             header.name,
-                            (cached_at, cache_age),
+                            (cached_at, cache_for),
                             header.encoding,
                             header.nostrip,
                             header.persist,
@@ -582,14 +581,14 @@ class AgentParser(Parser[AgentRawData, AgentHostSections]):
                     flatten_piggyback_section(
                         content,
                         cached_at=now,
-                        cache_age=cache_age,
+                        cache_for=self.cache_piggybacked_data_for,
                         selection=selection,
                     )) for header, content in piggyback_sections.items()
             },
             cache_info={
-                header.name: cast(Tuple[int, int], header.cache_info(now))
+                header.name: cache_info_tuple
                 for header in section_info.values()
-                if header.cache_info(now) is not None
+                if (cache_info_tuple := header.cache_info(now)) is not None
             },
         )
 
@@ -600,10 +599,7 @@ class AgentParser(Parser[AgentRawData, AgentHostSections]):
             return None
 
         persisted_sections = self.section_store.update(
-            sections={
-                marker.name: [marker.parse_line(line) for line in section
-                             ] for marker, section in sections.items()
-            },
+            sections=host_sections.sections,
             lookup_persist=lookup_persist,
             now=now,
             keep_outdated=self.keep_outdated,

@@ -4,7 +4,7 @@
 # This file is part of Checkmk (https://checkmk.com). It is subject to the terms and
 # conditions defined in the file COPYING, which is part of this source code package.
 
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 import re
 import json
 from typing import (
@@ -19,18 +19,20 @@ from typing import (
     Union,
     TYPE_CHECKING,
     cast,
+    ContextManager,
 )
 
 from six import ensure_str
 
-from cmk.gui.utils.html import HTML
+from cmk.gui.htmllib import HTML, foldable_container
 import cmk.gui.utils as utils
 import cmk.gui.config as config
-import cmk.gui.escaping as escaping
+import cmk.gui.utils.escaping as escaping
 import cmk.gui.weblib as weblib
 from cmk.gui.i18n import _
-from cmk.gui.globals import html, request, transactions, output_funnel
+from cmk.gui.globals import html, request, transactions, output_funnel, response
 from cmk.gui.utils.urls import makeuri, makeactionuri, requested_file_name
+from cmk.gui.utils.escaping import escape_html_permissive
 
 if TYPE_CHECKING:
     from cmk.gui.htmllib import HTMLContent, HTMLTagAttributes
@@ -153,7 +155,7 @@ class Table:
         # determine row limit
         if limit is None:
             limit = config.table_row_limit
-        if html.request.get_ascii_input('limit') == 'none' or output_format != "html":
+        if request.get_ascii_input('limit') == 'none' or output_format != "html":
             limit = None
 
         self.id = table_id
@@ -239,7 +241,7 @@ class Table:
         if isinstance(text, HTML):
             content = text
         else:
-            content = html.render_text(str(text) if not isinstance(text, str) else text)
+            content = escape_html_permissive(str(text) if not isinstance(text, str) else text)
 
         htmlcode: HTML = content + HTML(output_funnel.drain())
 
@@ -248,7 +250,8 @@ class Table:
         else:
             if title is None:
                 title = ""
-            header_title = html.render_text(str(title) if not isinstance(title, str) else title)
+            header_title = escape_html_permissive(
+                str(title) if not isinstance(title, str) else title)
 
         if self.options["collect_headers"] is True:
             # small helper to make sorting introducion easier. Cells which contain
@@ -273,65 +276,63 @@ class Table:
             return
 
         if self.options["output_format"] == "csv":
-            self._write_csv(
-                csv_separator=html.request.get_str_input_mandatory("csv_separator", ";"))
+            self._write_csv(csv_separator=request.get_str_input_mandatory("csv_separator", ";"))
             return
 
+        container: ContextManager[bool] = nullcontext(False)
         if self.title:
             if self.options["foldable"]:
                 html.open_div(class_="foldable_wrapper")
-                html.begin_foldable_container(treename="table",
-                                              id_=self.id,
-                                              isopen=True,
-                                              indent=False,
-                                              title=html.render_h3(self.title,
-                                                                   class_=["treeangle", "title"]))
+                container = foldable_container(treename="table",
+                                               id_=self.id,
+                                               isopen=True,
+                                               indent=False,
+                                               title=html.render_h3(self.title,
+                                                                    class_=["treeangle", "title"]))
             else:
-                html.open_h3(class_="table")
-                html.write(self.title)
-                html.close_h3()
+                html.h3(self.title, class_="table")
 
-        if self.help:
-            html.help(self.help)
+        with container:
+            if self.help:
+                html.help(self.help)
 
-        if not self.rows:
-            html.div(self.empty_text, class_="info")
-            return
+            if not self.rows:
+                html.div(self.empty_text, class_="info")
+                return
 
-        # Controls whether or not actions are available for a table
-        rows, actions_visible, search_term = self._evaluate_user_opts()
+            # Controls whether or not actions are available for a table
+            rows, actions_visible, search_term = self._evaluate_user_opts()
 
-        # Apply limit after search / sorting etc.
-        num_rows_unlimited = len(rows)
-        limit = self.limit
-        if limit:
-            # only use rows up to the limit plus the fixed rows
-            limited_rows = []
-            for index in range(num_rows_unlimited):
-                row = rows[index]
-                if index < limit or isinstance(row, GroupHeader) or row.fixed:
-                    limited_rows.append(row)
-            # Display corrected number of rows
-            num_rows_unlimited -= len(
-                [r for r in limited_rows if isinstance(row, GroupHeader) or r.fixed])
-            rows = limited_rows
+            # Apply limit after search / sorting etc.
+            num_rows_unlimited = len(rows)
+            limit = self.limit
+            if limit:
+                # only use rows up to the limit plus the fixed rows
+                limited_rows = []
+                for index in range(num_rows_unlimited):
+                    row = rows[index]
+                    if index < limit or isinstance(row, GroupHeader) or row.fixed:
+                        limited_rows.append(row)
+                # Display corrected number of rows
+                num_rows_unlimited -= len(
+                    [r for r in limited_rows if isinstance(row, GroupHeader) or r.fixed])
+                rows = limited_rows
 
-        # Render header
-        if self.limit_hint is not None:
-            num_rows_unlimited = self.limit_hint
+            # Render header
+            if self.limit_hint is not None:
+                num_rows_unlimited = self.limit_hint
 
-        if limit and num_rows_unlimited > limit:
+            if limit and num_rows_unlimited > limit:
 
-            html.show_message(
-                _('This table is limited to show only %d of %d rows. '
-                  'Click <a href="%s">here</a> to disable the limitation.') %
-                (limit, num_rows_unlimited, makeuri(request, [('limit', 'none')])))
+                html.show_message(
+                    _('This table is limited to show only %d of %d rows. '
+                      'Click <a href="%s">here</a> to disable the limitation.') %
+                    (limit, num_rows_unlimited, makeuri(request, [('limit', 'none')])))
 
-        self._write_table(rows, num_rows_unlimited, self._show_action_row(), actions_visible,
-                          search_term)
+            self._write_table(rows, num_rows_unlimited, self._show_action_row(), actions_visible,
+                              search_term)
 
         if self.title and self.options["foldable"]:
-            html.end_foldable_container()
             html.close_div()
 
         return
@@ -357,20 +358,20 @@ class Table:
 
         # Handle the initial visibility of the actions
         actions_visible = table_opts.get('actions_visible', False)
-        if html.request.get_ascii_input('_%s_actions' % table_id):
-            actions_visible = html.request.get_ascii_input('_%s_actions' % table_id) == '1'
+        if request.get_ascii_input('_%s_actions' % table_id):
+            actions_visible = request.get_ascii_input('_%s_actions' % table_id) == '1'
             table_opts['actions_visible'] = actions_visible
 
         if self.options["searchable"]:
-            search_term = html.request.get_unicode_input_mandatory('search', '')
+            search_term = request.get_unicode_input_mandatory('search', '')
             # Search is always lower case -> case insensitive
             search_term = search_term.lower()
             if search_term:
-                html.request.set_var('search', search_term)
+                request.set_var('search', search_term)
                 rows = _filter_rows(rows, search_term)
 
-        if html.request.get_ascii_input('_%s_reset_sorting' % table_id):
-            html.request.del_var('_%s_sort' % table_id)
+        if request.get_ascii_input('_%s_reset_sorting' % table_id):
+            request.del_var('_%s_sort' % table_id)
             if 'sort' in table_opts:
                 del table_opts['sort']  # persist
 
@@ -378,7 +379,7 @@ class Table:
             # Now apply eventual sorting settings
             sort = self._get_sort_column(table_opts)
             if sort is not None:
-                html.request.set_var('_%s_sort' % table_id, sort)
+                request.set_var('_%s_sort' % table_id, sort)
                 table_opts['sort'] = sort  # persist
                 sort_col, sort_reverse = map(int, sort.split(',', 1))
                 rows = _sort_rows(rows, sort_col, sort_reverse)
@@ -389,7 +390,7 @@ class Table:
         return rows, actions_visible, search_term
 
     def _get_sort_column(self, table_opts: Dict[str, Any]) -> Optional[str]:
-        return html.request.get_ascii_input('_%s_sort' % self.id, table_opts.get('sort'))
+        return request.get_ascii_input('_%s_sort' % self.id, table_opts.get('sort'))
 
     def _write_table(self, rows: TableRows, num_rows_unlimited: int, actions_enabled: bool,
                      actions_visible: bool, search_term: Optional[str]) -> None:
@@ -421,7 +422,7 @@ class Table:
             if not html.in_form():
                 html.begin_form("%s_actions" % table_id)
 
-            if html.request.has_var('_%s_sort' % table_id):
+            if request.has_var('_%s_sort' % table_id):
                 html.open_div(class_=["sort"])
                 html.button("_%s_reset_sorting" % table_id, _("Reset sorting"))
                 html.close_div()
@@ -440,9 +441,7 @@ class Table:
                 if nr < len(rows) - 1 and not isinstance(rows[nr + 1], GroupHeader):
                     html.open_tr(class_="groupheader")
                     html.open_td(colspan=num_cols)
-                    html.open_h3()
-                    html.write(row.title)
-                    html.close_h3()
+                    html.h3(row.title)
                     html.close_td()
                     html.close_tr()
 
@@ -467,9 +466,7 @@ class Table:
                 if self.options["omit_empty_columns"] and empty_columns[col_index]:
                     continue
 
-                html.open_td(class_=cell.css, colspan=cell.colspan)
-                html.write(cell.content)
-                html.close_td()
+                html.td(cell.content, class_=cell.css, colspan=cell.colspan)
             html.close_tr()
 
         if not rows and search_term:
@@ -508,9 +505,11 @@ class Table:
         if limit is not None:
             rows = rows[:limit]
 
+        resp = []
+
         # If we have no group headers then paint the headers now
         if not omit_headers and self.rows and not isinstance(self.rows[0], GroupHeader):
-            html.write(
+            resp.append(
                 csv_separator.join(
                     [escaping.strip_tags(header.title) or "" for header in self.headers]) + "\n")
 
@@ -518,9 +517,11 @@ class Table:
             if isinstance(row, GroupHeader):
                 continue
 
-            html.write(csv_separator.join([escaping.strip_tags(cell.content) for cell in row.cells
-                                          ]))
-            html.write("\n")
+            resp.append(
+                csv_separator.join([escaping.strip_tags(cell.content) for cell in row.cells]))
+            resp.append("\n")
+
+        response.set_data("".join(resp))
 
     def _render_headers(self, actions_enabled: bool, actions_visible: bool,
                         empty_columns: List[bool]) -> None:
@@ -553,7 +554,7 @@ class Table:
             else:
                 css_class.insert(0, "sort")
                 reverse = 0
-                sort = html.request.get_ascii_input('_%s_sort' % table_id)
+                sort = request.get_ascii_input('_%s_sort' % table_id)
                 if sort:
                     sort_col, sort_reverse = map(int, sort.split(',', 1))
                     if sort_col == nr:
@@ -586,14 +587,12 @@ class Table:
                                      help_txt,
                                      img,
                                      cssclass='toggle_actions')
-                    html.open_span()
-                    html.write(header_title)
-                    html.close_span()
+                    html.span(header_title)
                     html.close_div()
                 else:
-                    html.write(header_title)
+                    html.write_text(header_title)
             else:
-                html.write(header_title)
+                html.write_text(header_title)
 
             html.close_th()
         html.close_tr()

@@ -11,9 +11,9 @@ YAPF := $(PIPENV) run yapf
 THREE_TO_TWO := $(PIPENV) run 3to2
 BANDIT := $(PIPENV) run bandit
 FIND_INVALID_TEST_FILES := $(SCRIPTS)/find-invalid-autogen-files
-MYPY := $(SCRIPTS)/run-mypy
 ADDITIONAL_MYPY_ARGS :=
-GCC_TOOLCHAIN := /opt/gcc-10.1.0
+# TODO: Remove version duplication, see buildscripts/infrastructure/build-nodes/scripts/install-gnu-toolchain.sh
+GCC_TOOLCHAIN := /opt/gcc-11.1.0
 
 # Since the unit tests (that are written for Python 3) are executed with Python
 # 2.6 and 2.7, we need to convert them, just like it is done for the agent
@@ -110,7 +110,7 @@ bandit.ini:
 	  echo ) > bandit.ini
 
 format-shell:
-	sudo docker run --rm -v "$(realpath ..):/sh" -w /sh peterdavehello/shfmt shfmt -w -i 4 -ci $(SHELL_FILES)
+	docker run --rm -v "$(realpath ..):/sh" -w /sh peterdavehello/shfmt shfmt -w -i 4 -ci $(SHELL_FILES)
 
 agent-plugin-unit/py2/test_%.py: agent-plugin-unit/test_%.py
 	mkdir -p "$(dir $@)"
@@ -208,11 +208,15 @@ test-integration-docker:
 	$(PIPENV) run scripts/run-dockerized.py "test-integration"
 
 test-mypy:
-	$(FIND_PYTHON_FILES) | \
+	PYTHON_FILES=$$($(FIND_PYTHON_FILES) | \
 	`: filter out plugins, they are not real modules` \
 	grep -v $$(realpath '../checks') | \
 	grep -v $$(realpath '../inventory') | \
-	xargs $(MYPY) $(ADDITIONAL_MYPY_ARGS)
+	`: files are only needed for pylint to understand the module hierarchy` \
+	grep -v $$(realpath '../enterprise/cmk/__init__.py') | \
+	grep -v $$(realpath '../enterprise/cmk/base/__init__.py') \
+	) ; \
+	cd .. ; scripts/run-mypy $(MYPY_ADDOPTS) $(ADDITIONAL_MYPY_ARGS) $$PYTHON_FILES
 
 test-mypy-raw:
 	$(MAKE) test-mypy ADDITIONAL_MYPY_ARGS="--config-file=$(realpath ../mypy-raw.ini)"

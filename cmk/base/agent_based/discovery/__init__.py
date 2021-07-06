@@ -30,12 +30,11 @@ import cmk.utils.debug
 import cmk.utils.paths
 import cmk.utils.tty as tty
 from cmk.utils.caching import config_cache as _config_cache
-from cmk.utils.check_utils import worst_service_state, wrap_parameters
+from cmk.utils.check_utils import ActiveCheckResult, worst_service_state, wrap_parameters
 from cmk.utils.exceptions import MKGeneralException, MKTimeout, OnError
 from cmk.utils.log import console
 from cmk.utils.object_diff import make_object_diff
 from cmk.utils.type_defs import (
-    ActiveCheckResult,
     CheckPluginName,
     CheckPluginNameStr,
     DiscoveryResult,
@@ -44,13 +43,11 @@ from cmk.utils.type_defs import (
     HostName,
     Item,
     MetricTuple,
-    result as result_type,
     RulesetName,
     state_markers,
 )
 
 import cmk.core_helpers.cache
-from cmk.core_helpers.host_sections import HostSections
 from cmk.core_helpers.protocol import FetcherMessage
 from cmk.core_helpers.type_defs import Mode, NO_SELECTION, SectionNameCollection
 
@@ -59,13 +56,13 @@ import cmk.base.agent_based.decorator as decorator
 import cmk.base.autochecks as autochecks
 import cmk.base.check_table as check_table
 import cmk.base.check_utils
-import cmk.base.sources as sources
 import cmk.base.agent_based.checking as checking
 import cmk.base.config as config
 import cmk.base.core
 import cmk.base.crash_reporting
 import cmk.base.section as section
 from cmk.base.agent_based.data_provider import make_broker, ParsedSectionsBroker
+from cmk.base.agent_based.utils import check_sources, check_parsing_errors
 from cmk.base.api.agent_based import checking_classes
 from cmk.base.api.agent_based.value_store import load_host_value_store, ValueStoreManager
 from cmk.base.api.agent_based.type_defs import Parameters
@@ -86,8 +83,6 @@ CheckPreviewEntry = Tuple[str, CheckPluginNameStr, Optional[RulesetName], Item,
                           LegacyCheckParameters, LegacyCheckParameters, str, Optional[int], str,
                           List[MetricTuple], Dict[str, str], List[HostName]]
 CheckPreviewTable = List[CheckPreviewEntry]
-
-_DiscoverySubresult = Tuple[ActiveCheckResult, bool]
 
 #   .--Helpers-------------------------------------------------------------.
 #   |                  _   _      _                                        |
@@ -132,11 +127,7 @@ def schedule_discovery_check(host_name: HostName) -> None:
 #   '----------------------------------------------------------------------'
 
 
-# Function implementing cmk -I and cmk -II. This is directly
-# being called from the main option parsing code. The list of
-# hostnames is already prepared by the main code. If it is
-# empty then we use all hosts and switch to using cache files.
-def do_discovery(
+def commandline_discovery(
     arg_hostnames: Set[HostName],
     *,
     selected_sections: SectionNameCollection,
@@ -144,6 +135,12 @@ def do_discovery(
     arg_only_new: bool,
     only_host_labels: bool = False,
 ) -> None:
+    """Implementing cmk -I and cmk -II
+
+    This is directly called from the main option parsing code.
+    The list of hostnames is already prepared by the main code.
+    If it is empty then we use all hosts and switch to using cache files.
+    """
     config_cache = config.get_config_cache()
     use_caches = not arg_hostnames or cmk.core_helpers.cache.FileCacheFactory.maybe
     on_error = OnError.RAISE if cmk.utils.debug.enabled() else OnError.WARN
@@ -164,12 +161,12 @@ def do_discovery(
                 ip_address=ipaddress,
                 mode=mode,
                 selected_sections=selected_sections,
-                file_cache_max_age=config.discovery_max_cachefile_age() if use_caches else 0,
+                file_cache_max_age=config.max_cachefile_age(discovery=None if use_caches else 0),
                 fetcher_messages=(),
                 force_snmp_cache_refresh=False,
                 on_scan_error=on_error,
             )
-            _do_discovery_for(
+            _commandline_discovery_on_host(
                 host_name,
                 ipaddress,
                 parsed_sections_broker,
@@ -219,7 +216,7 @@ def _preprocess_hostnames(
     return host_names
 
 
-def _do_discovery_for(
+def _commandline_discovery_on_host(
     host_name: HostName,
     ipaddress: Optional[HostAddress],
     parsed_sections_broker: ParsedSectionsBroker,
@@ -270,13 +267,16 @@ def _do_discovery_for(
     count = len(service_result.new) if service_result.new else ("no new" if only_new else "no")
     section.section_success(f"Found {count} services")
 
+    for detail in check_parsing_errors(parsed_sections_broker.parsing_errors()).details:
+        console.warning(detail)
+
 
 # determine changed services on host.
 # param mode: can be one of "new", "remove", "fixall", "refresh", "only-host-labels"
 # param servic_filter: if a filter is set, it controls whether items are touched by the discovery.
 #                       if it returns False for a new item it will not be added, if it returns
 #                       False for a vanished item, that item is kept
-def discover_on_host(
+def automation_discovery(
     *,
     config_cache: config.ConfigCache,
     host_config: config.HostConfig,
@@ -284,7 +284,7 @@ def discover_on_host(
     service_filters: Optional[_ServiceFilters],
     on_error: OnError,
     use_cached_snmp_data: bool,
-    max_cachefile_age: int,
+    max_cachefile_age: cmk.core_helpers.cache.MaxAge,
 ) -> DiscoveryResult:
 
     console.verbose("  Doing discovery with mode '%s'...\n" % mode)
@@ -296,7 +296,8 @@ def discover_on_host(
         result.error_text = ""
         return result
 
-    _set_cache_opts_of_checkers(use_cached_snmp_data=use_cached_snmp_data)
+    cmk.core_helpers.cache.FileCacheFactory.use_outdated = True
+    cmk.core_helpers.cache.FileCacheFactory.maybe = use_cached_snmp_data
 
     try:
         # in "refresh" mode we first need to remove all previously discovered
@@ -377,18 +378,6 @@ def discover_on_host(
 
     result.self_total = result.self_new + result.self_kept
     return result
-
-
-def _set_cache_opts_of_checkers(*, use_cached_snmp_data: bool) -> None:
-    """Set caching options appropriate for discovery"""
-    # TCP data sources should use the cache: Fetching live data may steal log
-    # messages and the like from the checks.
-    # However: Discovering new hosts might have no cache, so don't enforce it.
-    cmk.core_helpers.cache.FileCacheFactory.use_outdated = True
-    # As this is a change quite close to a release, I am leaving the following
-    # line in. As far as I can tell, this property is never being read after the
-    # callsites of this function.
-    cmk.core_helpers.cache.FileCacheFactory.maybe = use_cached_snmp_data
 
 
 def _get_post_discovery_services(
@@ -472,12 +461,12 @@ def _get_post_discovery_services(
 
 
 @decorator.handle_check_mk_check_result("discovery", "Check_MK Discovery")
-def check_discovery(
+def active_check_discovery(
     host_name: HostName,
     ipaddress: Optional[HostAddress],
     *,
     # The next argument *must* remain optional for the DiscoCheckExecutor.
-    #   See Also: `cmk.base.agent_based.checking.do_check()`.
+    #   See Also: `cmk.base.agent_based.checking.active_check_checking()`.
     fetcher_messages: Sequence[FetcherMessage] = (),
 ) -> ActiveCheckResult:
 
@@ -509,8 +498,8 @@ def check_discovery(
         mode=Mode.DISCOVERY,
         fetcher_messages=fetcher_messages,
         selected_sections=NO_SELECTION,
-        file_cache_max_age=(config.discovery_max_cachefile_age()
-                            if cmk.core_helpers.cache.FileCacheFactory.maybe else 0),
+        file_cache_max_age=config.max_cachefile_age(
+            discovery=None if cmk.core_helpers.cache.FileCacheFactory.maybe else 0),
         force_snmp_cache_refresh=False,
         on_scan_error=OnError.RAISE,
     )
@@ -530,42 +519,33 @@ def check_discovery(
         on_error=OnError.RAISE,
     )
 
-    (status, infotexts, long_infotexts, perfdata), need_rediscovery = _aggregate_subresults(
-        _check_service_lists(
-            host_name=host_name,
-            services_by_transition=services,
-            params=params,
-            service_filters=_ServiceFilters.from_settings(rediscovery_parameters),
-            discovery_mode=discovery_mode,
-        ),
-        _check_host_labels(
-            host_labels,
-            int(params.get("severity_new_host_label", 1)),
-            discovery_mode,
-        ),
-        _check_data_sources(source_results, mode=Mode.DISCOVERY),
+    services_result, services_need_rediscovery = _check_service_lists(
+        host_name=host_name,
+        services_by_transition=services,
+        params=params,
+        service_filters=_ServiceFilters.from_settings(rediscovery_parameters),
+        discovery_mode=discovery_mode,
     )
 
-    if need_rediscovery:
-        autodiscovery_queue = _AutodiscoveryQueue()
-        if host_config.is_cluster and host_config.nodes:
-            for nodename in host_config.nodes:
-                autodiscovery_queue.add(nodename)
-        else:
-            autodiscovery_queue.add(host_name)
-        infotexts = list(infotexts) + ["rediscovery scheduled"]
+    host_labels_result, host_labels_need_rediscovery = _check_host_labels(
+        host_labels,
+        int(params.get("severity_new_host_label", 1)),
+        discovery_mode,
+    )
 
-    return status, infotexts, long_infotexts, perfdata
+    parsing_errors_result = check_parsing_errors(parsed_sections_broker.parsing_errors())
 
-
-def _aggregate_subresults(*subresults: _DiscoverySubresult) -> _DiscoverySubresult:
-    stati, texts, long_texts, perfdata_list = zip(*(result for result, _ in subresults))
-    return ((
-        worst_service_state(*stati, default=0),
-        sum((list(t) for t in texts), []),
-        sum((list(l) for l in long_texts), []),
-        sum((list(p) for p in perfdata_list), []),
-    ), any(need_rediscovery_flag for _, need_rediscovery_flag in subresults))
+    return ActiveCheckResult.from_subresults(
+        services_result,
+        host_labels_result,
+        *check_sources(source_results=source_results, mode=Mode.DISCOVERY),
+        parsing_errors_result,
+        _schedule_rediscovery(
+            host_config=host_config,
+            need_rediscovery=(services_need_rediscovery or host_labels_need_rediscovery) and
+            parsing_errors_result.state == 0,
+        ),
+    )
 
 
 def _check_service_lists(
@@ -575,7 +555,7 @@ def _check_service_lists(
     params: config.DiscoveryCheckParameters,
     service_filters: _ServiceFilters,
     discovery_mode: DiscoveryMode,
-) -> _DiscoverySubresult:
+) -> Tuple[ActiveCheckResult, bool]:
 
     status = 0
     infotexts = []
@@ -629,40 +609,40 @@ def _check_service_lists(
             u"ignored: %s: %s" %
             (discovered_service.check_plugin_name, discovered_service.description))
 
-    return (status, infotexts, long_infotexts, []), need_rediscovery
+    return ActiveCheckResult(status, infotexts, long_infotexts, []), need_rediscovery
 
 
 def _check_host_labels(
     host_labels: QualifiedDiscovery[HostLabel],
     severity_new_host_label: int,
     discovery_mode: DiscoveryMode,
-) -> _DiscoverySubresult:
+) -> Tuple[ActiveCheckResult, bool]:
     return (
-        (severity_new_host_label, [f"{len(host_labels.new)} new host labels"], [], []),
+        ActiveCheckResult(severity_new_host_label, [f"{len(host_labels.new)} new host labels"], [],
+                          []),
         discovery_mode in (DiscoveryMode.NEW, DiscoveryMode.FIXALL, DiscoveryMode.REFRESH),
     ) if host_labels.new else (
-        (0, ["no new host labels"], [], []),
+        ActiveCheckResult(0, ["no new host labels"], [], []),
         False,
     )
 
 
-def _check_data_sources(
-    result: Sequence[Tuple[sources.Source, result_type.Result[HostSections, Exception]]],
+def _schedule_rediscovery(
     *,
-    mode: Mode,
-) -> _DiscoverySubresult:
-    summaries = [
-        (source, source.summarize(host_sections, mode=mode)) for source, host_sections in result
-    ]
-    return (
-        (
-            worst_service_state(*(state for _s, (state, _t) in summaries), default=0),
-            # Do not output informational (state = 0) things.  These information
-            # are shown by the "Check_MK" service
-            [f"[{src.id}] {text}" for src, (state, text) in summaries if state != 0],
-            [],
-            []),
-        False)
+    host_config: config.HostConfig,
+    need_rediscovery: bool,
+) -> ActiveCheckResult:
+    if not need_rediscovery:
+        return ActiveCheckResult(0, (), (), ())
+
+    autodiscovery_queue = _AutodiscoveryQueue()
+    if host_config.is_cluster and host_config.nodes:
+        for nodename in host_config.nodes:
+            autodiscovery_queue.add(nodename)
+    else:
+        autodiscovery_queue.add(host_config.hostname)
+
+    return ActiveCheckResult(0, ("rediscovery scheduled",), (), ())
 
 
 class _AutodiscoveryQueue:
@@ -705,6 +685,8 @@ class _AutodiscoveryQueue:
 
 
 def discover_marked_hosts(core: MonitoringCore) -> None:
+    """Autodiscovery"""
+
     console.verbose("Doing discovery for all marked hosts:\n")
     autodiscovery_queue = _AutodiscoveryQueue()
 
@@ -747,6 +729,9 @@ def discover_marked_hosts(core: MonitoringCore) -> None:
             _config_cache.clear_all()
             config.get_config_cache().initialize()
 
+            # reset these to their original value to create a correct config
+            cmk.core_helpers.cache.FileCacheFactory.use_outdated = False
+            cmk.core_helpers.cache.FileCacheFactory.maybe = True
             if config.monitoring_core == "cmc":
                 cmk.base.core.do_reload(core)
             else:
@@ -791,7 +776,7 @@ def _discover_marked_host(
         console.verbose(f"  skipped: {reason}\n")
         return False
 
-    result = discover_on_host(
+    result = automation_discovery(
         config_cache=config_cache,
         host_config=host_config,
         mode=DiscoveryMode(rediscovery_parameters.get("mode")),
@@ -801,7 +786,7 @@ def _discover_marked_host(
         # autodiscovery is run every 5 minutes (see
         # omd/packages/check_mk/skel/etc/cron.d/cmk_discovery)
         # make sure we may use the file the active discovery check left behind:
-        max_cachefile_age=600,
+        max_cachefile_age=config.max_cachefile_age(discovery=600),
     )
     if result.error_text is not None:
         # for offline hosts the error message is empty. This is to remain
@@ -1113,7 +1098,7 @@ def _cluster_service_entry(
 def get_check_preview(
     *,
     host_name: HostName,
-    max_cachefile_age: int,
+    max_cachefile_age: cmk.core_helpers.cache.MaxAge,
     use_cached_snmp_data: bool,
     on_error: OnError,
 ) -> Tuple[CheckPreviewTable, QualifiedDiscovery[HostLabel]]:
@@ -1124,7 +1109,8 @@ def get_check_preview(
 
     ip_address = None if host_config.is_cluster else config.lookup_ip_address(host_config)
 
-    _set_cache_opts_of_checkers(use_cached_snmp_data=use_cached_snmp_data)
+    cmk.core_helpers.cache.FileCacheFactory.use_outdated = True
+    cmk.core_helpers.cache.FileCacheFactory.maybe = use_cached_snmp_data
 
     parsed_sections_broker, _source_results = make_broker(
         config_cache=config_cache,
@@ -1146,6 +1132,9 @@ def get_check_preview(
         save_labels=False,
         on_error=on_error,
     )
+
+    for detail in check_parsing_errors(parsed_sections_broker.parsing_errors()).details:
+        console.warning(detail)
 
     grouped_services = _get_host_services(
         host_config,

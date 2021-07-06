@@ -18,7 +18,7 @@ from cmk.utils.defines import short_service_state_name, short_host_state_name
 from cmk.utils.type_defs import Timestamp
 import cmk.utils.version as cmk_version
 
-import cmk.gui.escaping as escaping
+import cmk.gui.utils.escaping as escaping
 import cmk.gui.config as config
 import cmk.gui.metrics as metrics
 import cmk.gui.sites as sites
@@ -44,6 +44,9 @@ from cmk.gui.view_utils import CellContent, CellSpec, CSSClass
 from cmk.gui.plugins.views.icons import (
     get_icons,
     iconpainter_columns,
+    IconObjectType,
+    IconEntry,
+    LegacyIconEntry,
 )
 
 from cmk.gui.plugins.views import (
@@ -208,12 +211,11 @@ def _paint_day(timestamp: Timestamp) -> CellSpec:
     return "", time.strftime("%A, %Y-%m-%d", time.localtime(timestamp))
 
 
-# Paint column with various icons. The icons use
-# a plugin based mechanism so it is possible to
-# register own icon "handlers".
-# what: either "host" or "service"
-# row: the data row of the host or service
-def _paint_icons(what: str, row: Row) -> CellSpec:
+def _paint_icons(what: IconObjectType, row: Row) -> CellSpec:
+    """Paint column with various icons
+
+    The icons use a plugin based mechanism so it is possible to register own icon "handlers".
+    """
     # EC: In case of unrelated events also skip rendering this painter. All the icons
     # that display a host state are useless in this case. Maybe we make this decision
     # individually for the single icons one day.
@@ -225,14 +227,13 @@ def _paint_icons(what: str, row: Row) -> CellSpec:
     # In case of non HTML output, just return the top level icon names
     # as space separated string
     if html.output_format != 'html':
-        return 'icons', ' '.join([i[1] for i in toplevel_icons])
+        return 'icons', ' '.join(i.icon_name for i in toplevel_icons if isinstance(i, IconEntry))
 
     output = HTML()
     for icon in toplevel_icons:
-        if len(icon) == 4:
-            icon_name, title, url_spec = icon[1:]
-            if url_spec:
-                url, target_frame = transform_action_url(url_spec)
+        if isinstance(icon, IconEntry):
+            if icon.url_spec:
+                url, target_frame = transform_action_url(icon.url_spec)
                 url = replace_action_url_macros(url, what, row)
 
                 onclick = ''
@@ -241,14 +242,14 @@ def _paint_icons(what: str, row: Row) -> CellSpec:
                     url = 'javascript:void(0)'
 
                 output += html.render_icon_button(url,
-                                                  title,
-                                                  icon_name,
+                                                  icon.title or "",
+                                                  icon.icon_name,
                                                   onclick=onclick,
                                                   target=target_frame)
             else:
-                output += html.render_icon(icon_name, title)
-        else:
-            output += icon[1]
+                output += html.render_icon(icon.icon_name, icon.title)
+        elif isinstance(icon, LegacyIconEntry):
+            output += icon.code
 
     return "icons", output
 
@@ -274,7 +275,7 @@ class PainterServiceIcons(Painter):
     def printable(self) -> bool:
         return False
 
-    def group_by(self, row: Row) -> Tuple[str]:
+    def group_by(self, row: Row, cell: Cell) -> Tuple[str]:
         return ("",)  # Do not account for in grouping
 
     def render(self, row: Row, cell: Cell) -> CellSpec:
@@ -301,7 +302,7 @@ class PainterHostIcons(Painter):
     def printable(self) -> bool:
         return False
 
-    def group_by(self, row: Row) -> Tuple[str]:
+    def group_by(self, row: Row, cell: Cell) -> Tuple[str]:
         return ("",)  # Do not account for in grouping
 
     def render(self, row: Row, cell: Cell) -> CellSpec:
@@ -411,7 +412,7 @@ def _paint_service_state_short(row: Row) -> CellSpec:
     state, name = service_state_short(row)
     if is_stale(row):
         state = state + " stale"
-    return "state svcstate state%s" % state, html.render_span(name)
+    return "state svcstate state%s" % state, html.render_span(name, class_=["state_rounded_fill"])
 
 
 def _paint_host_state_short(row: Row, short: bool = False) -> CellSpec:
@@ -430,7 +431,7 @@ def _paint_host_state_short(row: Row, short: bool = False) -> CellSpec:
     if short:
         name = name[0]
 
-    return "state hstate hstate%s" % state, html.render_span(name)
+    return "state hstate hstate%s" % state, html.render_span(name, class_=["state_rounded_fill"])
 
 
 @painter_registry.register
@@ -1439,7 +1440,7 @@ class PainterCheckManpage(Painter):
 def _paint_comments(prefix: str, row: Row) -> CellSpec:
     comments = row[prefix + "comments_with_info"]
     text = HTML(", ").join(
-        [html.render_i(a) + ": %s" % escaping.escape_attribute(c) for _id, a, c in comments])
+        [html.render_i(a) + escaping.escape_html_permissive(": %s" % c) for _id, a, c in comments])
     return "", text
 
 
@@ -1648,7 +1649,7 @@ class PainterServiceCustomVariables(Painter):
     def columns(self) -> List[ColumnName]:
         return ['service_custom_variables']
 
-    def group_by(self, row: Row) -> Tuple:
+    def group_by(self, row: Row, cell: Cell) -> Tuple[Tuple[str, str], ...]:
         return tuple(row["service_custom_variables"].items())
 
     def render(self, row: Row, cell: Cell) -> CellSpec:
@@ -1676,11 +1677,13 @@ class ABCPainterCustomVariable(Painter, metaclass=abc.ABCMeta):
     def list_title(self, cell: Cell) -> str:
         return self._default_title
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def _default_title(self) -> str:
         raise NotImplementedError()
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def _object_type(self) -> str:
         raise NotImplementedError()
 
@@ -1740,6 +1743,19 @@ class PainterHostCustomVariable(ABCPainterCustomVariable):
     @property
     def columns(self) -> List[ColumnName]:
         return ['host_custom_variable_names', 'host_custom_variable_values']
+
+    def group_by(self, row: Row, cell: Cell) -> Union[str, Tuple[str, ...]]:
+        parameters: Optional[Dict[str, str]] = cell.painter_parameters()
+        if parameters is None:
+            return ''
+        custom_variable_name = parameters['ident']
+        try:
+            index = row['host_custom_variable_names'].index(custom_variable_name.upper())
+        except ValueError:
+            # group all hosts without this custom variable into a single group.
+            # this group does not have a headline.
+            return ''
+        return row['host_custom_variable_values'][index]
 
     @property
     def _default_title(self) -> str:
@@ -2449,7 +2465,8 @@ class PainterHost(Painter):
                 css.append("hstate%s" % option_state)
                 break
 
-        return " ".join(css), row["host_name"]
+        return " ".join(css), html.render_span(row["host_name"],
+                                               class_=["state_rounded_fill", "host"])
 
 
 @painter_registry.register
@@ -2970,7 +2987,7 @@ class PainterHostGroupMemberlist(Painter):
     def columns(self) -> List[ColumnName]:
         return ['host_groups']
 
-    def group_by(self, row):
+    def group_by(self, row: Row, cell: Cell) -> Tuple[str, ...]:
         return tuple(row["host_groups"])
 
     @property
@@ -2981,9 +2998,9 @@ class PainterHostGroupMemberlist(Painter):
         links = []
         for group in row["host_groups"]:
             link = "view.py?view_name=hostgroup&hostgroup=" + group
-            if html.request.var("display_options"):
+            if request.var("display_options"):
                 link += "&display_options=%s" % escaping.escape_attribute(
-                    html.request.var("display_options"))
+                    request.var("display_options"))
             links.append(html.render_a(group, link))
         return "", HTML(", ").join(links)
 
@@ -3189,7 +3206,7 @@ class PainterHostCustomVariables(Painter):
     def columns(self) -> List[ColumnName]:
         return ['host_custom_variables']
 
-    def group_by(self, row):
+    def group_by(self, row: Row, cell: Cell) -> Tuple[Tuple[str, str], ...]:
         return tuple(row["host_custom_variables"].items())
 
     def render(self, row: Row, cell: Cell) -> CellSpec:
@@ -3212,13 +3229,16 @@ def _paint_discovery_output(field: str, row: Row) -> CellSpec:
         discovery_url = "wato.py?mode=inventory&host=%s&mode=inventory" % row["host_name"]
 
         return None, {
-            "ignored": html.render_icon_button(ruleset_url, 'Disabled (configured away by admin)',
-                                               'rulesets') + "Disabled (configured away by admin)",
+            "ignored": html.render_icon_button(
+                ruleset_url, _('Disabled (configured away by admin)'), 'rulesets') +
+                       escaping.escape_html_permissive(_("Disabled (configured away by admin)")),
             "vanished": html.render_icon_button(
-                discovery_url, 'Vanished (checked, but no longer exist)', 'services') +
-                        "Vanished (checked, but no longer exist)",
-            "unmonitored": html.render_icon_button(discovery_url, 'Available (missing)', 'services')
-                           + "Available (missing)"
+                discovery_url, _('Vanished (checked, but no longer exist)'), 'services') +
+                        escaping.escape_html_permissive(
+                            _("Vanished (checked, but no longer exist)")),
+            "unmonitored": html.render_icon_button(discovery_url, _('Available (missing)'),
+                                                   'services') +
+                           escaping.escape_html_permissive(_("Available (missing)"))
         }.get(value, value)
     if field == "discovery_service" and row["discovery_state"] == "vanished":
         link = "view.py?view_name=service&site=%s&host=%s&service=%s" % (urlencode(
@@ -4664,8 +4684,8 @@ class PainterLogDate(Painter):
     def columns(self) -> List[ColumnName]:
         return ['log_time']
 
-    def group_by(self, row):
-        return _paint_day(row["log_time"])[1]
+    def group_by(self, row: Row, cell: Cell) -> str:
+        return str(_paint_day(row["log_time"])[1])
 
     def render(self, row: Row, cell: Cell) -> CellSpec:
         return _paint_day(row["log_time"])
@@ -4853,13 +4873,15 @@ class PainterHostTags(Painter):
 
 
 class ABCPainterTagsWithTitles(Painter, metaclass=abc.ABCMeta):
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def object_type(self):
         raise NotImplementedError()
 
     def render(self, row: Row, cell: Cell) -> CellSpec:
         entries = self._get_entries(row)
-        return "", html.render_br().join(["%s: %s" % e for e in sorted(entries)])
+        return "", html.render_br().join(
+            [escaping.escape_html_permissive("%s: %s" % e) for e in sorted(entries)])
 
     def _get_entries(self, row):
         entries = []

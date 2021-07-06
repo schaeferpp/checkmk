@@ -11,7 +11,7 @@ from livestatus import SiteId
 
 from cmk.utils.defines import short_service_state_name
 
-import cmk.gui.escaping as escaping
+import cmk.gui.utils.escaping as escaping
 import cmk.gui.config as config
 import cmk.gui.sites as sites
 from cmk.gui.type_defs import HTTPVariables, Row
@@ -663,7 +663,8 @@ class PainterEventState(Painter):
     def render(self, row, cell):
         state = row["event_state"]
         name = short_service_state_name(state, "")
-        return "state svcstate state%s" % state, html.render_span(name)
+        return "state svcstate state%s" % state, html.render_span(name,
+                                                                  class_=["state_rounded_fill"])
 
 
 @painter_registry.register
@@ -722,11 +723,11 @@ def render_delete_event_icons(row):
 
     # Found no cleaner way to get the view. Sorry.
     # TODO: This needs to be cleaned up with the new view implementation.
-    if html.request.has_var("name") and html.request.has_var("id"):
-        ident = html.request.get_integer_input_mandatory("id")
+    if request.has_var("name") and request.has_var("id"):
+        ident = request.get_integer_input_mandatory("id")
 
         import cmk.gui.dashboard as dashboard
-        view = dashboard.get_dashlet(html.request.get_str_input_mandatory("name"), ident)
+        view = dashboard.get_dashlet(request.get_str_input_mandatory("name"), ident)
 
         # These actions are not performed within the dashlet. Assume the title url still
         # links to the source view where the action can be performed.
@@ -737,7 +738,7 @@ def render_delete_event_icons(row):
             urlvars += urllib.parse.parse_qsl(parsed_url.query)
     else:
         # Regular view
-        view = get_permitted_views()[(html.request.get_str_input_mandatory("view_name"))]
+        view = get_permitted_views()[(request.get_str_input_mandatory("view_name"))]
         filename = None
 
     urlvars += [
@@ -1063,18 +1064,14 @@ class CommandECUpdateEvent(ECCommand):
         html.open_table(border="0", cellpadding="0", cellspacing="3")
         if config.user.may("mkeventd.update_comment"):
             html.open_tr()
-            html.open_td()
-            html.write(_("Change comment:"))
-            html.close_td()
+            html.td(_("Change comment:"))
             html.open_td()
             html.text_input('_mkeventd_comment', size=50)
             html.close_td()
             html.close_tr()
         if config.user.may("mkeventd.update_contact"):
             html.open_tr()
-            html.open_td()
-            html.write(_("Change contact:"))
-            html.close_td()
+            html.td(_("Change contact:"))
             html.open_td()
             html.text_input('_mkeventd_contact', size=50)
             html.close_td()
@@ -1090,15 +1087,15 @@ class CommandECUpdateEvent(ECCommand):
 
     def _action(self, cmdtag: str, spec: str, row: Row, row_index: int,
                 num_rows: int) -> CommandActionResult:
-        if html.request.var('_mkeventd_update'):
+        if request.var('_mkeventd_update'):
             if config.user.may("mkeventd.update_comment"):
-                comment = html.request.get_unicode_input_mandatory(
-                    "_mkeventd_comment").strip().replace(";", ",")
+                comment = request.get_unicode_input_mandatory("_mkeventd_comment").strip().replace(
+                    ";", ",")
             else:
                 comment = ""
             if config.user.may("mkeventd.update_contact"):
-                contact = html.request.get_unicode_input_mandatory(
-                    "_mkeventd_contact").strip().replace(":", ",")
+                contact = request.get_unicode_input_mandatory("_mkeventd_contact").strip().replace(
+                    ":", ",")
             else:
                 contact = ""
             ack = html.get_checkbox("_mkeventd_acknowledge")
@@ -1145,7 +1142,7 @@ class CommandECChangeState(ECCommand):
 
     def _action(self, cmdtag: str, spec: str, row: Row, row_index: int,
                 num_rows: int) -> CommandActionResult:
-        if html.request.var('_mkeventd_changestate'):
+        if request.var('_mkeventd_changestate'):
             state = MonitoringState().from_html_vars("_mkeventd_state")
             return "CHANGESTATE;%s;%s;%s" % (row["event_id"], config.user.id,
                                              state), _("change the state")
@@ -1191,7 +1188,7 @@ class CommandECCustomAction(ECCommand):
     def _action(self, cmdtag: str, spec: str, row: Row, row_index: int,
                 num_rows: int) -> CommandActionResult:
         for action_id, title in mkeventd.action_choices(omit_hidden=True):
-            if html.request.var("_action_" + action_id):
+            if request.var("_action_" + action_id):
                 title = _("execute the action \"%s\"") % title
                 return "ACTION;%s;%s;%s" % (row["event_id"], config.user.id, action_id), title
         return None
@@ -1232,7 +1229,7 @@ class CommandECArchiveEvent(ECCommand):
 
     def _action(self, cmdtag: str, spec: str, row: Row, row_index: int,
                 num_rows: int) -> CommandActionResult:
-        if html.request.var("_delete_event"):
+        if request.var("_delete_event"):
             command = "DELETE;%s;%s" % (row["event_id"], config.user.id)
             title = _("<b>archive</b>")
             return command, title
@@ -1276,7 +1273,7 @@ class CommandECArchiveEventsOfHost(ECCommand):
 
     def _action(self, cmdtag: str, spec: str, row: Row, row_index: int,
                 num_rows: int) -> CommandActionResult:
-        if html.request.var("_archive_events_of_hosts"):
+        if request.var("_archive_events_of_hosts"):
             if cmdtag == "HOST":
                 tag: Optional[str] = "host"
             elif cmdtag == "SVC":

@@ -154,14 +154,14 @@ class AutomationDiscovery(DiscoveryAutomation):
 
         for hostname in hostnames:
             host_config = config_cache.get_host_config(hostname)
-            results[hostname] = discovery.discover_on_host(
+            results[hostname] = discovery.automation_discovery(
                 config_cache=config_cache,
                 host_config=host_config,
                 mode=mode,
                 service_filters=None,
                 on_error=on_error,
                 use_cached_snmp_data=use_cached_snmp_data,
-                max_cachefile_age=config.discovery_max_cachefile_age(),
+                max_cachefile_age=config.max_cachefile_age(),
             )
 
             if results[hostname].error_text is None:
@@ -228,7 +228,7 @@ class AutomationTryDiscovery(Automation):
 
         return discovery.get_check_preview(
             host_name=args[0],
-            max_cachefile_age=config.discovery_max_cachefile_age(),
+            max_cachefile_age=config.max_cachefile_age(),
             use_cached_snmp_data=use_cached_snmp_data,
             on_error=on_error,
         )
@@ -887,6 +887,8 @@ class AutomationRestart(Automation):
                 local_checks_dir,
                 local_agent_based_plugins_dir,
         ]:
+            if not checks_path.exists():
+                continue
             this_time = self._last_modification_in_dir(checks_path)
             if this_time > last_time:
                 return True
@@ -1181,7 +1183,7 @@ class AutomationDiagHost(Automation):
     ) -> Tuple[int, str]:
         state, output = 0, u""
         for source in sources.make_sources(host_config, ipaddress):
-            source.file_cache_max_age = config.check_max_cachefile_age
+            source.file_cache_max_age = config.max_cachefile_age()
             if isinstance(source, sources.programs.DSProgramSource) and cmd:
                 source = source.ds(source.hostname, ipaddress, template=cmd)
             elif isinstance(source, sources.tcp.TCPSource):
@@ -1474,9 +1476,10 @@ class AutomationGetAgentOutput(Automation):
         try:
             ipaddress = config.lookup_ip_address(host_config)
             if ty == "agent":
-                cmk.core_helpers.cache.FileCacheFactory.reset_maybe()
+                cmk.core_helpers.cache.FileCacheFactory.maybe = (
+                    not cmk.core_helpers.cache.FileCacheFactory.disabled)
                 for source in sources.make_sources(host_config, ipaddress):
-                    source.file_cache_max_age = config.check_max_cachefile_age
+                    source.file_cache_max_age = config.max_cachefile_age()
                     if not isinstance(source, sources.agent.AgentSource):
                         continue
 

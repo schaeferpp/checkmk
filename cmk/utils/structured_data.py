@@ -12,165 +12,325 @@ import io
 import gzip
 import re
 import pprint
-from typing import Dict, List, Optional
+from typing import (
+    Dict,
+    List,
+    Optional,
+    Any,
+    Union,
+    Tuple,
+    Set,
+    Callable,
+    NamedTuple,
+    Literal,
+    Counter as TCounter,
+    Sequence,
+)
+from pathlib import Path
+from collections import Counter
 
-import cmk.utils.store as store
+from cmk.utils import store
 from cmk.utils.exceptions import MKGeneralException
 
-#     ____            ____
-#    /    \          /    \     max. 1 per type
-#    | SD | -------> | NA | ------------------------.
-#    \____/          \____/                         |
-#                      |                            |
-#    CLIENT            |                            |
-#                  ____|____                        |
-#                 /    |    \                       |
-#              ___    ___    ___             ___    |
-#             /   \  /   \  /   \   PATH  * /   \   |
-#             | A |  | E |  | C | --------- | N | --'
-#             \___/  \___/  \___/           \___/
-#
-#             NA:   NodeAttribute   (interface)
-#             N:    Node:           ()
-#             C:    Container       (parent)
-#             A:    Attributes      (leaf)
-#             E:    Numeration      (leaf)
+# TODO Cleanup path in utils, base, gui, find ONE place (type defs or similar)
+# TODO
+# - is_empty -> __bool__
+# - is_equal -> __eq__/__ne__
+# - merge_with -> __add__
+# - count_entries -> __len__?
+# TODO remove has_edge
 
-#   .--StructuredDataTree--------------------------------------------------.
+SDRawPath = str
+SDRawTree = Dict
+
+SDKey = str
+SDKeys = List[SDKey]
+# SDValue needs only to support __eq__
+SDValue = Any
+
+SDAttributes = Dict[SDKey, SDValue]
+
+#SDTableRowIdent = str
+#SDTable = Dict[SDTableRowIdent, SDAttributes]
+SDTable = List[SDAttributes]
+
+# TODO Cleanup int: May be an indexed node
+SDNodeName = Union[str, int]
+SDPath = List[SDNodeName]
+
+SDNodePath = Tuple[SDNodeName, ...]
+SDNodes = Dict[SDNodeName, "StructuredDataNode"]
+
+SDEncodeAs = Callable
+
+SDDeltaCounter = TCounter[Literal["new", "changed", "removed"]]
+
+
+class SDDeltaResult(NamedTuple):
+    counter: SDDeltaCounter
+    delta: "StructuredDataNode"
+
+
+class NDeltaResult(NamedTuple):
+    counter: SDDeltaCounter
+    delta: "Table"
+
+
+class TDeltaResult(NamedTuple):
+    counter: SDDeltaCounter
+    delta: SDTable
+
+
+class ADeltaResult(NamedTuple):
+    counter: SDDeltaCounter
+    delta: "Attributes"
+
+
+class DDeltaResult(NamedTuple):
+    counter: SDDeltaCounter
+    delta: SDAttributes
+
+
+SDFilterFunc = Callable[[SDKey], bool]
+
+
+class SDFilter(NamedTuple):
+    path: SDPath
+    filter_nodes: SDFilterFunc
+    filter_attributes: SDFilterFunc
+    filter_columns: SDFilterFunc
+
+
+#   .--IO------------------------------------------------------------------.
+#   |                              ___ ___                                 |
+#   |                             |_ _/ _ \                                |
+#   |                              | | | | |                               |
+#   |                              | | |_| |                               |
+#   |                             |___\___/                                |
+#   |                                                                      |
+#   '----------------------------------------------------------------------'
+
+
+def save_tree_to(
+    tree: "StructuredDataNode",
+    path: str,
+    filename: str,
+    pretty: bool = False,
+) -> None:
+    filepath = "%s/%s" % (path, filename)
+    output = tree.get_raw_tree()
+    store.save_object_to_file(filepath, output, pretty=pretty)
+
+    buf = io.BytesIO()
+    with gzip.GzipFile(fileobj=buf, mode="wb") as f:
+        f.write((repr(output) + "\n").encode("utf-8"))
+    store.save_bytes_to_file(filepath + ".gz", buf.getvalue())
+
+    # Inform Livestatus about the latest inventory update
+    store.save_text_to_file("%s/.last" % path, u"")
+
+
+def load_tree_from(filepath: Union[Path, str]) -> "StructuredDataNode":
+    raw_tree = store.load_object_from_file(filepath)
+    if raw_tree:
+        return StructuredDataNode().create_tree_from_raw_tree(raw_tree)
+    return StructuredDataNode()
+
+
+#.
+#   .--filters-------------------------------------------------------------.
+#   |                       __ _ _ _                                       |
+#   |                      / _(_) | |_ ___ _ __ ___                        |
+#   |                     | |_| | | __/ _ \ '__/ __|                       |
+#   |                     |  _| | | ||  __/ |  \__ \                       |
+#   |                     |_| |_|_|\__\___|_|  |___/                       |
+#   |                                                                      |
+#   '----------------------------------------------------------------------'
+
+_use_all = lambda key: True
+_use_nothing = lambda key: False
+
+
+def _make_choices_filter(choices: Sequence[Union[str, int]]) -> SDFilterFunc:
+    return lambda key: key in choices
+
+
+def make_filter(allowed_path: Tuple[SDPath, Optional[SDKeys]]) -> SDFilter:
+    path, keys = allowed_path
+    return SDFilter(
+        path=path,
+        filter_nodes=_use_all,
+        filter_attributes=_use_all,
+        filter_columns=_use_all,
+    ) if keys is None else SDFilter(
+        path=path,
+        filter_nodes=_use_nothing,
+        filter_attributes=_make_choices_filter(keys) if keys else _use_all,
+        filter_columns=_make_choices_filter(keys) if keys else _use_all,
+    )
+
+
+#.
+#   .--Structured DataNode-------------------------------------------------.
 #   |         ____  _                   _                      _           |
 #   |        / ___|| |_ _ __ _   _  ___| |_ _   _ _ __ ___  __| |          |
 #   |        \___ \| __| '__| | | |/ __| __| | | | '__/ _ \/ _` |          |
 #   |         ___) | |_| |  | |_| | (__| |_| |_| | | |  __/ (_| |          |
 #   |        |____/ \__|_|   \__,_|\___|\__|\__,_|_|  \___|\__,_|          |
 #   |                                                                      |
-#   |               ____        _       _____                              |
-#   |              |  _ \  __ _| |_ __ |_   _| __ ___  ___                 |
-#   |              | | | |/ _` | __/ _` || || '__/ _ \/ _ \                |
-#   |              | |_| | (_| | || (_| || || | |  __/  __/                |
-#   |              |____/ \__,_|\__\__,_||_||_|  \___|\___|                |
+#   |             ____        _        _   _           _                   |
+#   |            |  _ \  __ _| |_ __ _| \ | | ___   __| | ___              |
+#   |            | | | |/ _` | __/ _` |  \| |/ _ \ / _` |/ _ \             |
+#   |            | |_| | (_| | || (_| | |\  | (_) | (_| |  __/             |
+#   |            |____/ \__,_|\__\__,_|_| \_|\___/ \__,_|\___|             |
 #   |                                                                      |
 #   '----------------------------------------------------------------------'
 
 
-class StructuredDataTree:
-    """Interface for structured data tree"""
-    def __init__(self):
-        super(StructuredDataTree, self).__init__()
-        self._root = Container()
+class StructuredDataNode:
+    def __init__(self) -> None:
+        self.path: SDNodePath = tuple()
+        self.attributes = Attributes()
+        self.table = Table()
+        self._nodes: SDNodes = {}
 
-    #   ---building tree from plugins-------------------------------------------
+    def set_path(self, path: SDNodePath) -> None:
+        self.path = path
+        self.attributes.set_path(path)
+        self.table.set_path(path)
 
-    def get_dict(self, tree_path):
-        return self._get_object(tree_path, Attributes())
+    def is_empty(self) -> bool:
+        if not (self.attributes.is_empty() and self.table.is_empty()):
+            return False
 
-    def get_list(self, tree_path):
-        return self._get_object(tree_path, Numeration())
+        for node in self._nodes.values():
+            if not node.is_empty():
+                return False
+        return True
 
-    def _get_object(self, tree_path, child):
-        self._validate_tree_path(tree_path)
-        path = self._parse_tree_path(tree_path)
-        parent = self._create_hierarchy(path[:-1])
-        return parent.add_child(path[-1], child, tuple(path)).get_child_data()
+    def is_equal(self, other: object, edges: Optional[SDPath] = None) -> bool:
+        if not isinstance(other, StructuredDataNode):
+            raise TypeError("Cannot compare %s with %s" % (type(self), type(other)))
 
-    def _validate_tree_path(self, tree_path: str) -> None:
-        if not tree_path:
-            raise MKGeneralException("Empty tree path or zero.")
-        if not isinstance(tree_path, str):
-            raise MKGeneralException("Wrong tree path format. Must be of type string.")
-        if not tree_path.endswith((":", ".")):
-            raise MKGeneralException("No valid tree path.")
-        if bool(re.compile('[^a-zA-Z0-9_.:-]').search(tree_path)):
-            raise MKGeneralException("Specified tree path contains unexpected characters.")
+        if not (self.attributes.is_equal(other.attributes) and self.table.is_equal(other.table)):
+            return False
 
-    def _parse_tree_path(self, tree_path):
-        if tree_path.startswith("."):
-            tree_path = tree_path[1:]
-        if tree_path.endswith(":") or tree_path.endswith("."):
-            tree_path = tree_path[:-1]
-        return tree_path.split(".")
+        compared_keys = _compare_dict_keys(old_dict=other._nodes, new_dict=self._nodes)
+        if compared_keys.only_old or compared_keys.only_new:
+            return False
 
-    def _create_hierarchy(self, path):
+        for key in compared_keys.both:
+            if not self._nodes[key].is_equal(other._nodes[key]):
+                return False
+        return True
+
+    def count_entries(self) -> int:
+        return sum([
+            self.attributes.count_entries(),
+            self.table.count_entries(),
+        ] + [node.count_entries() for node in self._nodes.values()])
+
+    def merge_with(self, other: object) -> None:
+        if not isinstance(other, StructuredDataNode):
+            raise TypeError("Cannot compare %s with %s" % (type(self), type(other)))
+
+        self.attributes.merge_with(other.attributes)
+        self.table.merge_with(other.table)
+
+        compared_keys = _compare_dict_keys(old_dict=other._nodes, new_dict=self._nodes)
+
+        for key in compared_keys.both:
+            self._nodes[key].merge_with(other._nodes[key])
+
+        for key in compared_keys.only_old:
+            self.add_node(key, other._nodes[key])
+
+    def copy(self) -> "StructuredDataNode":
+        new_node = StructuredDataNode()
+
+        new_node.add_attributes(self.attributes.data)
+        new_node.add_table(self.table.data)
+
+        for edge, node in self._nodes.items():
+            new_node.add_node(edge, node.copy())
+        return new_node
+
+    #   ---node methods---------------------------------------------------------
+
+    def setdefault_node(self, path: SDPath) -> "StructuredDataNode":
         if not path:
-            return self._root
-        abs_path = []
-        node = self._root
-        while path:
-            edge = path.pop(0)
-            abs_path.append(edge)
-            node = node.add_child(edge, Container(), tuple(abs_path))
-        return node
+            return self
+        edge = path[0]
+        node = self._nodes.setdefault(edge, StructuredDataNode())
+        node.set_path(self.path + (edge,))
+        return node.setdefault_node(path[1:])
 
-    #   ---loading and saving tree----------------------------------------------
+    def add_node(self, edge: SDNodeName, node: "StructuredDataNode") -> "StructuredDataNode":
+        the_node = self._nodes.setdefault(edge, StructuredDataNode())
+        the_node.set_path(self.path + (edge,))
+        the_node.merge_with(node)
+        return the_node
 
-    def save_to(self, path, filename, pretty=False):
-        filepath = "%s/%s" % (path, filename)
-        output = self.get_raw_tree()
-        store.save_object_to_file(filepath, output, pretty=pretty)
+    def add_attributes(self, attributes: SDAttributes) -> None:
+        self.attributes.add_attributes(attributes)
 
-        buf = io.BytesIO()
-        with gzip.GzipFile(fileobj=buf, mode="wb") as f:
-            f.write((repr(output) + "\n").encode("utf-8"))
-        store.save_bytes_to_file(filepath + ".gz", buf.getvalue())
+    def add_table(self, table: SDTable) -> None:
+        self.table.add_table(table)
 
-        # Inform Livestatus about the latest inventory update
-        store.save_text_to_file("%s/.last" % path, u"")
+    def has_edge(self, edge: SDNodeName) -> bool:
+        return bool(self._nodes.get(edge))
 
-    def load_from(self, filepath):
-        raw_tree = store.load_object_from_file(filepath)
-        return self.create_tree_from_raw_tree(raw_tree)
+    def get_node(self, path: SDPath) -> Optional["StructuredDataNode"]:
+        return self._get_node(path)
 
-    def create_tree_from_raw_tree(self, raw_tree):
-        if raw_tree:
-            self._create_hierarchy_from_data(raw_tree, self._root, tuple())
+    def get_table(self, path: SDPath) -> Optional["Table"]:
+        node = self._get_node(path)
+        return None if node is None else node.table
+
+    def get_attributes(self, path: SDPath) -> Optional["Attributes"]:
+        node = self._get_node(path)
+        return None if node is None else node.attributes
+
+    def _get_node(self, path: SDPath) -> Optional["StructuredDataNode"]:
+        if not path:
+            return self
+        node = self._nodes.get(path[0])
+        return None if node is None else node._get_node(path[1:])
+
+    #   ---representation-------------------------------------------------------
+
+    def __repr__(self) -> str:
+        return "%s(%s)" % (self.__class__.__name__, pprint.pformat(self.get_raw_tree()))
+
+    #   ---building tree from (legacy) plugins----------------------------------
+
+    def get_dict(self, tree_path: Optional[SDRawPath]) -> SDAttributes:
+        return self.setdefault_node(_parse_tree_path(tree_path)).attributes.data
+
+    def get_list(self, tree_path: Optional[SDRawPath]) -> SDTable:
+        return self.setdefault_node(_parse_tree_path(tree_path)).table.data
+
+    #   ---de/serializing-------------------------------------------------------
+
+    def create_tree_from_raw_tree(self, raw_tree: SDRawTree) -> "StructuredDataNode":
+        raw_attributes: SDAttributes = {}
+        for key, value in raw_tree.items():
+            if isinstance(value, dict):
+                self.setdefault_node([key]).create_tree_from_raw_tree(value)
+                continue
+
+            if isinstance(value, list):
+                if self._is_table(value):
+                    self.setdefault_node([key]).add_table(value)
+                else:
+                    self._add_indexed_nodes(key, value)
+                continue
+
+            raw_attributes.setdefault(key, value)
+        self.add_attributes(raw_attributes)
         return self
 
-    def _create_hierarchy_from_data(self, raw_tree, parent, parent_path):
-        for edge, attrs in raw_tree.items():
-            if not attrs:
-                continue
-            if parent_path:
-                abs_path = parent_path
-            else:
-                abs_path = tuple()
-            abs_path += (edge,)
-            if isinstance(attrs, list):
-                numeration = Numeration()
-                numeration.set_child_data(attrs)
-                parent.add_child(edge, numeration, abs_path)
-            else:
-                sub_raw_tree, leaf_data = self._get_child_data(attrs)
-                if leaf_data:
-                    attributes = Attributes()
-                    attributes.set_child_data(leaf_data)
-                    parent.add_child(edge, attributes, abs_path)
-                if sub_raw_tree:
-                    container = parent.add_child(edge, Container(), abs_path)
-                    self._create_hierarchy_from_data(sub_raw_tree, container, abs_path)
-
-    def _get_child_data(self, raw_entries):
-        leaf_data: Dict = {}
-        sub_raw_tree: Dict = {}
-        for k, v in raw_entries.items():
-            if isinstance(v, dict):
-                # Dict based values mean that current key
-                # is a node.
-                sub_raw_tree.setdefault(k, v)
-            elif isinstance(v, list):
-                # Concerns "a.b:" and "a.b:*.c".
-                # In the second case we have to deal with nested numerations
-                # We take a look at children which may be real numerations
-                # or sub trees.
-                if self._is_numeration(v):
-                    sub_raw_tree.setdefault(k, v)
-                else:
-                    sub_raw_tree.setdefault(k, dict(enumerate(v)))
-            else:
-                # Here we collect all other values meaning simple
-                # attributes of this node.
-                leaf_data.setdefault(k, v)
-        return sub_raw_tree, leaf_data
-
-    def _is_numeration(self, entries):
+    def _is_table(self, entries: List) -> bool:
         for entry in entries:
             # Skipping invalid entries such as
             # {u'KEY': [LIST OF STRINGS], ...}
@@ -182,484 +342,273 @@ class StructuredDataTree:
                 return False
         return True
 
-    #   ---delegators-----------------------------------------------------------
+    def _add_indexed_nodes(self, key, value):
+        for idx, entry in enumerate(value):
+            idx_attributes: SDAttributes = {}
+            node = self.setdefault_node([key, idx])
+            for idx_key, idx_entry in entry.items():
+                if isinstance(idx_entry, list):
+                    node.setdefault_node([idx_key]).add_table(idx_entry)
+                else:
+                    idx_attributes.setdefault(idx_key, idx_entry)
+            node.add_attributes(idx_attributes)
 
-    def is_empty(self):
-        return self._root.is_empty()
+    def get_raw_tree(self) -> Union[Dict, List]:
+        if self._has_indexed_nodes():
+            return [self._nodes[k].get_raw_tree() for k in sorted(self._nodes)]
 
-    def is_equal(self, struct_tree, edges=None):
-        return self._root.is_equal(struct_tree._root, edges=edges)
+        if not self.table.is_empty():
+            return self.table.get_raw_tree()
 
-    def count_entries(self):
-        return self._root.count_entries()
-
-    def get_raw_tree(self):
-        return self._root.get_raw_tree()
-
-    def normalize_nodes(self):
-        self._root.normalize_nodes()
-
-    def merge_with(self, struct_tree):
-        self._root.merge_with(struct_tree._root)
-
-    def has_edge(self, edge):
-        return self._root.has_edge(edge)
-
-    def get_children(self, edges=None):
-        return self._root.get_children(edges=edges)
-
-    def get_sub_container(self, path):
-        return self._root.get_sub_container(path)
-
-    def get_sub_numeration(self, path):
-        return self._root.get_sub_numeration(path)
-
-    def get_sub_attributes(self, path):
-        return self._root.get_sub_attributes(path)
-
-    def get_sub_children(self, path):
-        return self._root.get_sub_children(path)
-
-    #   ---structured tree methods----------------------------------------------
-
-    def compare_with(self, old_tree):
-        delta_tree = StructuredDataTree()
-        num_new, num_changed, num_removed, delta_root_node =\
-            self._root.compare_with(old_tree._root)
-        delta_tree._root = delta_root_node
-        return num_new, num_changed, num_removed, delta_tree
-
-    def copy(self):
-        new_tree = StructuredDataTree()
-        new_tree._root = self._root.copy()
-        return new_tree
-
-    def get_root_container(self):
-        return self._root
-
-    def get_filtered_tree(self, allowed_paths):
-        if allowed_paths is None:
-            return self
-        filtered_tree = StructuredDataTree()
-        for path, keys in allowed_paths:
-            # Make a copy of 'paths' which is mutable
-            # later 'paths' is modified via .pop(0)
-            sub_tree = self._root.get_filtered_branch(list(path), keys, Container())
-            if sub_tree is None:
-                continue
-            filtered_tree._root.merge_with(sub_tree)
-        return filtered_tree
-
-    def __repr__(self):
-        return "%s(%s)" % (self.__class__.__name__, pprint.pformat(self.get_raw_tree()))
-
-    #   ---web------------------------------------------------------------------
-
-    def show(self, renderer, path=None):
-        self._root.show(renderer, path=path)
-
-
-#.
-#   .--NodeAttribute-------------------------------------------------------.
-#   |  _   _           _         _   _   _        _ _           _          |
-#   | | \ | | ___   __| | ___   / \ | |_| |_ _ __(_) |__  _   _| |_ ___    |
-#   | |  \| |/ _ \ / _` |/ _ \ / _ \| __| __| '__| | '_ \| | | | __/ _ \   |
-#   | | |\  | (_) | (_| |  __// ___ \ |_| |_| |  | | |_) | |_| | ||  __/   |
-#   | |_| \_|\___/ \__,_|\___/_/   \_\__|\__|_|  |_|_.__/ \__,_|\__\___|   |
-#   |                                                                      |
-#   '----------------------------------------------------------------------'
-
-
-class NodeAttribute:
-    """Interface for all node attributes"""
-    def is_empty(self):
-        raise NotImplementedError()
-
-    def is_equal(self, foreign, edges=None):
-        """At the moment 'edges' argument just allowed for root node."""
-        raise NotImplementedError()
-
-    def count_entries(self):
-        raise NotImplementedError()
-
-    def compare_with(self, other, keep_identical=False):
-        """Compares new tree with old one: new_tree.compare_with(old_tree)."""
-        raise NotImplementedError()
-
-    def encode_for_delta_tree(self, encode_as):
-        raise NotImplementedError()
-
-    def get_raw_tree(self):
-        raise NotImplementedError()
-
-    def normalize_nodes(self):
-        raise NotImplementedError()
-
-    def merge_with(self, foreign):
-        raise NotImplementedError()
-
-    def copy(self):
-        raise NotImplementedError()
-
-    def __repr__(self):
-        return "%s(%s)" % (self.__class__.__name__, pprint.pformat(self.get_raw_tree()))
-
-    #   ---web------------------------------------------------------------------
-
-    def show(self, renderer, path=None):
-        raise NotImplementedError()
-
-
-#.
-#   .--Container-----------------------------------------------------------.
-#   |              ____            _        _                              |
-#   |             / ___|___  _ __ | |_ __ _(_)_ __   ___ _ __              |
-#   |            | |   / _ \| '_ \| __/ _` | | '_ \ / _ \ '__|             |
-#   |            | |__| (_) | | | | || (_| | | | | |  __/ |                |
-#   |             \____\___/|_| |_|\__\__,_|_|_| |_|\___|_|                |
-#   |                                                                      |
-#   '----------------------------------------------------------------------'
-
-
-class Container(NodeAttribute):
-    def __init__(self):
-        super(Container, self).__init__()
-        self._edges = {}
-
-    def is_empty(self):
-        for _, __, child in self.get_children():
-            if not child.is_empty():
-                return False
-        return True
-
-    def is_equal(self, foreign, edges=None):
-        for _, __, my_child, foreign_child in self._get_comparable_children(foreign, edges=edges):
-            if not my_child.is_equal(foreign_child):
-                return False
-        return True
-
-    def count_entries(self):
-        return sum([child.count_entries() for _, __, child in self.get_children()])
-
-    def compare_with(self, other, keep_identical=False):
-        removed_keys, kept_keys, new_keys = _compare_dict_keys(other._edges, self._edges)
-
-        delta_node = Container()
-        num_new, num_changed, num_removed = 0, 0, 0
-        for edge, abs_path, my_child in self.get_children(edges=new_keys):
-            new_entries = my_child.count_entries()
-            if new_entries:
-                num_new += new_entries
-                delta_node.add_child(edge,
-                                     my_child.encode_for_delta_tree(encode_as=_new_delta_tree_node),
-                                     abs_path)
-
-        for edge, abs_path, my_child, other_child in \
-            self._get_comparable_children(other, edges=kept_keys):
-            if my_child.is_equal(other_child):
-                if keep_identical:
-                    delta_node.add_child(
-                        edge, my_child.encode_for_delta_tree(encode_as=_identical_delta_tree_node),
-                        abs_path)
-                continue
-            new_entries, changed_entries, removed_entries, delta_child = \
-                my_child.compare_with(other_child, keep_identical=keep_identical)
-            if new_entries or changed_entries or removed_entries:
-                num_new += new_entries
-                num_changed += changed_entries
-                num_removed += removed_entries
-                delta_node.add_child(edge, delta_child, abs_path)
-
-        for edge, abs_path, other_child in other.get_children(edges=removed_keys):
-            removed_entries = other_child.count_entries()
-            if removed_entries:
-                num_removed += removed_entries
-                delta_node.add_child(
-                    edge, other_child.encode_for_delta_tree(encode_as=_removed_delta_tree_node),
-                    abs_path)
-
-        return num_new, num_changed, num_removed, delta_node
-
-    def encode_for_delta_tree(self, encode_as):
-        delta_node = Container()
-        for edge, abs_path, child in self.get_children():
-            delta_node.add_child(edge, child.encode_for_delta_tree(encode_as), abs_path)
-        return delta_node
-
-    def get_raw_tree(self):
         tree: Dict = {}
-        for edge, _, child in self.get_children():
-            child_tree = child.get_raw_tree()
-            if self._is_nested_numeration_tree(child):
-                # Sort by index but forget index afterwards => nested sub nodes as before
-                sorted_values = [child_tree[k] for k in sorted(child_tree.keys())]
-                tree.setdefault(edge, sorted_values)
-            elif isinstance(child, Numeration):
-                tree.setdefault(edge, child_tree)
-            else:
-                tree.setdefault(edge, {}).update(child_tree)
+        tree.update(self.attributes.get_raw_tree())
+
+        for edge, node in self._nodes.items():
+            node_raw_tree = node.get_raw_tree()
+            if isinstance(node_raw_tree, list):
+                tree.setdefault(edge, node_raw_tree)
+                continue
+
+            tree.setdefault(edge, {}).update(node_raw_tree)
         return tree
 
-    def _is_nested_numeration_tree(self, child):
-        if isinstance(child, Container):
-            for key in child._edges:
-                if isinstance(key, int):
-                    return True
+    def _has_indexed_nodes(self) -> bool:
+        for key in self._nodes:
+            if isinstance(key, int):
+                return True
         return False
 
     def normalize_nodes(self):
         """
         After the execution of plugins there may remain empty
         nodes which will be removed within this method.
-        Moreover we have to deal with nested numerations, eg.
+        Moreover we have to deal with nested tables, eg.
         at paths like "hardware.memory.arrays:*.devices:" where
         we obtain: 'memory': {'arrays': [{'devices': [...]}, {}, ... ]}.
         In this case we have to convert this
         'list-composed-of-dicts-containing-lists' structure into
-        numerated nodes ('arrays') containing real numerations ('devices').
+        numerated nodes ('arrays') containing real tables ('devices').
         """
-        for edge, abs_path, child in self.get_children():
-            if isinstance(child, Numeration) and \
-               self._has_nested_numeration_node(child.get_child_data()):
-                self._set_nested_numeration_node(edge, child.get_child_data(), abs_path)
-            if child.is_empty():
-                self._edges[edge].remove_node_child(child)
-                continue
-            child.normalize_nodes()
-
-    def _has_nested_numeration_node(self, node_data):
-        for entry in node_data:
-            for v in entry.values():
-                if isinstance(v, list):
-                    return True
-        return False
-
-    def _set_nested_numeration_node(self, edge, child_data, abs_path):
-        del self._edges[edge]
-        parent = self.add_child(edge, Container(), abs_path)
-        for nr, entry in enumerate(child_data):
-            attrs: Dict = {}
+        remove_table = False
+        for idx, entry in enumerate(self.table.data):
             for k, v in entry.items():
                 if isinstance(v, list):
-                    numeration = parent.add_child(nr, Container(), abs_path+(nr,))\
-                                       .add_child(k, Numeration(), abs_path+(nr,k))
-                    numeration.set_child_data(v)
-                else:
-                    attrs.setdefault(k, v)
-            if attrs:
-                attributes = parent.add_child(nr, Attributes(), abs_path + (nr,))
-                attributes.set_child_data(attrs)
+                    self.setdefault_node([idx, k]).add_table(v)
+                    remove_table = True
 
-    def merge_with(self, foreign):
-        for edge, abs_path, my_child, foreign_child in \
-            self._get_comparable_children(foreign):
-            my_child = self.add_child(edge, my_child, abs_path)
-            my_child.merge_with(foreign_child)
+        if remove_table:
+            self.table = Table()
+            self.table.set_path(self.path)
 
-    def copy(self):
-        new_node = Container()
-        for edge, abs_path, child in self.get_children():
-            new_node.add_child(edge, child.copy(), abs_path)
-        return new_node
+        for node in self._nodes.values():
+            node.normalize_nodes()
 
-    #   ---container methods----------------------------------------------------
+    #   ---delta----------------------------------------------------------------
 
-    def add_child(self, edge, child, abs_path=None):
-        node = self._edges.setdefault(edge, Node(abs_path))
-        return node.add_node_child(child)
+    def compare_with(self, other: object, keep_identical: bool = False) -> SDDeltaResult:
+        if not isinstance(other, StructuredDataNode):
+            raise TypeError("Cannot compare %s with %s" % (type(self), type(other)))
 
-    def has_edge(self, edge):
-        return bool(self._edges.get(edge))
+        counter: SDDeltaCounter = Counter()
+        delta_node = StructuredDataNode()
 
-    def get_filtered_branch(self, path, keys, parent):
-        sub_node = self._get_sub_node(path[:1])
-        if sub_node is None:
-            return None
+        # Attributes
+        delta_attributes_result = self.attributes.compare_with(other.attributes)
+        counter.update(delta_attributes_result.counter)
+        delta_node.add_attributes(delta_attributes_result.delta.data)
 
-        edge = path.pop(0)
-        sub_node_abs_path = sub_node.get_absolute_path()
-        if path:
-            container = sub_node.get_node_container()
-            if container is not None:
-                filtered = container.get_filtered_branch(path, keys, Container())
-                if filtered is not None:
-                    parent.add_child(edge, filtered, sub_node_abs_path)
-            return parent
+        # Table
+        delta_table_result = self.table.compare_with(other.table)
+        counter.update(delta_table_result.counter)
+        delta_node.add_table(delta_table_result.delta.data)
 
-        if keys is None:
-            for child in sub_node.get_node_children():
-                parent.add_child(edge, child, sub_node_abs_path)
-            return parent
+        # Nodes
+        compared_keys = _compare_dict_keys(old_dict=other._nodes, new_dict=self._nodes)
 
-        numeration = sub_node.get_node_numeration()
-        if numeration is not None:
-            if keys:
-                numeration = numeration.get_filtered_data(keys)
-            parent.add_child(edge, numeration, sub_node_abs_path)
+        for key in compared_keys.only_new:
+            node = self._nodes[key]
+            new_entries = node.count_entries()
+            if new_entries:
+                counter.update(new=new_entries)
+                delta_node.add_node(
+                    key,
+                    node.get_encoded_node(encode_as=_new_delta_tree_node),
+                )
 
-        attributes = sub_node.get_node_attributes()
-        if attributes is not None:
-            if keys:
-                attributes = attributes.get_filtered_data(keys)
-            parent.add_child(edge, attributes, sub_node_abs_path)
+        for key in compared_keys.both:
+            node = self._nodes[key]
+            other_node = other._nodes[key]
 
-        return parent
+            if node.is_equal(other_node):
+                if keep_identical:
+                    delta_node.add_node(
+                        key,
+                        node.get_encoded_node(encode_as=_identical_delta_tree_node),
+                    )
+                continue
 
-    #   ---getting [sub] nodes/node attributes----------------------------------
+            delta_node_result = node.compare_with(
+                other_node,
+                keep_identical=keep_identical,
+            )
 
-    def get_edge_nodes(self):
-        return list(self._edges.items())
+            if (delta_node_result.counter['new'] or delta_node_result.counter['changed'] or
+                    delta_node_result.counter['removed']):
+                counter.update(delta_node_result.counter)
+                delta_node.add_node(key, delta_node_result.delta)
 
-    def get_children(self, edges=None):
-        """Returns a flatten list of tuples (edge, absolute path, child)"""
-        children = set()
-        if edges is None:
-            for edge, node in self._edges.items():
-                node_abs_path = node.get_absolute_path()
-                for child in node.get_node_children():
-                    children.add((edge, node_abs_path, child))
-        else:
-            for edge, node in self._edges.items():
-                if edge not in edges:
-                    continue
-                node_abs_path = node.get_absolute_path()
-                for child in node.get_node_children():
-                    children.add((edge, node_abs_path, child))
-        return children
+        for key in compared_keys.only_old:
+            other_node = other._nodes[key]
+            removed_entries = other_node.count_entries()
+            if removed_entries:
+                counter.update(removed=removed_entries)
+                delta_node.add_node(
+                    key,
+                    other_node.get_encoded_node(encode_as=_removed_delta_tree_node),
+                )
 
-    def _get_comparable_children(self, foreign, edges=None):
-        """Returns a flatten list of tuples (edge, absolute path, my child, foreign child)"""
-        comparable_children = set()
-        if edges is None:
-            edges = set(self._edges).union(foreign._edges)
-        for edge in edges:
-            my_node = self._edges.get(edge, Node())
-            foreign_node = foreign._edges.get(edge, Node())
-            for abs_path, my_child, foreign_child in \
-                my_node.get_comparable_node_children(foreign_node):
-                comparable_children.add((edge, abs_path, my_child, foreign_child))
-        return comparable_children
+        return SDDeltaResult(counter=counter, delta=delta_node)
 
-    def get_sub_container(self, path):
-        sub_node = self._get_sub_node(path)
-        if sub_node is None:
-            return None
-        return sub_node.get_node_container()
+    def get_encoded_node(self, encode_as: SDEncodeAs) -> "StructuredDataNode":
+        delta_node = StructuredDataNode()
 
-    def get_sub_numeration(self, path):
-        sub_node = self._get_sub_node(path)
-        if sub_node is None:
-            return None
-        return sub_node.get_node_numeration()
+        delta_node.add_attributes(self.attributes.get_encoded_attributes(encode_as))
+        delta_node.add_table(self.table.get_encoded_table(encode_as))
 
-    def get_sub_attributes(self, path):
-        sub_node = self._get_sub_node(path)
-        if sub_node is None:
-            return None
-        return sub_node.get_node_attributes()
+        for edge, node in self._nodes.items():
+            delta_node.add_node(edge, node.get_encoded_node(encode_as))
+        return delta_node
 
-    def get_sub_children(self, path):
-        sub_node = self._get_sub_node(path)
-        if sub_node is None:
-            return None
-        return sub_node.get_node_children()
+    #   ---filtering------------------------------------------------------------
 
-    def _get_sub_node(self, path):
-        if not path:
-            return None
+    def get_filtered_node(self, filters: List[SDFilter]) -> "StructuredDataNode":
+        filtered = StructuredDataNode()
+        for f in filters:
+            # First check if node exists
+            node = self._get_node(f.path)
+            if node is None:
+                continue
 
-        edge, path = path[0], path[1:]
+            filtered_node = filtered.setdefault_node(f.path)
 
-        sub_node = self._edges.get(edge)
-        if sub_node is None:
-            return None
+            filtered_node.add_attributes(node.attributes.get_filtered_data(f.filter_attributes))
 
-        if path:
-            container = sub_node.get_node_container()
-            if container is None:
-                return None
-            return container._get_sub_node(path)
+            filtered_node.add_table(node.table.get_filtered_data(f.filter_columns))
 
-        return sub_node
+            for edge, sub_node in node._nodes.items():
+                # TODO Typing: For nodes there are only _use_all or _use_nothing used.
+                # These indexed node (type int) will be cleaned up one day.
+                if f.filter_nodes(str(edge)):
+                    filtered_node.add_node(edge, sub_node)
+
+        return filtered
 
     #   ---web------------------------------------------------------------------
 
-    def show(self, renderer, path=None):
-        renderer.show_container(self, path=path)
+    def show(self, renderer):
+        # TODO
+        if not self.attributes.is_empty():
+            renderer.show_attributes(self.attributes)
+
+        if not self.table.is_empty():
+            renderer.show_table(self.table)
+
+        for edge in sorted(self._nodes):
+            renderer.show_node(self._nodes[edge])
 
 
 #.
-#   .--Leaf----------------------------------------------------------------.
-#   |                         _                __                          |
-#   |                        | |    ___  __ _ / _|                         |
-#   |                        | |   / _ \/ _` | |_                          |
-#   |                        | |__|  __/ (_| |  _|                         |
-#   |                        |_____\___|\__,_|_|                           |
+#   .--Table---------------------------------------------------------------.
+#   |                       _____     _     _                              |
+#   |                      |_   _|_ _| |__ | | ___                         |
+#   |                        | |/ _` | '_ \| |/ _ \                        |
+#   |                        | | (_| | |_) | |  __/                        |
+#   |                        |_|\__,_|_.__/|_|\___|                        |
 #   |                                                                      |
 #   '----------------------------------------------------------------------'
 
 
-class Leaf(NodeAttribute):
-    """Interface for all primitive nodes/leaves"""
-    def normalize_nodes(self):
-        pass
+class Table:
+    def __init__(self) -> None:
+        self.path: SDNodePath = tuple()
+        self.data: SDTable = []
 
-    def set_child_data(self, data):
-        raise NotImplementedError()
+    def set_path(self, path: SDNodePath) -> None:
+        self.path = path
 
-    def get_child_data(self):
-        raise NotImplementedError()
+    def is_empty(self) -> bool:
+        return self.data == []
 
-    def get_filtered_data(self, keys):
-        raise NotImplementedError()
+    def is_equal(self, other: object, edges: Optional[SDPath] = None) -> bool:
+        if not isinstance(other, Table):
+            raise TypeError("Cannot compare %s with %s" % (type(self), type(other)))
 
-    def _get_filtered_entries(self, entries, keys):
-        filtered: Dict = {}
-        for k, v in entries.items():
-            if k in keys:
-                filtered.setdefault(k, v)
-        return filtered
-
-
-#.
-#   .--Numeration----------------------------------------------------------.
-#   |       _   _                                _   _                     |
-#   |      | \ | |_   _ _ __ ___   ___ _ __ __ _| |_(_) ___  _ __          |
-#   |      |  \| | | | | '_ ` _ \ / _ \ '__/ _` | __| |/ _ \| '_ \         |
-#   |      | |\  | |_| | | | | | |  __/ | | (_| | |_| | (_) | | | |        |
-#   |      |_| \_|\__,_|_| |_| |_|\___|_|  \__,_|\__|_|\___/|_| |_|        |
-#   |                                                                      |
-#   '----------------------------------------------------------------------'
-
-
-class Numeration(Leaf):
-    def __init__(self):
-        super(Numeration, self).__init__()
-        self._numeration = []
-
-    def is_empty(self):
-        return self._numeration == []
-
-    def is_equal(self, foreign, edges=None):
-        for row in self._numeration:
-            if row not in foreign._numeration:
+        for row in self.data:
+            if row not in other.data:
                 return False
-        for row in foreign._numeration:
-            if row not in self._numeration:
+        for row in other.data:
+            if row not in self.data:
                 return False
         return True
 
-    def count_entries(self):
-        return sum(map(len, self._numeration))
+    def count_entries(self) -> int:
+        return sum(map(len, self.data))
 
-    def compare_with(self, other, keep_identical=False):
-        remaining_own_rows, remaining_other_rows, identical_rows =\
-            self._get_categorized_rows(other)
+    def merge_with(self, other: object) -> None:
+        if not isinstance(other, Table):
+            raise TypeError("Cannot compare %s with %s" % (type(self), type(other)))
 
+        other_keys = other._get_table_keys()
+        my_keys = self._get_table_keys()
+        intersect_keys = my_keys.intersection(other_keys)
+
+        # In case there is no intersection, append all other rows without
+        # merging with own rows
+        if not intersect_keys:
+            self.add_table(other.data)
+            return
+
+        # Try to match rows of both trees based on the keys that are found in
+        # both. Matching rows are updated. Others are appended.
+        other_num = {other._prepare_key(entry, intersect_keys): entry for entry in other.data}
+
+        for entry in self.data:
+            key = self._prepare_key(entry, intersect_keys)
+            if key in other_num:
+                entry.update(other_num[key])
+                del other_num[key]
+
+        self.add_table(list(other_num.values()))
+
+    def _get_table_keys(self) -> Set[SDKey]:
+        return {key for row in self.data for key in row}
+
+    def _prepare_key(self, entry: Dict, keys: Set[SDKey]) -> Tuple[SDKey, ...]:
+        return tuple(entry[key] for key in sorted(keys) if key in entry)
+
+    #   ---table methods--------------------------------------------------------
+
+    def add_table(self, table: SDTable) -> None:
+        self.data.extend(table)
+
+    #   ---de/serializing-------------------------------------------------------
+
+    def get_raw_tree(self) -> SDTable:
+        return self.data
+
+    #   ---delta----------------------------------------------------------------
+
+    def compare_with(self, other: object, keep_identical: bool = False) -> NDeltaResult:
+        if not isinstance(other, Table):
+            raise TypeError("Cannot compare %s with %s" % (type(self), type(other)))
+
+        counter: SDDeltaCounter = Counter()
+        delta_table = Table()
+
+        remaining_own_rows, remaining_other_rows, identical_rows = self._get_categorized_rows(other)
         new_rows: List = []
         removed_rows: List = []
-        compared_rows = []
-        num_new, num_changed, num_removed = 0, 0, 0
+
         if not remaining_other_rows and remaining_own_rows:
             new_rows.extend(remaining_own_rows)
 
@@ -668,140 +617,86 @@ class Numeration(Leaf):
 
         elif remaining_other_rows and remaining_own_rows:
             if len(remaining_other_rows) == len(remaining_own_rows):
-                num_new, num_changed, num_removed, compared_rows =\
-                    self._compare_remaining_rows_with_same_length(
-                        remaining_own_rows,
-                        remaining_other_rows,
-                        keep_identical=keep_identical)
+                delta_rows_result = self._compare_remaining_rows_with_same_length(
+                    remaining_own_rows,
+                    remaining_other_rows,
+                    keep_identical=keep_identical,
+                )
+                counter.update(delta_rows_result.counter)
+                delta_table.add_table(delta_rows_result.delta)
             else:
                 new_rows.extend(remaining_own_rows)
                 removed_rows.extend(remaining_other_rows)
 
-        delta_node_rows = compared_rows\
-                          + [{k: _new_delta_tree_node(v)
-                             for k,v in row.items()}
-                             for row in new_rows]\
-                          + [{k: _removed_delta_tree_node(v)
-                             for k,v in row.items()}
-                             for row in removed_rows]
-        if keep_identical:
-            delta_node_rows += [
-                {k: _identical_delta_tree_node(v) for k, v in row.items()} for row in identical_rows
-            ]
-        delta_node: Optional[Numeration] = None
-        if delta_node_rows:
-            delta_node = Numeration()
-            delta_node.set_child_data(delta_node_rows)
-        return len(new_rows) + num_new, num_changed,\
-               len(removed_rows) + num_removed, delta_node
+        delta_table.add_table(
+            [{k: _new_delta_tree_node(v) for k, v in row.items()} for row in new_rows])
+        delta_table.add_table(
+            [{k: _removed_delta_tree_node(v) for k, v in row.items()} for row in removed_rows])
 
-    def _get_categorized_rows(self, other):
-        identical_rows: List = []
+        if keep_identical:
+            delta_table.add_table([
+                {k: _identical_delta_tree_node(v) for k, v in row.items()} for row in identical_rows
+            ])
+
+        counter.update(new=sum(map(len, new_rows)), removed=sum(map(len, removed_rows)))
+        return NDeltaResult(counter=counter, delta=delta_table)
+
+    def _get_categorized_rows(self, other: "Table") -> Tuple[SDTable, SDTable, SDTable]:
+        identical_rows = []
         remaining_other_rows = []
         remaining_new_rows = []
-        for row in other._numeration:
-            if row in self._numeration:
+        for row in other.data:
+            if row in self.data:
                 if row not in identical_rows:
                     identical_rows.append(row)
             else:
                 remaining_other_rows.append(row)
-        for row in self._numeration:
-            if row in other._numeration:
+        for row in self.data:
+            if row in other.data:
                 if row not in identical_rows:
                     identical_rows.append(row)
             else:
                 remaining_new_rows.append(row)
         return remaining_new_rows, remaining_other_rows, identical_rows
 
-    def _compare_remaining_rows_with_same_length(self, own_rows, other_rows, keep_identical=False):
+    def _compare_remaining_rows_with_same_length(
+        self,
+        own_rows: SDTable,
+        other_rows: SDTable,
+        keep_identical: bool = False,
+    ) -> TDeltaResult:
         # In this case we assume that each entry corresponds to the
         # other one with the same index.
-        num_new, num_changed, num_removed = 0, 0, 0
+        counter: SDDeltaCounter = Counter()
         compared_rows = []
         for own_row, other_row in zip(own_rows, other_rows):
-            new_entries, changed_entries, removed_entries, identical_entries = \
-                _compare_dicts(other_row, own_row)
-            num_new += len(new_entries)
-            num_changed += len(changed_entries)
-            num_removed += len(removed_entries)
-            row: Dict = {}
-            for entries in [new_entries, changed_entries, removed_entries]:
-                row.update(entries)
-            if keep_identical or new_entries or changed_entries or removed_entries:
-                row.update(identical_entries)
-            if row:
-                compared_rows.append(row)
-        return num_new, num_changed, num_removed, compared_rows
+            delta_dict_result = _compare_dicts(
+                old_dict=other_row,
+                new_dict=own_row,
+                keep_identical=keep_identical,
+            )
 
-    def encode_for_delta_tree(self, encode_as):
-        delta_node = Numeration()
-        data = []
-        for entry in self._numeration:
-            data.append({k: encode_as(v) for k, v in entry.items()})
-        delta_node.set_child_data(data)
-        return delta_node
+            counter.update(delta_dict_result.counter)
+            if delta_dict_result.delta:
+                compared_rows.append(delta_dict_result.delta)
+        return TDeltaResult(counter=counter, delta=compared_rows)
 
-    def get_raw_tree(self):
-        return self._numeration
+    def get_encoded_table(self, encode_as: SDEncodeAs) -> SDTable:
+        return [{k: encode_as(v) for k, v in row.items()} for row in self.data]
 
-    def merge_with(self, foreign):
-        foreign_keys = foreign._get_numeration_keys()
-        my_keys = self._get_numeration_keys()
-        intersect_keys = my_keys.intersection(foreign_keys)
+    #   ---filtering------------------------------------------------------------
 
-        # In case there is no intersection, append all foreign rows without
-        # merging with own rows
-        if not intersect_keys:
-            self._numeration += foreign._numeration
-            return
-
-        # Try to match rows of both trees based on the keys that are found in
-        # both. Matching rows are updated. Others are appended.
-        foreign_num = {
-            foreign._prepare_key(entry, intersect_keys): entry for entry in foreign._numeration
-        }
-
-        for entry in self._numeration:
-            key = self._prepare_key(entry, intersect_keys)
-            if key in foreign_num:
-                entry.update(foreign_num[key])
-                del foreign_num[key]
-
-        self._numeration += list(foreign_num.values())
-
-    def _get_numeration_keys(self):
-        return {key for row in self._numeration for key in row}
-
-    def _prepare_key(self, entry, keys):
-        return tuple(entry[key] for key in sorted(keys) if key in entry)
-
-    def copy(self):
-        new_node = Numeration()
-        new_node.set_child_data(self._numeration[:])
-        return new_node
-
-    #   ---leaf methods---------------------------------------------------------
-
-    def set_child_data(self, data):
-        self._numeration += data
-
-    def get_child_data(self):
-        return self._numeration
-
-    def get_filtered_data(self, keys):
-        filtered = Numeration()
-        numeration = []
-        for entry in self._numeration:
-            filtered_entry = self._get_filtered_entries(entry, keys)
-            if filtered_entry:
-                numeration.append(filtered_entry)
-        filtered.set_child_data(numeration)
-        return filtered
+    def get_filtered_data(self, filter_func: SDFilterFunc) -> SDTable:
+        return [
+            filtered_row for row in self.data
+            if (filtered_row := _get_filtered_dict(row, filter_func))
+        ]
 
     #   ---web------------------------------------------------------------------
 
-    def show(self, renderer, path=None):
-        renderer.show_numeration(self, path=path)
+    def show(self, renderer):
+        # TODO
+        renderer.show_table(self)
 
 
 #.
@@ -815,141 +710,75 @@ class Numeration(Leaf):
 #   '----------------------------------------------------------------------'
 
 
-class Attributes(Leaf):
-    def __init__(self):
-        super(Attributes, self).__init__()
-        self._attributes = {}
+class Attributes:
+    def __init__(self) -> None:
+        self.path: SDNodePath = tuple()
+        self.data: SDAttributes = {}
 
-    def is_empty(self):
-        return self._attributes == {}
+    def set_path(self, path: SDNodePath) -> None:
+        self.path = path
 
-    def is_equal(self, foreign, edges=None):
-        return self._attributes == foreign._attributes
+    def is_empty(self) -> bool:
+        return self.data == {}
 
-    def count_entries(self):
-        return len(self._attributes)
+    def is_equal(self, other: object, edges: Optional[SDPath] = None) -> bool:
+        if not isinstance(other, Attributes):
+            raise TypeError("Cannot compare %s with %s" % (type(self), type(other)))
 
-    def compare_with(self, other, keep_identical=False):
-        new, changed, removed, identical = \
-            _compare_dicts(other._attributes, self._attributes)
-        delta_node: Optional[Attributes] = None
-        if new or changed or removed:
-            delta_node = Attributes()
-            delta_node.set_child_data(new)
-            delta_node.set_child_data(changed)
-            delta_node.set_child_data(removed)
-            if keep_identical:
-                delta_node.set_child_data(identical)
-        return len(new), len(changed), len(removed), delta_node
+        return self.data == other.data
 
-    def encode_for_delta_tree(self, encode_as):
-        delta_node = Attributes()
-        data = {k: encode_as(v) for k, v in self._attributes.items()}
-        delta_node.set_child_data(data)
-        return delta_node
+    def count_entries(self) -> int:
+        return len(self.data)
 
-    def get_raw_tree(self):
-        return self._attributes
+    def merge_with(self, other: object) -> None:
+        if not isinstance(other, Attributes):
+            raise TypeError("Cannot compare %s with %s" % (type(self), type(other)))
 
-    def merge_with(self, foreign):
-        self._attributes.update(foreign._attributes)
+        self.data.update(other.data)
 
-    def copy(self):
-        new_node = Attributes()
-        new_node.set_child_data(self._attributes.copy())
-        return new_node
+    #   ---attributes methods---------------------------------------------------
 
-    #   ---leaf methods---------------------------------------------------------
+    def add_attributes(self, attributes: SDAttributes) -> None:
+        self.data.update(attributes)
 
-    def set_child_data(self, data):
-        self._attributes.update(data)
+    #   ---de/serializing-------------------------------------------------------
 
-    def get_child_data(self):
-        return self._attributes
+    def get_raw_tree(self) -> SDAttributes:
+        return self.data
 
-    def get_filtered_data(self, keys):
-        filtered = Attributes()
-        attributes = self._get_filtered_entries(self._attributes, keys)
-        filtered.set_child_data(attributes)
-        return filtered
+    #   ---delta----------------------------------------------------------------
+
+    def compare_with(self, other: object, keep_identical: bool = False) -> ADeltaResult:
+        if not isinstance(other, Attributes):
+            raise TypeError("Cannot compare %s with %s" % (type(self), type(other)))
+
+        delta_dict_result = _compare_dicts(
+            old_dict=other.data,
+            new_dict=self.data,
+            keep_identical=keep_identical,
+        )
+
+        delta_attributes = Attributes()
+        delta_attributes.add_attributes(delta_dict_result.delta)
+
+        return ADeltaResult(
+            counter=delta_dict_result.counter,
+            delta=delta_attributes,
+        )
+
+    def get_encoded_attributes(self, encode_as: SDEncodeAs) -> SDAttributes:
+        return {k: encode_as(v) for k, v in self.data.items()}
+
+    #   ---filtering------------------------------------------------------------
+
+    def get_filtered_data(self, filter_func: SDFilterFunc) -> SDAttributes:
+        return _get_filtered_dict(self.data, filter_func)
 
     #   ---web------------------------------------------------------------------
 
-    def show(self, renderer, path=None):
-        renderer.show_attributes(self, path=path)
-
-
-#.
-#   .--Node----------------------------------------------------------------.
-#   |                       _   _           _                              |
-#   |                      | \ | | ___   __| | ___                         |
-#   |                      |  \| |/ _ \ / _` |/ _ \                        |
-#   |                      | |\  | (_) | (_| |  __/                        |
-#   |                      |_| \_|\___/ \__,_|\___|                        |
-#   |                                                                      |
-#   '----------------------------------------------------------------------'
-
-
-class Node:
-    """Node contains max. one node attribute per type."""
-
-    CHILDREN_NAMES = [Container, Numeration, Attributes]
-
-    def __init__(self, abs_path=None):
-        super(Node, self).__init__()
-        if abs_path is None:
-            abs_path = tuple()
-        self._children = {}
-        self._abs_path = abs_path
-
-    def get_absolute_path(self):
-        return self._abs_path
-
-    def add_node_child(self, child):
-        return self._children.setdefault(type(child), child)
-
-    def remove_node_child(self, child):
-        child_type = type(child)
-        if child_type in self._children:
-            del self._children[child_type]
-
-    def get_node_container(self, default=None):
-        return self._children.get(type(Container()), default)
-
-    def get_node_numeration(self, default=None):
-        return self._children.get(type(Numeration()), default)
-
-    def get_node_attributes(self, default=None):
-        return self._children.get(type(Attributes()), default)
-
-    def get_node_children(self):
-        return set(self._children.values())
-
-    def get_comparable_node_children(self, foreign):
-        # If we merge empty tree with existing one
-        # abs_path is empty, thus we try foreign's one.
-        # Eg. in get_filtered_tree
-        if self._abs_path:
-            abs_path = self._abs_path
-        else:
-            abs_path = foreign._abs_path
-        comparable_children = set()
-        for child_name in self.CHILDREN_NAMES:
-            child = child_name()
-            child_type = type(child)
-            if self._children.get(child_type) is None \
-               and foreign._children.get(child_type) is None:
-                continue
-            comparable_children.add(
-                (abs_path, self._children.get(child_type,
-                                              child), foreign._children.get(child_type, child)))
-        return comparable_children
-
-    def copy(self):
-        new_node = Node(self.get_absolute_path())
-        for child in self._children.values():
-            new_node.add_node_child(child.copy())
-        return new_node
+    def show(self, renderer):
+        # TODO
+        renderer.show_attributes(self)
 
 
 #.
@@ -963,7 +792,7 @@ class Node:
 #   '----------------------------------------------------------------------'
 
 
-def _compare_dicts(old_dict, new_dict):
+def _compare_dicts(*, old_dict: Dict, new_dict: Dict, keep_identical: bool) -> DDeltaResult:
     """
     Format of compared entries:
       new:          {k: (None, new_value), ...}
@@ -971,21 +800,41 @@ def _compare_dicts(old_dict, new_dict):
       removed:      {k: (old_value, None), ...}
       identical:    {k: (value, value), ...}
     """
-    removed_keys, kept_keys, new_keys = _compare_dict_keys(old_dict, new_dict)
+    compared_keys = _compare_dict_keys(old_dict=old_dict, new_dict=new_dict)
+
     identical: Dict = {}
     changed: Dict = {}
-    for k in kept_keys:
+    for k in compared_keys.both:
         new_value = new_dict[k]
         old_value = old_dict[k]
         if new_value == old_value:
             identical.setdefault(k, _identical_delta_tree_node(old_value))
         else:
             changed.setdefault(k, _changed_delta_tree_node(old_value, new_value))
-    return {k: _new_delta_tree_node(new_dict[k]) for k in new_keys}, changed,\
-           {k: _removed_delta_tree_node(old_dict[k]) for k in removed_keys}, identical
+
+    new = {k: _new_delta_tree_node(new_dict[k]) for k in compared_keys.only_new}
+    removed = {k: _removed_delta_tree_node(old_dict[k]) for k in compared_keys.only_old}
+
+    delta_dict: Dict = {}
+    delta_dict.update(new)
+    delta_dict.update(changed)
+    delta_dict.update(removed)
+    if keep_identical:
+        delta_dict.update(identical)
+
+    return DDeltaResult(
+        counter=Counter(new=len(new), changed=len(changed), removed=len(removed)),
+        delta=delta_dict,
+    )
 
 
-def _compare_dict_keys(old_dict, new_dict):
+class ComparedDictKeys(NamedTuple):
+    only_old: Set
+    both: Set
+    only_new: Set
+
+
+def _compare_dict_keys(*, old_dict: Dict, new_dict: Dict) -> ComparedDictKeys:
     """
     Returns the set relationships of the keys between two dictionaries:
     - relative complement of new_dict in old_dict
@@ -993,21 +842,62 @@ def _compare_dict_keys(old_dict, new_dict):
     - relative complement of old_dict in new_dict
     """
     old_keys, new_keys = set(old_dict), set(new_dict)
-    return old_keys - new_keys, old_keys.intersection(new_keys),\
-           new_keys - old_keys
+    return ComparedDictKeys(
+        only_old=old_keys - new_keys,
+        both=old_keys.intersection(new_keys),
+        only_new=new_keys - old_keys,
+    )
 
 
-def _new_delta_tree_node(value):
+def _get_filtered_dict(dict_: Dict, filter_func: SDFilterFunc) -> Dict:
+    return {k: v for k, v in dict_.items() if filter_func(k)}
+
+
+def _new_delta_tree_node(value: SDValue) -> Tuple[None, SDValue]:
     return (None, value)
 
 
-def _removed_delta_tree_node(value):
+def _removed_delta_tree_node(value: SDValue) -> Tuple[SDValue, None]:
     return (value, None)
 
 
-def _changed_delta_tree_node(old_value, new_value):
+def _changed_delta_tree_node(old_value: SDValue, new_value: SDValue) -> Tuple[SDValue, SDValue]:
     return (old_value, new_value)
 
 
-def _identical_delta_tree_node(value):
+def _identical_delta_tree_node(value: SDValue) -> Tuple[SDValue, SDValue]:
     return (value, value)
+
+
+def _parse_tree_path(tree_path: Optional[SDRawPath]) -> SDPath:
+    if not tree_path:
+        raise MKGeneralException("Empty tree path or zero.")
+
+    if not isinstance(tree_path, str):
+        raise MKGeneralException("Wrong tree path format. Must be of type string.")
+
+    if not tree_path.endswith((":", ".")):
+        raise MKGeneralException("No valid tree path.")
+
+    if bool(re.compile('[^a-zA-Z0-9_.:-]').search(tree_path)):
+        raise MKGeneralException("Specified tree path contains unexpected characters.")
+
+    if tree_path.startswith("."):
+        tree_path = tree_path[1:]
+
+    if tree_path.endswith(":") or tree_path.endswith("."):
+        tree_path = tree_path[:-1]
+
+    return parse_visible_raw_path(tree_path)
+
+
+def parse_visible_raw_path(raw_path: SDRawPath) -> SDPath:
+    parsed_path: SDPath = []
+    for part in raw_path.split("."):
+        if not part:
+            continue
+        try:
+            parsed_path.append(int(part))
+        except ValueError:
+            parsed_path.append(part)
+    return parsed_path

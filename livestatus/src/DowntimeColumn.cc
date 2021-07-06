@@ -9,11 +9,7 @@
 #include "Renderer.h"
 #include "Row.h"
 
-#ifndef CMC
-#include "nagios.h"
-#endif
-
-void detail::DowntimeRenderer::operator()(Row row, RowRenderer &r) const {
+void DowntimeRenderer::operator()(Row row, RowRenderer &r) const {
     ListRenderer l(r);
     for (const auto &downtime : f_(row)) {
         switch (verbosity_) {
@@ -46,10 +42,4 @@ void detail::DowntimeRenderer::operator()(Row row, RowRenderer &r) const {
             }
         }
     }
-}
-
-void DowntimeColumn::output(Row row, RowRenderer &r,
-                            const contact * /*auth_user*/,
-                            std::chrono::seconds /*timezone_offset*/) const {
-    renderer_(row, r);
 }

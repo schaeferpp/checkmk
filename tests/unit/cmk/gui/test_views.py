@@ -10,7 +10,7 @@ from cmk.gui.plugins.visuals.utils import Filter
 import copy
 from typing import Any, Dict
 
-import pytest  # type: ignore[import]
+import pytest
 
 import cmk.gui.config as config
 import cmk.utils.version as cmk_version
@@ -706,7 +706,7 @@ def test_legacy_register_painter(monkeypatch):
     assert painter.painter_options == ["opt1"]
     assert painter.printable is False
     assert painter.render(row={}, cell=dummy_cell) == ("abc", "xyz")
-    assert painter.group_by(row={}) == "xyz"
+    assert painter.group_by(row={}, cell=dummy_cell) == "xyz"
 
 
 # These tests make adding new elements needlessly painful.

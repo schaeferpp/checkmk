@@ -8,6 +8,7 @@ import ast
 import contextlib
 import copy
 import inspect
+import ipaddress
 import itertools
 import marshal
 import numbers
@@ -93,12 +94,14 @@ from cmk.utils.type_defs import (
     TagIDs,
     TagIDToTaggroupID,
     TimeperiodName,
-    OptionalConfigSerial,
-    LATEST_SERIAL,
 )
 
 from cmk.snmplib.type_defs import (  # noqa: F401 # pylint: disable=unused-import; these are required in the modules' namespace to load the configuration!
     SNMPScanFunction, SNMPCredentials, SNMPHostConfig, SNMPTiming, SNMPBackendEnum)
+
+import cmk.core_helpers.cache as cache_file
+import cmk.core_helpers.config_path
+from cmk.core_helpers.config_path import LATEST_CONFIG, ConfigPath
 
 import cmk.base.api.agent_based.register as agent_based_register
 import cmk.base.autochecks as autochecks
@@ -113,6 +116,7 @@ from cmk.base.api.agent_based.register.section_plugins_legacy import (
 )
 from cmk.base.api.agent_based.type_defs import (
     Parameters,
+    ParametersTypeAlias,
     SectionPlugin,
     SNMPSectionPlugin,
 )
@@ -260,7 +264,7 @@ def load(with_conf_d: bool = True,
     _verify_no_deprecated_variables_used()
 
 
-def load_packed_config(serial: OptionalConfigSerial) -> None:
+def load_packed_config(config_path: ConfigPath) -> None:
     """Load the configuration for the CMK helpers of CMC
 
     These files are written by PackedConfig().
@@ -269,9 +273,13 @@ def load_packed_config(serial: OptionalConfigSerial) -> None:
     check helpers would only need check related config variables.
 
     The validations which are performed during load() also don't need to be performed.
+
+    See Also:
+        cmk.base.core_nagios._dump_precompiled_hostcheck()
+
     """
     _initialize_config()
-    globals().update(PackedConfigStore(serial).read())
+    globals().update(PackedConfigStore.from_serial(config_path).read())
     _perform_post_config_loading_actions()
 
 
@@ -491,6 +499,8 @@ def _collect_parameter_rulesets_from_globals(global_dict: Dict[str, Any]) -> Non
     partially_migrated = {
         "diskstat_inventory",
         "inventory_ipmi_rules",
+        "discovery_cmciii",
+        "filesystem_groups",
     }
 
     for var_name in vars_to_remove - partially_migrated:
@@ -614,9 +624,9 @@ def all_nonfunction_vars() -> Set[str]:
     }
 
 
-def save_packed_config(serial: OptionalConfigSerial, config_cache: "ConfigCache") -> None:
+def save_packed_config(config_path: ConfigPath, config_cache: "ConfigCache") -> None:
     """Create and store a precompiled configuration for Checkmk helper processes"""
-    PackedConfigStore(serial).write(PackedConfigGenerator(config_cache).generate())
+    PackedConfigStore.from_serial(config_path).write(PackedConfigGenerator(config_cache).generate())
 
 
 class PackedConfigGenerator:
@@ -742,9 +752,12 @@ class PackedConfigGenerator:
 
 class PackedConfigStore:
     """Caring about persistence of the packed configuration"""
-    def __init__(self, serial: OptionalConfigSerial) -> None:
-        base_path: Final[Path] = cmk.utils.paths.make_helper_config_path(serial)
-        self.path: Final[Path] = base_path / "precompiled_check_config.mk"
+    def __init__(self, path: Path) -> None:
+        self.path: Final = path
+
+    @classmethod
+    def from_serial(cls, config_path: ConfigPath) -> "PackedConfigStore":
+        return cls(Path(config_path) / "precompiled_check_config.mk")
 
     def write(self, helper_config: Mapping[str, Any]) -> None:
         self.path.parent.mkdir(parents=True, exist_ok=True)
@@ -758,12 +771,12 @@ class PackedConfigStore:
             return pickle.load(f)
 
 
-def make_core_autochecks_dir(serial: OptionalConfigSerial) -> Path:
-    return cmk.utils.paths.make_helper_config_path(serial) / "autochecks"
+def make_core_autochecks_dir(config_path: ConfigPath) -> Path:
+    return Path(config_path) / "autochecks"
 
 
-def make_core_discovered_host_labels_dir(serial: OptionalConfigSerial) -> Path:
-    return cmk.utils.paths.make_helper_config_path(serial) / "discovered_host_labels"
+def make_core_discovered_host_labels_dir(config_path: ConfigPath) -> Path:
+    return Path(config_path) / "discovered_host_labels"
 
 
 @contextlib.contextmanager
@@ -782,9 +795,9 @@ def set_use_core_config(use_core_config: bool) -> Iterator[None]:
     _orig_discovered_host_labels_dir = cmk.utils.paths.discovered_host_labels_dir
     try:
         if use_core_config:
-            cmk.utils.paths.autochecks_dir = str(make_core_autochecks_dir(LATEST_SERIAL))
+            cmk.utils.paths.autochecks_dir = str(make_core_autochecks_dir(LATEST_CONFIG))
             cmk.utils.paths.discovered_host_labels_dir = make_core_discovered_host_labels_dir(
-                LATEST_SERIAL)
+                LATEST_CONFIG)
         else:
             cmk.utils.paths.autochecks_dir = cmk.utils.paths.base_autochecks_dir
             cmk.utils.paths.discovered_host_labels_dir = cmk.utils.paths.base_discovered_host_labels_dir
@@ -1394,8 +1407,19 @@ _all_checks_loaded = False
 service_rule_groups = {"temperature"}
 
 
-def discovery_max_cachefile_age() -> int:
-    return inventory_max_cachefile_age
+def max_cachefile_age(
+    *,
+    checking: Optional[int] = None,
+    discovery: Optional[int] = None,
+    inventory: Optional[int] = None,
+) -> cache_file.MaxAge:
+    return cache_file.MaxAge(
+        checking=check_max_cachefile_age if checking is None else checking,
+        # next line: inventory_max_cachefile_age is *not a typo*, old name for discovery!
+        discovery=inventory_max_cachefile_age if discovery is None else discovery,
+        # next line: hard coded default, not configurable.
+        inventory=120 if inventory is None else inventory,
+    )
 
 
 #.
@@ -2072,7 +2096,7 @@ def _extract_check_plugins(
 def _get_plugin_parameters(
     *,
     host_name: HostName,
-    default_parameters: Optional[Dict[str, Any]],
+    default_parameters: Optional[ParametersTypeAlias],
     ruleset_name: Optional[RuleSetName],
     ruleset_type: Literal["all", "merged"],
     rules_getter_function: Callable[[RuleSetName], List[Dict[str, Any]]],
@@ -2094,9 +2118,10 @@ def _get_plugin_parameters(
         return [Parameters(d) for d in host_rules]
 
     if ruleset_type == "merged":
-        params = default_parameters.copy()
-        params.update(config_cache.host_extra_conf_merged(host_name, rules))
-        return Parameters(params)
+        return Parameters({
+            **default_parameters,
+            **config_cache.host_extra_conf_merged(host_name, rules),
+        })
 
     # validation should have prevented this
     raise NotImplementedError(f"unknown discovery rule set type {ruleset_type!r}")
@@ -2152,7 +2177,7 @@ def compute_check_parameters(
 
 
 def _update_with_default_check_parameters(
-    check_default_parameters: Dict[str, Any],
+    check_default_parameters: ParametersTypeAlias,
     params: LegacyCheckParameters,
 ) -> LegacyCheckParameters:
 
@@ -2477,11 +2502,11 @@ class HostConfig:
 
         return list(parent_candidates.intersection(self._config_cache.all_active_realhosts()))
 
-    def snmp_config(self, ipaddress: HostAddress) -> SNMPHostConfig:
+    def snmp_config(self, ip_address: HostAddress) -> SNMPHostConfig:
         return SNMPHostConfig(
             is_ipv6_primary=self.is_ipv6_primary,
             hostname=self.hostname,
-            ipaddress=ipaddress,
+            ipaddress=ip_address,
             credentials=self._snmp_credentials(),
             port=self._snmp_port(),
             is_bulkwalk_host=self._config_cache.in_binary_hostlist(self.hostname, bulkwalk_hosts),
@@ -2953,9 +2978,9 @@ class HostConfig:
 
     @property
     def management_address(self) -> Optional[HostAddress]:
-        mgmt_ip_address = host_attributes.get(self.hostname, {}).get("management_address")
-        if mgmt_ip_address:
-            return mgmt_ip_address
+        mgmt_host_address = host_attributes.get(self.hostname, {}).get("management_address")
+        if mgmt_host_address:
+            return mgmt_host_address
 
         if self.is_ipv6_primary:
             return ipv6addresses.get(self.hostname)
@@ -3135,8 +3160,9 @@ class HostConfig:
             ) for hostname in hostnames)
 
     @property
-    def max_cachefile_age(self) -> int:
-        return check_max_cachefile_age if self.nodes is None else cluster_max_cachefile_age
+    def max_cachefile_age(self) -> cache_file.MaxAge:
+        return max_cachefile_age(
+            checking=None if self.nodes is None else cluster_max_cachefile_age,)
 
     @property
     def is_dyndns_host(self) -> bool:
@@ -3144,18 +3170,25 @@ class HostConfig:
 
 
 def lookup_mgmt_board_ip_address(host_config: HostConfig) -> Optional[HostAddress]:
+    mgmt_address = host_config.management_address
+    try:
+        mgmt_ipa: Optional[HostAddress] = HostAddress(ipaddress.ip_address(mgmt_address))
+    except (ValueError, TypeError):
+        mgmt_ipa = None
+
     try:
         return ip_lookup.lookup_ip_address(
-            host_config=host_config,
+            # host name is ignored, if mgmt_ipa is trueish.
+            host_name=mgmt_address or host_config.hostname,
             family=host_config.default_address_family,
-            # TODO Cleanup:
-            # host_config.management_address also looks up "hostname" in ipaddresses/ipv6addresses
-            # dependent on host_config.is_ipv6_primary as above. Thus we get the "right" IP address
-            # here.
-            configured_ip_address=host_config.management_address,
+            configured_ip_address=mgmt_ipa,
             simulation_mode=simulation_mode,
+            is_snmp_usewalk_host=host_config.is_usewalk_host and
+            (host_config.management_protocol == "snmp"),
             override_dns=fake_dns,
-            use_dns_cache=use_dns_cache,
+            is_dyndns_host=host_config.is_dyndns_host,
+            is_no_ip_host=False,
+            force_file_cache_renewal=not use_dns_cache,
         )
     except MKIPAddressLookupError:
         return None
@@ -3169,13 +3202,16 @@ def lookup_ip_address(
     if family is None:
         family = host_config.default_address_family
     return ip_lookup.lookup_ip_address(
-        host_config=host_config,
+        host_name=host_config.hostname,
         family=family,
         configured_ip_address=(ipaddresses if family is socket.AF_INET else ipv6addresses).get(
             host_config.hostname),
         simulation_mode=simulation_mode,
+        is_snmp_usewalk_host=host_config.is_usewalk_host and host_config.is_snmp_host,
         override_dns=fake_dns,
-        use_dns_cache=use_dns_cache,
+        is_dyndns_host=host_config.is_dyndns_host,
+        is_no_ip_host=host_config.is_no_ip_host,
+        force_file_cache_renewal=not use_dns_cache,
     )
 
 

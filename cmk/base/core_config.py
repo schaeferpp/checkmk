@@ -10,13 +10,12 @@ import os
 import shutil
 import socket
 import sys
-from contextlib import contextmanager, suppress
+from contextlib import contextmanager
 from pathlib import Path
 from typing import (
     AnyStr,
     Callable,
     Dict,
-    Final,
     Iterable,
     Iterator,
     List,
@@ -29,21 +28,21 @@ from typing import (
 import cmk.utils.debug
 import cmk.utils.password_store
 import cmk.utils.paths
-import cmk.utils.store as store
 import cmk.utils.tty as tty
 import cmk.utils.version as cmk_version
 from cmk.utils.exceptions import MKGeneralException
 from cmk.utils.log import console
 from cmk.utils.type_defs import (
     CheckPluginName,
-    ConfigSerial,
     HostAddress,
     HostName,
     Labels,
     LabelSources,
-    LATEST_SERIAL,
     ServiceName,
 )
+
+import cmk.core_helpers.config_path
+from cmk.core_helpers.config_path import VersionedConfigPath
 
 import cmk.base.api.agent_based.register as agent_based_register
 import cmk.base.config as config
@@ -66,79 +65,6 @@ CoreCommand = str
 CheckCommandArguments = Iterable[Union[int, float, str, Tuple[str, str, str]]]
 
 
-class HelperConfig:
-    """Managing the helper core config generations below var/check_mk/core/helper-config/[serial]
-
-    The context manager ensures that the directory for the config serial is created and the "latest"
-    link is only created in case the context is left without exception.
-    """
-    def __init__(self, serial: ConfigSerial) -> None:
-        self.serial: Final = serial
-        self.serial_path: Final = cmk.utils.paths.make_helper_config_path(serial)
-        self.latest_path: Final = cmk.utils.paths.make_helper_config_path(LATEST_SERIAL)
-
-    @contextmanager
-    def create(self) -> Iterator["HelperConfig"]:
-        self._cleanup()
-
-        self.serial_path.mkdir(parents=True, exist_ok=True)
-        yield self
-        self._create_latest_link()
-
-    def _create_latest_link(self) -> None:
-        with suppress(FileNotFoundError):
-            self.latest_path.unlink()
-        self.latest_path.symlink_to(self.serial_path.name)
-
-    def _cleanup(self) -> None:
-        """Cleanup old helper configs
-
-        This is only used when using the Nagios core. The Microcore cares about the cleanup on it's
-        own, because the Microcore holds the information which configs are still needed."""
-        if config.monitoring_core == "cmc":
-            return
-
-        if not cmk.utils.paths.core_helper_config_dir.exists():
-            return
-
-        latest_config_path = self.latest_path.resolve()
-        for config_path in cmk.utils.paths.core_helper_config_dir.iterdir():
-            if config_path.is_symlink() or not config_path.is_dir():
-                continue
-
-            if config_path == latest_config_path:
-                continue
-
-            shutil.rmtree(config_path)
-
-
-def current_helper_config_serial() -> ConfigSerial:
-    serial: int = store.load_object_from_file(
-        cmk.utils.paths.core_helper_config_dir / "serial.mk",
-        default=0,
-        lock=True,
-    )
-    return ConfigSerial(str(serial))
-
-
-def next_helper_config_serial() -> ConfigSerial:
-    """Acquire and return the next helper config serial
-
-    This ID is used to identify a core helper configuration generation. It is used to store the
-    helper config on the file system below var/check_mk/core/helper_config/[serial]. It needs to
-    be unique compared to all currently known serials (the ones that exist in the directory
-    mentioned above).
-    """
-    serial = int(current_helper_config_serial())
-    serial += 1
-
-    store.save_object_to_file(
-        cmk.utils.paths.core_helper_config_dir / "serial.mk",
-        serial,
-    )
-    return ConfigSerial(str(serial))
-
-
 class MonitoringCore(metaclass=abc.ABCMeta):
     @classmethod
     @abc.abstractmethod
@@ -146,7 +72,7 @@ class MonitoringCore(metaclass=abc.ABCMeta):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def create_config(self, serial: ConfigSerial) -> None:
+    def create_config(self, config_path: VersionedConfigPath) -> None:
         raise NotImplementedError
 
 
@@ -419,9 +345,9 @@ def _create_core_config(core: MonitoringCore) -> ConfigurationWarnings:
     _verify_non_duplicate_hosts()
     _verify_non_deprecated_checkgroups()
 
-    with HelperConfig(
-            next_helper_config_serial()).create() as helper_config, _backup_objects_file(core):
-        core.create_config(helper_config.serial)
+    config_path = next(VersionedConfigPath.current())
+    with config_path.create(is_cmc=config.is_cmc()), _backup_objects_file(core):
+        core.create_config(config_path)
 
     cmk.utils.password_store.save(config.stored_passwords)
 
